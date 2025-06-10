@@ -9,7 +9,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle.js';
 
 import store from './store';
-
+axios.defaults.baseURL = process.env.VUE_APP_API_BASE_URL || 'http://localhost:3000';
 const router = createRouter({
   history: createWebHistory(),
   routes
@@ -59,5 +59,9 @@ app.config.globalProperties.toast = function (title, content, variant = null, ap
     toast.remove();
   }, 3000);
 };
+window.store = store;
+window.axios = axios;
+window.toast = app.config.globalProperties.toast;
+window.router = router;
 
 app.mount('#app');
