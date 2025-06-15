@@ -26,28 +26,15 @@
         :requirements="['Required field', 'Enter your password']"
       />
 
-      <!-- Submit Button -->
-      <div class="submit-section">
-        <button
-          type="submit"
-          class="btn btn-primary w-100"
-          :class="{ 'btn-disabled': isSubmitting || !isFormValid }"
-          :disabled="isSubmitting || !isFormValid"
-          @mouseover="showTooltip = !isFormValid && !isSubmitting"
-          @mouseleave="showTooltip = false"
-        >
-          <span v-if="isSubmitting" class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-          {{ isSubmitting ? 'Logging in...' : 'Login' }}
-        </button>
-        
-        <!-- Tooltip for disabled button -->
-        <div v-if="showTooltip && !isFormValid" class="tooltip-content">
-          <strong>Form incomplete:</strong>
-          <ul class="mb-0">
-            <li v-for="field in missingRequiredFields" :key="field">{{ field }}</li>
-          </ul>
-        </div>
-      </div>
+      <SubmitButton
+        :is-loading="isSubmitting"
+        :is-form-valid="isFormValid"
+        default-text="Login"
+        loading-text="Logging in..."
+        variant="btn-primary"
+        :tooltip-fields="missingRequiredFields"
+        tooltip-title="Form incomplete"
+      />
 
       <!-- Register Link -->
       <div class="text-center mt-3">
@@ -66,11 +53,13 @@ import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import { useRouter } from 'vue-router';
 import FormField from '@/components/FormField.vue';
+import SubmitButton from '@/components/SubmitButton.vue';
 
 export default {
   name: "LoginPage",
   components: {
-    FormField
+    FormField,
+    SubmitButton
   },
   setup() {
     const router = useRouter();
@@ -91,7 +80,6 @@ export default {
 
     // UI state
     const isSubmitting = ref(false);
-    const showTooltip = ref(false);
 
     // Computed properties
     const isFormValid = computed(() => !v$.value.$invalid);
@@ -165,7 +153,6 @@ export default {
       v$,
       isSubmitting,
       isFormValid,
-      showTooltip,
       missingRequiredFields,
       handleSubmit
     };
@@ -180,55 +167,12 @@ export default {
   padding: 2rem;
 }
 
-.submit-section {
-  position: relative;
+.mt-3 {
   margin-top: 1rem;
-}
-
-.btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.25rem;
-  font-size: 1rem;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-  transition: all 0.15s ease-in-out;
-}
-
-.btn-primary {
-  background-color: #0d6efd;
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background-color: #0b5ed7;
-}
-
-.btn-disabled {
-  background-color: #6c757d !important;
-  cursor: not-allowed;
-}
-
-.btn:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-}
-
-.w-100 {
-  width: 100%;
-}
-
-.me-2 {
-  margin-right: 0.5rem;
 }
 
 .mb-0 {
   margin-bottom: 0;
-}
-
-.mt-3 {
-  margin-top: 1rem;
 }
 
 .text-center {
@@ -243,60 +187,5 @@ export default {
 .link-primary:hover {
   color: #0b5ed7;
   text-decoration: underline;
-}
-
-.tooltip-content {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #333;
-  color: white;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.25rem;
-  font-size: 0.875rem;
-  white-space: nowrap;
-  z-index: 1000;
-  margin-bottom: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-.tooltip-content::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 5px solid transparent;
-  border-top-color: #333;
-}
-
-.tooltip-content ul {
-  margin: 0;
-  padding-left: 1rem;
-  list-style-type: disc;
-}
-
-.spinner-border {
-  display: inline-block;
-  width: 2rem;
-  height: 2rem;
-  vertical-align: -0.125em;
-  border: 0.25em solid currentColor;
-  border-right-color: transparent;
-  border-radius: 50%;
-  animation: spinner-border 0.75s linear infinite;
-}
-
-.spinner-border-sm {
-  width: 1rem;
-  height: 1rem;
-  border-width: 0.2em;
-}
-
-@keyframes spinner-border {
-  to {
-    transform: rotate(360deg);
-  }
 }
 </style>
