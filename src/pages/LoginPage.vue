@@ -11,7 +11,7 @@
         :required="true"
         :has-error="v$.username.$error"
         :errors="['Username is required.']"
-        :requirements="['Required field', 'Enter your registered username']"
+        :requirements="['Required field']"
       />
 
       <FormField
@@ -23,7 +23,7 @@
         :required="true"
         :has-error="v$.password.$error"
         :errors="['Password is required.']"
-        :requirements="['Required field', 'Enter your password']"
+        :requirements="['Required field']"
       />
 
       <SubmitButton

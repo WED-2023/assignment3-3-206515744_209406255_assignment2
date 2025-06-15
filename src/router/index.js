@@ -1,7 +1,7 @@
 import Main from "../pages/MainPage.vue";
 import Register from "../pages/RegisterPage.vue";
 import Login from "../pages/LoginPage.vue";
-import RecipesSearch from "../pages/SearchPage.vue";
+import SearchPage from "../pages/SearchPage.vue";
 // import RecipesRandom from "../pages/RecipesRandomPage.vue";
 // import RecipeView from "../pages/RecipeViewPage.vue";
 // import UsersLastView from "../pages/UsersLastViewPage.vue";
@@ -31,7 +31,7 @@ const routes = [
   {
     path: "/recipes/search",
     name: "search",
-    component: RecipesSearch,
+    component: SearchPage,
   },
   // {
   //   path: "/recipes/:recipeId",
