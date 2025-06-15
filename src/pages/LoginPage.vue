@@ -127,16 +127,11 @@ export default {
           password: state.password
         };
 
-        const response = await window.axios.post('/login', payload);
+        await window.axios.post('/login', payload);
         
         // Store user data and token if provided
-        if (response.data.token) {
-          localStorage.setItem('authToken', response.data.token);
-        }
-        if (response.data.user) {
-          localStorage.setItem('user', JSON.stringify(response.data.user));
-        }
-        
+
+        window.store.login(state.username);
         window.toast('Login Successful', 'Welcome back!', 'success');
         router.push('/'); // Redirect to home or dashboard
       } catch (error) {
