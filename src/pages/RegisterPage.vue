@@ -2,226 +2,97 @@
   <div class="register-page">
     <h1>Register</h1>
     <form @submit.prevent="handleSubmit" novalidate>
-      <!-- Username Field -->
-      <div class="form-group">
-        <label for="username" class="form-label">
-          Username <span class="text-danger">*</span>
-        </label>
-        <div class="input-wrapper">
-          <input
-            id="username"
-            v-model="state.username"
-            type="text"
-            class="form-control"
-            :class="{ 'is-invalid': v$.username.$error }"
-            autocomplete="username"
-            name="username"
-            @focus="showValidationHint.username = true"
-            @input="showValidationHint.username = true"
-          />
-          <div v-if="showValidationHint.username && !state.username" class="validation-hint">
-            <strong>Requirements:</strong>
-            <ul>
-              <li>Required field</li>
-              <li>3-8 characters long</li>
-            </ul>
-          </div>
-        </div>
-        <div v-if="v$.username.$error" class="invalid-feedback">
-          <div v-for="error in getUsernameErrors" :key="error">{{ error }}</div>
-        </div>
-      </div>
+      <FormField
+        v-model="state.username"
+        label="Username"
+        name="username"
+        type="text"
+        autocomplete="username"
+        :required="true"
+        :has-error="v$.username.$error"
+        :errors="getUsernameErrors"
+        :requirements="['Required field', '3-8 characters long']"
+      />
 
-      <!-- Password Field -->
-      <div class="form-group">
-        <label for="password" class="form-label">
-          Password <span class="text-danger">*</span>
-        </label>
-        <div class="input-wrapper">
-          <input
-            id="password"
-            v-model="state.password"
-            type="password"
-            class="form-control"
-            :class="{ 'is-invalid': v$.password.$error }"
-            autocomplete="new-password"
-            name="password"
-            @focus="showValidationHint.password = true"
-            @input="showValidationHint.password = true"
-          />
-          <div v-if="showValidationHint.password && !state.password" class="validation-hint">
-            <strong>Requirements:</strong>
-            <ul>
-              <li>Required field</li>
-              <li>5-10 characters long</li>
-              <li>At least one special character (!@#$%^&*(),.?":{}|&lt;&gt;)</li>
-              <li>At least one number</li>
-            </ul>
-          </div>
-        </div>
-        <div v-if="v$.password.$error" class="invalid-feedback">
-          <div v-for="error in getPasswordErrors" :key="error">{{ error }}</div>
-        </div>
-      </div>
+      <FormField
+        v-model="state.password"
+        label="Password"
+        name="password"
+        type="password"
+        autocomplete="new-password"
+        :required="true"
+        :has-error="v$.password.$error"
+        :errors="getPasswordErrors"
+        :requirements="[
+          'Required field',
+          '5-10 characters long',
+          'At least one special character',
+          'At least one number'
+        ]"
+      />
 
-      <!-- Confirm Password Field -->
-      <div class="form-group">
-        <label for="confirmPassword" class="form-label">
-          Confirm Password <span class="text-danger">*</span>
-        </label>
-        <div class="input-wrapper">
-          <input
-            id="confirmPassword"
-            v-model="state.confirmPassword"
-            type="password"
-            class="form-control"
-            :class="{ 'is-invalid': v$.confirmPassword.$error }"
-            autocomplete="new-password"
-            name="confirmPassword"
-            @focus="showValidationHint.confirmPassword = true"
-            @input="showValidationHint.confirmPassword = true"
-          />
-          <div v-if="showValidationHint.confirmPassword && !state.confirmPassword" class="validation-hint">
-            <strong>Requirements:</strong>
-            <ul>
-              <li>Required field</li>
-              <li>Must match the password above</li>
-            </ul>
-          </div>
-        </div>
-        <div v-if="v$.confirmPassword.$error" class="invalid-feedback">
-          Passwords must match.
-        </div>
-      </div>
+      <FormField
+        v-model="state.confirmPassword"
+        label="Confirm Password"
+        name="confirmPassword"
+        type="password"
+        autocomplete="new-password"
+        :required="true"
+        :has-error="v$.confirmPassword.$error"
+        :errors="['Passwords must match.']"
+        :requirements="['Required field', 'Must match the password above']"
+      />
 
-      <!-- First Name Field -->
-      <div class="form-group">
-        <label for="firstName" class="form-label">
-          First Name <span class="text-danger">*</span>
-        </label>
-        <div class="input-wrapper">
-          <input
-            id="firstName"
-            v-model="state.firstName"
-            type="text"
-            class="form-control"
-            :class="{ 'is-invalid': v$.firstName.$error }"
-            autocomplete="given-name"
-            name="firstName"
-            @focus="showValidationHint.firstName = true"
-            @input="showValidationHint.firstName = true"
-          />
-          <div v-if="showValidationHint.firstName && !state.firstName" class="validation-hint">
-            <strong>Requirements:</strong>
-            <ul>
-              <li>Required field</li>
-            </ul>
-          </div>
-        </div>
-        <div v-if="v$.firstName.$error" class="invalid-feedback">
-          First name is required.
-        </div>
-      </div>
+      <FormField
+        v-model="state.firstName"
+        label="First Name"
+        name="firstName"
+        type="text"
+        autocomplete="given-name"
+        :required="true"
+        :has-error="v$.firstName.$error"
+        :errors="['First name is required.']"
+        :requirements="['Required field']"
+      />
 
-      <!-- Last Name Field -->
-      <div class="form-group">
-        <label for="lastName" class="form-label">
-          Last Name <span class="text-danger">*</span>
-        </label>
-        <div class="input-wrapper">
-          <input
-            id="lastName"
-            v-model="state.lastName"
-            type="text"
-            class="form-control"
-            :class="{ 'is-invalid': v$.lastName.$error }"
-            autocomplete="family-name"
-            name="lastName"
-            @focus="showValidationHint.lastName = true"
-            @input="showValidationHint.lastName = true"
-          />
-          <div v-if="showValidationHint.lastName && !state.lastName" class="validation-hint">
-            <strong>Requirements:</strong>
-            <ul>
-              <li>Required field</li>
-            </ul>
-          </div>
-        </div>
-        <div v-if="v$.lastName.$error" class="invalid-feedback">
-          Last name is required.
-        </div>
-      </div>
+      <FormField
+        v-model="state.lastName"
+        label="Last Name"
+        name="lastName"
+        type="text"
+        autocomplete="family-name"
+        :required="true"
+        :has-error="v$.lastName.$error"
+        :errors="['Last name is required.']"
+        :requirements="['Required field']"
+      />
 
-      <!-- Email Field -->
-      <div class="form-group">
-        <label for="email" class="form-label">
-          Email <span class="text-danger">*</span>
-        </label>
-        <div class="input-wrapper">
-          <input
-            id="email"
-            v-model="state.email"
-            type="email"
-            class="form-control"
-            :class="{ 'is-invalid': v$.email.$error }"
-            autocomplete="email"
-            name="email"
-            @focus="showValidationHint.email = true"
-            @input="showValidationHint.email = true"
-          />
-          <div v-if="showValidationHint.email && !state.email" class="validation-hint">
-            <strong>Requirements:</strong>
-            <ul>
-              <li>Required field</li>
-              <li>Valid email format (example@domain.com)</li>
-            </ul>
-          </div>
-        </div>
-        <div v-if="v$.email.$error" class="invalid-feedback">
-          <div v-for="error in getEmailErrors" :key="error">{{ error }}</div>
-        </div>
-      </div>
+      <FormField
+        v-model="state.email"
+        label="Email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        :required="true"
+        :has-error="v$.email.$error"
+        :errors="getEmailErrors"
+        :requirements="['Required field', 'Valid email format (example@domain.com)']"
+      />
 
-      <!-- Country Field -->
-      <div class="form-group">
-        <label for="country" class="form-label">
-          Country <span class="text-danger">*</span>
-        </label>
-        <div class="input-wrapper">
-          <select
-            id="country"
-            v-model="state.country"
-            class="form-control"
-            :class="{ 'is-invalid': v$.country.$error }"
-            autocomplete="country-name"
-            name="country"
-            :disabled="isLoadingCountries"
-            @focus="showValidationHint.country = true"
-            @change="showValidationHint.country = true"
-          >
-            <option disabled value="">
-              {{ isLoadingCountries ? 'Loading countries...' : 'Select a country' }}
-            </option>
-            <option
-              v-for="country in countries"
-              :key="country.code"
-              :value="country.name"
-            >
-              {{ country.name }}
-            </option>
-          </select>
-          <div v-if="showValidationHint.country && !state.country" class="validation-hint">
-            <strong>Requirements:</strong>
-            <ul>
-              <li>Required field</li>
-              <li>Select from the available countries</li>
-            </ul>
-          </div>
-        </div>
-        <div v-if="v$.country.$error" class="invalid-feedback">
-          Country is required.
-        </div>
-      </div>
+      <FormField
+        v-model="state.country"
+        label="Country"
+        name="country"
+        type="select"
+        autocomplete="country-name"
+        :required="true"
+        :has-error="v$.country.$error"
+        :errors="['Country is required.']"
+        :requirements="['Required field', 'Select from the available countries']"
+        :placeholder="isLoadingCountries ? 'Loading countries...' : 'Select a country'"
+        :options="countries"
+        :disabled="isLoadingCountries"
+      />
 
       <!-- Submit Button -->
       <div class="submit-section">
@@ -254,6 +125,7 @@ import { reactive, ref, onMounted, computed, watch } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required, minLength, sameAs, maxLength, email } from '@vuelidate/validators';
 import axios from 'axios';
+import FormField from '@/components/FormField.vue';
 
 // Custom validators
 const hasSpecialChar = (value) => /[!@#$%^&*(),.?":{}|<>]/.test(value);
@@ -266,6 +138,9 @@ const env = {
 
 export default {
   name: "RegisterPage",
+  components: {
+    FormField
+  },
   setup() {
     // Form state
     const state = reactive({
@@ -276,17 +151,6 @@ export default {
       lastName: '',
       email: '',
       country: ''
-    });
-
-    // UI state for validation hints
-    const showValidationHint = reactive({
-      username: false,
-      password: false,
-      confirmPassword: false,
-      firstName: false,
-      lastName: false,
-      email: false,
-      country: false
     });
 
     // Validation rules
@@ -320,11 +184,10 @@ export default {
     const countries = ref([]);
     const isLoadingCountries = ref(false);
     const showTooltip = ref(false);
-    const hasUserInteracted = ref(false);
 
     // Watch for user interaction
     watch([state], () => {
-      hasUserInteracted.value = true;
+      // User interaction tracking if needed
     }, { deep: true });
 
     // Computed properties
@@ -489,7 +352,6 @@ export default {
       isSubmitting,
       isFormValid,
       showTooltip,
-      showValidationHint,
       missingRequiredFields,
       handleSubmit,
       getUsernameErrors,
@@ -505,80 +367,6 @@ export default {
   max-width: 400px;
   margin: auto;
   padding: 2rem;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.input-wrapper {
-  position: relative;
-}
-
-.form-label {
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  display: block;
-}
-
-.form-control {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ced4da;
-  border-radius: 0.25rem;
-  font-size: 1rem;
-}
-
-.form-control:focus {
-  outline: none;
-  border-color: #86b7fe;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-.is-invalid {
-  border-color: #dc3545;
-}
-
-.is-invalid:focus {
-  border-color: #dc3545;
-  box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
-}
-
-.invalid-feedback {
-  display: block;
-  width: 100%;
-  margin-top: 0.25rem;
-  font-size: 0.875em;
-  color: #dc3545;
-}
-
-.validation-hint {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background-color: #e3f2fd;
-  border: 1px solid #90caf9;
-  border-radius: 0.25rem;
-  padding: 0.5rem;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-  z-index: 10;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.validation-hint strong {
-  color: #1976d2;
-}
-
-.validation-hint ul {
-  margin: 0.25rem 0 0 0;
-  padding-left: 1rem;
-  color: #424242;
-}
-
-.text-danger {
-  color: #dc3545;
 }
 
 .submit-section {

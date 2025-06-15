@@ -2,65 +2,29 @@
   <div class="login-page">
     <h1>Login</h1>
     <form @submit.prevent="handleSubmit" novalidate>
-      <!-- Username Field -->
-      <div class="form-group">
-        <label for="username" class="form-label">
-          Username <span class="text-danger">*</span>
-        </label>
-        <div class="input-wrapper">
-          <input
-            id="username"
-            v-model="state.username"
-            type="text"
-            class="form-control"
-            :class="{ 'is-invalid': v$.username.$error }"
-            autocomplete="username"
-            name="username"
-            @focus="showValidationHint.username = true"
-            @input="showValidationHint.username = true"
-          />
-          <div v-if="showValidationHint.username && !state.username" class="validation-hint">
-            <strong>Requirements:</strong>
-            <ul>
-              <li>Required field</li>
-              <li>Enter your registered username</li>
-            </ul>
-          </div>
-        </div>
-        <div v-if="v$.username.$error" class="invalid-feedback">
-          Username is required.
-        </div>
-      </div>
+      <FormField
+        v-model="state.username"
+        label="Username"
+        name="username"
+        type="text"
+        autocomplete="username"
+        :required="true"
+        :has-error="v$.username.$error"
+        :errors="['Username is required.']"
+        :requirements="['Required field', 'Enter your registered username']"
+      />
 
-      <!-- Password Field -->
-      <div class="form-group">
-        <label for="password" class="form-label">
-          Password <span class="text-danger">*</span>
-        </label>
-        <div class="input-wrapper">
-          <input
-            id="password"
-            v-model="state.password"
-            type="password"
-            class="form-control"
-            :class="{ 'is-invalid': v$.password.$error }"
-            autocomplete="current-password"
-            name="password"
-            @focus="showValidationHint.password = true"
-            @input="showValidationHint.password = true"
-          />
-          <div v-if="showValidationHint.password && !state.password" class="validation-hint">
-            <strong>Requirements:</strong>
-            <ul>
-              <li>Required field</li>
-              <li>Enter your password</li>
-            </ul>
-          </div>
-        </div>
-        <div v-if="v$.password.$error" class="invalid-feedback">
-          Password is required.
-        </div>
-      </div>
+      <FormField
+        v-model="state.password"
+        label="Password"
+        name="password"
+        type="password"
+        autocomplete="current-password"
+        :required="true"
+        :has-error="v$.password.$error"
+        :errors="['Password is required.']"
+        :requirements="['Required field', 'Enter your password']"
+      />
 
       <!-- Submit Button -->
       <div class="submit-section">
@@ -101,9 +65,13 @@ import { reactive, ref, computed } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import { useRouter } from 'vue-router';
+import FormField from '@/components/FormField.vue';
 
 export default {
   name: "LoginPage",
+  components: {
+    FormField
+  },
   setup() {
     const router = useRouter();
 
@@ -111,12 +79,6 @@ export default {
     const state = reactive({
       username: '',
       password: ''
-    });
-
-    // UI state for validation hints
-    const showValidationHint = reactive({
-      username: false,
-      password: false
     });
 
     // Validation rules
@@ -177,10 +139,16 @@ export default {
           password: state.password
         };
 
-        await window.axios.post('/login', payload);
+        const response = await window.axios.post('/login', payload);
         
         // Store user data and token if provided
-        window.store.login(state.username);
+        if (response.data.token) {
+          localStorage.setItem('authToken', response.data.token);
+        }
+        if (response.data.user) {
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+        }
+        
         window.toast('Login Successful', 'Welcome back!', 'success');
         router.push('/'); // Redirect to home or dashboard
       } catch (error) {
@@ -198,7 +166,6 @@ export default {
       isSubmitting,
       isFormValid,
       showTooltip,
-      showValidationHint,
       missingRequiredFields,
       handleSubmit
     };
@@ -211,80 +178,6 @@ export default {
   max-width: 400px;
   margin: auto;
   padding: 2rem;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.input-wrapper {
-  position: relative;
-}
-
-.form-label {
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  display: block;
-}
-
-.form-control {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ced4da;
-  border-radius: 0.25rem;
-  font-size: 1rem;
-}
-
-.form-control:focus {
-  outline: none;
-  border-color: #86b7fe;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-.is-invalid {
-  border-color: #dc3545;
-}
-
-.is-invalid:focus {
-  border-color: #dc3545;
-  box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
-}
-
-.invalid-feedback {
-  display: block;
-  width: 100%;
-  margin-top: 0.25rem;
-  font-size: 0.875em;
-  color: #dc3545;
-}
-
-.validation-hint {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background-color: #e3f2fd;
-  border: 1px solid #90caf9;
-  border-radius: 0.25rem;
-  padding: 0.5rem;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-  z-index: 10;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.validation-hint strong {
-  color: #1976d2;
-}
-
-.validation-hint ul {
-  margin: 0.25rem 0 0 0;
-  padding-left: 1rem;
-  color: #424242;
-}
-
-.text-danger {
-  color: #dc3545;
 }
 
 .submit-section {
