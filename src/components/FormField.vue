@@ -11,10 +11,12 @@
         :type="type"
         :name="name"
         :autocomplete="autocomplete"
+        :placeholder="placeholder"
         :class="['form-control', { 'is-invalid': hasError }]"
         :disabled="disabled"
         @input="$emit('update:modelValue', $event.target.value)"
         @focus="showHint = true"
+        @blur="showHint = false"
       />
       
       <select
@@ -27,6 +29,7 @@
         :disabled="disabled"
         @change="$emit('update:modelValue', $event.target.value)"
         @focus="showHint = true"
+        @blur="showHint = false"
       >
         <option v-if="placeholder" disabled value="">{{ placeholder }}</option>
         <option

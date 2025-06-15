@@ -88,7 +88,7 @@
         :required="true"
         :has-error="v$.country.$error"
         :errors="['Country is required.']"
-        :requirements="['Required field', 'Select from the available countries']"
+        :requirements="['Required field']"
         :placeholder="isLoadingCountries ? 'Loading countries...' : 'Select a country'"
         :options="countries"
         :disabled="isLoadingCountries"
