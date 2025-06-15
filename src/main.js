@@ -1,14 +1,41 @@
 import { createApp } from 'vue';
 import App from './App.vue';
-import routes from './router/index';
+import routes from './router/index.js';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import { createRouter, createWebHistory } from 'vue-router';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle.js';
+// import {
+//   FormGroupPlugin,
+//   FormInputPlugin,
+//   FormPlugin,
+//   ButtonPlugin,
+//   ToastPlugin,
+//   CardPlugin,
+//   NavbarPlugin,
+//   FormSelectPlugin,
+//   AlertPlugin,
+//   LayoutPlugin,
+// } from 'bootstrap-vue';
+// [
+//   FormGroupPlugin,
+//   FormInputPlugin,
+//   FormPlugin,
+//   ButtonPlugin,
+//   ToastPlugin,
+//   CardPlugin,
+//   NavbarPlugin,
+//   FormSelectPlugin,
+//   AlertPlugin,
+//   LayoutPlugin,
+// ].forEach((plugin) => {
+//   createApp(App).use(plugin);
+// });
 
-import store from './store';
+import store from './store.js';
+
 axios.defaults.baseURL = process.env.VUE_APP_API_BASE_URL || 'http://localhost:3000';
 const router = createRouter({
   history: createWebHistory(),
