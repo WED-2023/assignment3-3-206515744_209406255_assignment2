@@ -282,7 +282,8 @@ export default {
       commonIntolerances: ['gluten', 'dairy', 'peanut', 'soy'],
       otherIntolerances: ['egg', 'grain', 'seafood', 'sesame', 'shellfish', 'sulfite', 'tree nut', 'wheat'],
 
-      userLikedRecipes: [] // Add this to store user's liked recipes
+      userLikedRecipes: [],
+      userFavoriteRecipes: [] // Add this
     };
   },
   setup() {
@@ -380,20 +381,22 @@ export default {
       try {
         console.log("Search params:", params);
         
-        // Execute search and fetch liked recipes in parallel
+        // Execute search and fetch both liked and favorite recipes in parallel
         const [searchResponse] = await Promise.all([
           window.axios.get('/recipes/search', { params }),
-          this.fetchUserLikedRecipes() // This updates this.userLikedRecipes
+          this.fetchUserLikedRecipes(),
+          this.fetchUserFavoriteRecipes() // Add this
         ]);
         
         console.log("Search response:", searchResponse);
         console.log("Liked recipes:", this.userLikedRecipes);
+        console.log("Favorite recipes:", this.userFavoriteRecipes);
         
         // Get search results
         const recipes = searchResponse.data.recipes || searchResponse.data || [];
         
-        // Mark recipes as liked if they exist in user's liked recipes
-        this.searchResults = this.markLikedRecipes(recipes);
+        // Mark recipes as liked/favorited
+        this.searchResults = this.markRecipeStates(recipes);
         
       } catch (error) {
         console.error("Search failed:", error);
@@ -430,33 +433,64 @@ export default {
       }
     },
 
-    markLikedRecipes(recipes) {
+    async fetchUserFavoriteRecipes() {
+      if (!this.$root.store.username) {
+        this.userFavoriteRecipes = [];
+        return [];
+      }
+
+      try {
+        const response = await window.axios.get('/users/favorites');
+        this.userFavoriteRecipes = response.data.recipes || response.data || [];
+        return this.userFavoriteRecipes;
+      } catch (error) {
+        console.error("Failed to fetch favorite recipes:", error);
+        this.userFavoriteRecipes = [];
+        return [];
+      }
+    },
+
+    markRecipeStates(recipes) {
       return recipes.map(recipe => {
-        // Check if this recipe is in the user's liked recipes
+        // Check if this recipe is liked
         const isLiked = this.userLikedRecipes.some(likedRecipe => 
           likedRecipe.id === recipe.id
         );
         
+        // Check if this recipe is favorited
+        const isFavorited = this.userFavoriteRecipes.some(favRecipe => 
+          favRecipe.id === recipe.id
+        );
+        
         return {
           ...recipe,
-          liked: isLiked
+          liked: isLiked,
+          favorited: isFavorited
         };
       });
     },
 
-    onRecipeLikedChanged(data) {
-      console.log('Recipe liked status changed on search page:', data);
+    onRecipeActionChanged(data) {
+      console.log('Recipe action changed on search page:', data);
       
-      // Update the userLikedRecipes array
-      if (data.isLiked) {
-        // Add to liked recipes if not already there
-        const recipe = this.searchResults.find(r => r.id === data.recipeId);
-        if (recipe && !this.userLikedRecipes.some(lr => lr.id === data.recipeId)) {
-          this.userLikedRecipes.push(recipe);
+      if (data.actionType === 'like') {
+        if (data.isActive) {
+          const recipe = this.searchResults.find(r => r.id === data.recipeId);
+          if (recipe && !this.userLikedRecipes.some(lr => lr.id === data.recipeId)) {
+            this.userLikedRecipes.push(recipe);
+          }
+        } else {
+          this.userLikedRecipes = this.userLikedRecipes.filter(lr => lr.id !== data.recipeId);
         }
-      } else {
-        // Remove from liked recipes
-        this.userLikedRecipes = this.userLikedRecipes.filter(lr => lr.id !== data.recipeId);
+      } else if (data.actionType === 'favorite') {
+        if (data.isActive) {
+          const recipe = this.searchResults.find(r => r.id === data.recipeId);
+          if (recipe && !this.userFavoriteRecipes.some(fr => fr.id === data.recipeId)) {
+            this.userFavoriteRecipes.push(recipe);
+          }
+        } else {
+          this.userFavoriteRecipes = this.userFavoriteRecipes.filter(fr => fr.id !== data.recipeId);
+        }
       }
     },
 
