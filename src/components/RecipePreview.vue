@@ -9,7 +9,7 @@
     <div class="card-body text-center">
       <h5 class="card-title">{{ recipe.title }}</h5>
       <p class="card-text">{{ recipe.readyInMinutes }} minutes</p>
-      <p class="card-text">{{ recipe.aggregateLikes }} likes</p>
+      <p class="card-text">Score: {{ recipe.spoonacularScore }}</p>
     </div>
   </div>
 </template>
