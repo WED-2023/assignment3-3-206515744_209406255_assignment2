@@ -14,18 +14,37 @@
       <h5 class="card-title">{{ recipe.title }}</h5>
       <p class="card-text">{{ recipe.readyInMinutes }} minutes</p>
       
-      <!-- Like button in its own row -->
-      <div class="like-button-row">
-        <LikeButton
+      <!-- Action buttons in their own row -->
+      <div class="action-buttons-row">
+        <!-- Like button -->
+        <ActionButton
           :item-id="recipe.id"
-          :initial-liked-state="recipe.liked || false"
-          liked-emoji="❤️"
-          not-liked-emoji="🤍"
+          action-type="like"
+          :initial-active-state="recipe.liked || false"
+          active-emoji="❤️"
+          inactive-emoji="🤍"
           color="red"
           size="medium"
-          like-tooltip="Add to favorites"
-          unlike-tooltip="Remove from favorites"
-          @like-changed="onLikeChanged"
+          active-tooltip="Remove from liked"
+          inactive-tooltip="Add to liked"
+          add-endpoint="/users/liked"
+          @action-changed="onActionChanged"
+          @click.stop
+        />
+        
+        <!-- Favorite button -->
+        <ActionButton
+          :item-id="recipe.id"
+          action-type="favorite"
+          :initial-active-state="recipe.favorited || false"
+          active-emoji="⭐"
+          inactive-emoji="☆"
+          color="yellow"
+          size="medium"
+          active-tooltip="Remove from favorites"
+          inactive-tooltip="Add to favorites"
+          add-endpoint="/users/favorites"
+          @action-changed="onActionChanged"
           @click.stop
         />
       </div>
@@ -34,12 +53,12 @@
 </template>
 
 <script>
-import LikeButton from './LikeButton.vue';
+import ActionButton from './ActionButton.vue';
 
 export default {
   name: "RecipePreview",
   components: {
-    LikeButton
+    ActionButton
   },
   props: {
     recipe: {
@@ -47,18 +66,19 @@ export default {
       required: true
     }
   },
-  emits: ['recipe-liked-changed'],
+  emits: ['recipe-action-changed'],
   methods: {
     goToRecipe() {
       this.$router.push(`/recipe/${this.recipe.id}`);
     },
     
-    onLikeChanged(data) {
-      console.log('Recipe like status changed:', data);
-      // Emit event to parent component instead of mutating prop
-      this.$emit('recipe-liked-changed', {
+    onActionChanged(data) {
+      console.log('Recipe action changed:', data);
+      // Emit event to parent component
+      this.$emit('recipe-action-changed', {
         recipeId: this.recipe.id,
-        isLiked: data.isLiked
+        actionType: data.actionType,
+        isActive: data.isActive
       });
     }
   }
@@ -108,7 +128,10 @@ export default {
   font-size: 0.9rem;
 }
 
-.like-button-row {
+.action-buttons-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
   margin-top: 0.5rem;
 }
 </style>

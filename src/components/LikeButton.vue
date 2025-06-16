@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="like-button-container">
     <button 
       class="like-button"
@@ -324,4 +324,4 @@ export default {
     transform: scale(1);
   }
 }
-</style>
+</style> -->
