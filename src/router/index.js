@@ -3,7 +3,7 @@ import Register from "../pages/RegisterPage.vue";
 import Login from "../pages/LoginPage.vue";
 import SearchPage from "../pages/SearchPage.vue";
 // import RecipesRandom from "../pages/RecipesRandomPage.vue";
-// import RecipeView from "../pages/RecipeViewPage.vue";
+import RecipeView from "../pages/RecipeViewPage.vue";
 // import UsersLastView from "../pages/UsersLastViewPage.vue";
 // import UsersLiked from "../pages/UsersLikedPage.vue";
 // import UsersFavorites from "../pages/UsersFavoritesPage.vue";
@@ -33,11 +33,11 @@ const routes = [
     name: "search",
     component: SearchPage,
   },
-  // {
-  //   path: "/recipes/:recipeId",
-  //   name: "recipe",
-  //   component: RecipeView,
-  // },
+  {
+    path: "/recipes/:recipeId",
+    name: "recipe",
+    component: RecipeView,
+  },
   // {
   //   path: "/recipes/random",
   //   name: "recipeRandom",

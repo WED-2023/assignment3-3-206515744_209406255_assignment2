@@ -95,12 +95,12 @@ export default {
       this.hasSearched = true;
 
       try {
-        const response = await window.axios.post('/recipes/search', {
+        const response = await window.axios.get('/recipes/search', {
           params: {
             query: this.form.query
           }
         });
-
+        console.log("Search response:", response);
         this.searchResults = response.data.recipes || response.data || [];
       } catch (error) {
         console.error("Search failed:", error);

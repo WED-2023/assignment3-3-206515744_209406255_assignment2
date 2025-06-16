@@ -1,5 +1,5 @@
 <template>
-  <div class="card h-100">
+  <div class="card h-100 recipe-card" @click="goToRecipe">
     <img
       v-if="recipe.image"
       :src="recipe.image"
@@ -22,6 +22,11 @@ export default {
       type: Object,
       required: true
     }
+  },
+  methods: {
+    goToRecipe() {
+      this.$router.push(`/recipes/${this.recipe.id}`);
+    }
   }
 }
 </script>
@@ -31,5 +36,17 @@ export default {
   width: 100%;
   height: 200px;
   object-fit: cover;
+}
+
+.recipe-card {
+  cursor: pointer;
+  transition:
+    transform 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
+}
+
+.recipe-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 </style>
