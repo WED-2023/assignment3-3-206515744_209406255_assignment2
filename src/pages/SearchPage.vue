@@ -280,7 +280,9 @@ export default {
       ],
       
       commonIntolerances: ['gluten', 'dairy', 'peanut', 'soy'],
-      otherIntolerances: ['egg', 'grain', 'seafood', 'sesame', 'shellfish', 'sulfite', 'tree nut', 'wheat']
+      otherIntolerances: ['egg', 'grain', 'seafood', 'sesame', 'shellfish', 'sulfite', 'tree nut', 'wheat'],
+
+      userLikedRecipes: [] // Add this to store user's liked recipes
     };
   },
   setup() {
@@ -377,9 +379,22 @@ export default {
 
       try {
         console.log("Search params:", params);
-        const response = await window.axios.get('/recipes/search', { params });
-        console.log("Search response:", response);
-        this.searchResults = response.data.recipes || response.data || [];
+        
+        // Execute search and fetch liked recipes in parallel
+        const [searchResponse] = await Promise.all([
+          window.axios.get('/recipes/search', { params }),
+          this.fetchUserLikedRecipes() // This updates this.userLikedRecipes
+        ]);
+        
+        console.log("Search response:", searchResponse);
+        console.log("Liked recipes:", this.userLikedRecipes);
+        
+        // Get search results
+        const recipes = searchResponse.data.recipes || searchResponse.data || [];
+        
+        // Mark recipes as liked if they exist in user's liked recipes
+        this.searchResults = this.markLikedRecipes(recipes);
+        
       } catch (error) {
         console.error("Search failed:", error);
         
@@ -394,6 +409,54 @@ export default {
         }
       } finally {
         this.loading = false;
+      }
+    },
+
+    async fetchUserLikedRecipes() {
+      // Only fetch if user is logged in
+      if (!window.store.username) {
+        this.userLikedRecipes = [];
+        return [];
+      }
+
+      try {
+        const response = await window.axios.get('/users/liked');
+        this.userLikedRecipes = response.data.recipes || response.data || [];
+        return this.userLikedRecipes;
+      } catch (error) {
+        console.error("Failed to fetch liked recipes:", error);
+        this.userLikedRecipes = [];
+        return [];
+      }
+    },
+
+    markLikedRecipes(recipes) {
+      return recipes.map(recipe => {
+        // Check if this recipe is in the user's liked recipes
+        const isLiked = this.userLikedRecipes.some(likedRecipe => 
+          likedRecipe.id === recipe.id
+        );
+        
+        return {
+          ...recipe,
+          liked: isLiked
+        };
+      });
+    },
+
+    onRecipeLikedChanged(data) {
+      console.log('Recipe liked status changed on search page:', data);
+      
+      // Update the userLikedRecipes array
+      if (data.isLiked) {
+        // Add to liked recipes if not already there
+        const recipe = this.searchResults.find(r => r.id === data.recipeId);
+        if (recipe && !this.userLikedRecipes.some(lr => lr.id === data.recipeId)) {
+          this.userLikedRecipes.push(recipe);
+        }
+      } else {
+        // Remove from liked recipes
+        this.userLikedRecipes = this.userLikedRecipes.filter(lr => lr.id !== data.recipeId);
       }
     },
 

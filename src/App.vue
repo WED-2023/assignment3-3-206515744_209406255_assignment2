@@ -9,8 +9,15 @@
         <router-link :to="{ name: 'login' }">Login</router-link> |
       </span>
       <span v-else>
-        {{ store.username }}:
-        <button @click="logout" class="btn btn-link p-0">Logout</button> |
+        <span>{{ store.username }}:
+        <button @click="logout" class="btn btn-link p-0">Logout</button>
+        |</span>
+        <span> <router-link
+        class="nav-link"
+        :to="{ name: 'usersLiked' }"
+      >
+        My Liked
+      </router-link></span>
       </span>
     </div>
     <router-view />

@@ -5,7 +5,7 @@ import SearchPage from "../pages/SearchPage.vue";
 // import RecipesRandom from "../pages/RecipesRandomPage.vue";
 import RecipeView from "../pages/RecipeViewPage.vue";
 // import UsersLastView from "../pages/UsersLastViewPage.vue";
-// import UsersLiked from "../pages/UsersLikedPage.vue";
+import UsersLiked from "../pages/UsersLikedPage.vue";
 // import UsersFavorites from "../pages/UsersFavoritesPage.vue";
 // import UsersMyRecipes from "../pages/UsersMyRecipesPage.vue";
 // import UsersFamilyRecipes from "../pages/UsersFamilyRecipesPage.vue";
@@ -48,11 +48,11 @@ const routes = [
   //   name: "usersLastView",
   //   component: UsersLastView,
   // },
-  // {
-  //   path: "/users/liked",
-  //   name: "usersLiked",
-  //   component: UsersLiked,
-  // },
+  {
+    path: "/users/liked",
+    name: "usersLiked",
+    component: UsersLiked,
+  },
   // {
   //   path: "/users/favorites",
   //   name: "usersFavorites",

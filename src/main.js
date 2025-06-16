@@ -1,18 +1,21 @@
-import { createApp } from 'vue';
-import App from './App.vue';
-import routes from './router/index.js';
-import axios from 'axios';
-import VueAxios from 'vue-axios';
-import { createRouter, createWebHistory } from 'vue-router';
+import { createApp } from "vue";
+import App from "./App.vue";
+import routes from "./router/index.js";
+import axios from "axios";
+import VueAxios from "vue-axios";
+import { createRouter, createWebHistory } from "vue-router";
 
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap/dist/js/bootstrap.bundle.js';
-import store from './store.js';
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap/dist/js/bootstrap.bundle.js";
+import store from "./store.js";
 
-axios.defaults.baseURL = process.env.VUE_APP_API_BASE_URL || 'http://localhost:3000';
+// Configure axios to include credentials (cookies) with all requests
+axios.defaults.withCredentials = true;
+axios.defaults.baseURL =
+  process.env.VUE_APP_API_BASE_URL || "http://localhost:3000";
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
 });
 
 const app = createApp(App);
@@ -22,7 +25,12 @@ app.use(VueAxios, axios);
 
 app.config.globalProperties.store = store;
 
-app.config.globalProperties.toast = function (title, content, variant = null, append = false) {
+app.config.globalProperties.toast = function (
+  title,
+  content,
+  variant = null,
+  append = false
+) {
   const toastContainerId = "toast-container";
   let toastContainer = document.getElementById(toastContainerId);
   if (!toastContainer) {
@@ -36,7 +44,9 @@ app.config.globalProperties.toast = function (title, content, variant = null, ap
   }
 
   const toast = document.createElement("div");
-  toast.className = `toast align-items-center text-bg-${variant || 'info'} border-0 show`;
+  toast.className = `toast align-items-center text-bg-${
+    variant || "info"
+  } border-0 show`;
   toast.setAttribute("role", "alert");
   toast.setAttribute("aria-live", "assertive");
   toast.setAttribute("aria-atomic", "true");
@@ -64,4 +74,4 @@ window.axios = axios;
 window.toast = app.config.globalProperties.toast;
 window.router = router;
 
-app.mount('#app');
+app.mount("#app");
