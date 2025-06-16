@@ -1,4 +1,4 @@
-<script>
+<!-- <script>
 // ...existing imports...
 
 export default {
@@ -65,4 +65,4 @@ export default {
     }
   }
 };
-</script>
+</script> -->
