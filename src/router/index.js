@@ -7,7 +7,8 @@ import RecipeView from "../pages/RecipeViewPage.vue";
 // import UsersLastView from "../pages/UsersLastViewPage.vue";
 import UsersLiked from "../pages/UsersLikedPage.vue";
 import UsersFavorites from "../pages/UsersFavoritesPage.vue";
-// import UsersMyRecipes from "../pages/UsersMyRecipesPage.vue";
+import UsersMyRecipes from "../pages/UsersMyRecipesPage.vue";
+import UsersNewRecipe from "../pages/UsersNewRecipePage.vue";
 // import UsersFamilyRecipes from "../pages/UsersFamilyRecipesPage.vue";
 // import UsersMealPlan from "../pages/UsersMealPlanPage.vue";
 import NotFound from "../pages/NotFoundPage.vue";
@@ -21,7 +22,7 @@ const routes = [
   {
     path: "/register",
     name: "register",
-    component: Register
+    component: Register,
   },
   {
     path: "/login",
@@ -58,11 +59,16 @@ const routes = [
     name: "usersFavorites",
     component: UsersFavorites,
   },
-  // {
-  //   path: "/users/my-recipes",
-  //   name: "usersMyRecipes",
-  //   component: UsersMyRecipes,
-  // },
+  {
+    path: "/users/my-recipes",
+    name: "usersMyRecipes",
+    component: UsersMyRecipes,
+  },
+  {
+    path: "/users/my-recipes/new",
+    name: "usersNewRecipe",
+    component: UsersNewRecipe,
+  },
   // {
   //   path: "/users/family-recipes",
   //   name: "usersFamilyRecipes",
@@ -78,7 +84,7 @@ const routes = [
     path: "/:catchAll(.*)",
     name: "notFound",
     component: NotFound,
-  }
+  },
 ];
 
 export default routes;

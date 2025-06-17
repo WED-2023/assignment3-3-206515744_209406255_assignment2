@@ -24,6 +24,12 @@
       >
         My Favorites
       </router-link></span>
+      <span> <router-link
+        class="nav-link"
+        :to="{ name: 'usersMyRecipes' }"
+      >
+        My Recipes
+      </router-link></span>
       </span>
     </div>
     <router-view />
