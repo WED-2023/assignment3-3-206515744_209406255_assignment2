@@ -163,7 +163,9 @@ export default {
       try {
         console.log('Deleting recipe:', this.recipe.id);
         
-        const response = await window.axios.delete(`/users/my-recipes/${this.recipe.id}`);
+        const response = await window.axios.delete(`/users/my-recipes/`, {
+          data: { recipe_id: this.recipe.id }
+        });
         
         if (response.data.success || response.status === 200) {
           // Show success message
