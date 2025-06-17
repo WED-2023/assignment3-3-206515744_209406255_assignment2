@@ -20,7 +20,7 @@
         <ActionButton
           :item-id="recipe.id"
           action-type="like"
-          :initial-active-state="recipe.liked || false"
+          :initial-active-state="isLiked"
           active-emoji="❤️"
           inactive-emoji="🤍"
           color="red"
@@ -36,7 +36,7 @@
         <ActionButton
           :item-id="recipe.id"
           action-type="favorite"
-          :initial-active-state="recipe.favorited || false"
+          :initial-active-state="isFavorited"
           active-emoji="⭐"
           inactive-emoji="☆"
           color="yellow"
@@ -67,13 +67,82 @@ export default {
     }
   },
   emits: ['recipe-action-changed'],
+  data() {
+    return {
+      isLiked: false,
+      isFavorited: false,
+      stateLoaded: false
+    };
+  },
+  async mounted() {
+    await this.loadRecipeState();
+  },
   methods: {
+    async loadRecipeState() {
+      // If user is not logged in, don't check state
+      if (!window.store || !window.store.username) {
+        this.stateLoaded = true;
+        return;
+      }
+
+      try {
+        // Check if recipe has pre-set state from parent (for optimization)
+        if (this.recipe.liked !== undefined) {
+          this.isLiked = this.recipe.liked;
+        } else {
+          // Fetch user's liked recipes to check if this recipe is liked
+          await this.checkLikedState();
+        }
+
+        if (this.recipe.favorited !== undefined) {
+          this.isFavorited = this.recipe.favorited;
+        } else {
+          // Fetch user's favorite recipes to check if this recipe is favorited
+          await this.checkFavoritedState();
+        }
+      } catch (error) {
+        console.error('Error loading recipe state:', error);
+      } finally {
+        this.stateLoaded = true;
+      }
+    },
+
+    async checkLikedState() {
+      try {
+        const response = await window.axios.get('/users/liked');
+        const likedRecipes = response.data.recipes || response.data || [];
+        this.isLiked = likedRecipes.some(r => r.id === this.recipe.id);
+      } catch (error) {
+        console.error('Error checking liked state:', error);
+        this.isLiked = false;
+      }
+    },
+
+    async checkFavoritedState() {
+      try {
+        const response = await window.axios.get('/users/favorites');
+        const favoriteRecipes = response.data.recipes || response.data || [];
+        this.isFavorited = favoriteRecipes.some(r => r.id === this.recipe.id);
+      } catch (error) {
+        console.error('Error checking favorited state:', error);
+        this.isFavorited = false;
+      }
+    },
+
     goToRecipe() {
-      this.$router.push(`/recipe/${this.recipe.id}`);
+      this.$router.push(`/recipes/${this.recipe.id}`);
     },
     
     onActionChanged(data) {
       console.log('Recipe action changed:', data);
+      
+      // Update local state based on the action
+      if (data.actionType === 'like') {
+        this.isLiked = data.isActive;
+      } else if (data.actionType === 'favorite') {
+        this.isFavorited = data.isActive;
+      }
+      
       // Emit event to parent component
       this.$emit('recipe-action-changed', {
         recipeId: this.recipe.id,

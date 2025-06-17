@@ -14,6 +14,7 @@
         :recipes="likedRecipes" 
         title="" 
         class="center"
+        @recipe-action-changed="onRecipeActionChanged"
       />
     </div>
 
@@ -75,25 +76,25 @@ export default {
       try {
         console.log('Fetching user liked recipes...');
         
-        // Debug: Check if cookies are being sent
-        console.log('Document cookies:', document.cookie);
-        
         const response = await window.axios.get('/users/liked');
         console.log('Liked recipes response:', response);
         
-        this.likedRecipes = response.data.recipes || response.data || [];
+        // Just pass the raw recipe data - RecipePreview will handle state
+        const recipes = response.data.recipes || response.data || [];
+        this.likedRecipes = recipes.map(recipe => ({
+          ...recipe,
+          liked: true // Hint for RecipePreview to optimize (since they come from liked endpoint)
+        }));
+        
         this.hasLoaded = true;
         
       } catch (error) {
         console.error("Failed to fetch liked recipes:", error);
-        console.error("Error response:", error.response);
         
         if (error.response?.status === 401) {
-          // User not authenticated
           this.errorMessage = "Please log in to view your liked recipes.";
           this.$router.push('/login');
         } else if (error.response?.status === 404) {
-          // No liked recipes found
           this.likedRecipes = [];
           this.hasLoaded = true;
         } else {
@@ -101,6 +102,15 @@ export default {
         }
       } finally {
         this.loading = false;
+      }
+    },
+
+    onRecipeActionChanged(data) {
+      console.log('Recipe action changed on liked page:', data);
+      
+      // If user unlikes a recipe, remove it from the list
+      if (data.actionType === 'like' && !data.isActive) {
+        this.likedRecipes = this.likedRecipes.filter(recipe => recipe.id !== data.recipeId);
       }
     }
   }

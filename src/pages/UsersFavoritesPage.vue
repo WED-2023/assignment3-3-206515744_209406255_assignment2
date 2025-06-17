@@ -79,11 +79,11 @@ export default {
         const response = await window.axios.get('/users/favorites');
         console.log('Favorite recipes response:', response);
         
-        // Mark all recipes from favorites page as favorited
+        // Just pass the raw recipe data - RecipePreview will handle state
         const recipes = response.data.recipes || response.data || [];
         this.favoriteRecipes = recipes.map(recipe => ({
           ...recipe,
-          favorited: true // Mark as favorited since they come from the favorites endpoint
+          favorited: true // Hint for RecipePreview to optimize (since they come from favorites endpoint)
         }));
         
         this.hasLoaded = true;
