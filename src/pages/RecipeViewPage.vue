@@ -45,7 +45,6 @@
             <div class="wrapped">
               <!-- Basic view information - always shown -->
               <div class="mb-3">
-                <div><strong>Recipe ID:</strong> {{ recipe.id }}</div>
                 <div><strong>Ready in:</strong> {{ recipe.readyInMinutes }} minutes</div>
                 <div><strong>Spoonacular Score:</strong> {{ recipe.spoonacularScore }}</div>
               </div>
@@ -139,6 +138,21 @@
     async created() {
       await this.fetchFullRecipe();
     },
+    computed: {
+      // Determine the API endpoint based on the current route
+      apiEndpoint() {
+        const fullPath = this.$route.path;
+        const recipeId = this.$route.params.recipeId;
+        
+        // Check if we're on a user's my-recipes route
+        if (fullPath.includes('/users/my-recipes/')) {
+          return `/users/my-recipes/${recipeId}`;
+        }
+        
+        // Default to the general recipes endpoint
+        return `/recipes/${recipeId}`;
+      }
+    },
     methods: {
       async fetchFullRecipe() {
         this.loading = true;
@@ -146,14 +160,15 @@
         
         try {
           const recipeId = this.$route.params.recipeId;
-          console.log('Fetching full recipe with ID:', recipeId);
+          console.log('Fetching recipe with ID:', recipeId);
+          console.log('Using API endpoint:', this.apiEndpoint);
           
-          // Always fetch full recipe data when component loads
-          const response = await window.axios.get(`/recipes/${recipeId}`, { 
+          // Use the computed endpoint based on the current route
+          const response = await window.axios.get(this.apiEndpoint, { 
             params: { full: true } 
           });
           
-          console.log('Full recipe response:', response.data);
+          console.log('Recipe response:', response.data);
 
           if (response.status !== 200) {
             this.$router.replace("/NotFound");

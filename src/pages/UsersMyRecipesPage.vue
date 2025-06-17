@@ -19,7 +19,10 @@
         :recipes="myRecipes" 
         title="" 
         class="center"
+        :custom-route-prefix="'/users/my-recipes'"
+        :show-delete-button="true"
         @recipe-action-changed="onRecipeActionChanged"
+        @recipe-deleted="onRecipeDeleted"
       />
     </div>
 
@@ -67,8 +70,9 @@ export default {
     const internalInstance = getCurrentInstance();
     const store = internalInstance.appContext.config.globalProperties.store;
     const axios = internalInstance.appContext.config.globalProperties.axios;
+    const toast = internalInstance.appContext.config.globalProperties.toast;
 
-    return { store, axios };
+    return { store, axios, toast };
   },
   async created() {
     await this.fetchMyRecipes();
@@ -87,20 +91,21 @@ export default {
         // Transform the API response to match RecipePreview expected format
         const recipes = response.data || [];
         this.myRecipes = recipes.map(recipe => ({
-          id: recipe.recipe_id,
+          id: recipe.id, // Use recipe.id instead of recipe.recipe_id
           title: recipe.title,
           image: recipe.image,
           readyInMinutes: recipe.readyInMinutes,
-          aggregateLikes: recipe.aggregateLikes,
+          aggregateLikes: recipe.aggregateLikes || 0, // Default to 0 if not provided
           vegan: recipe.vegan,
           vegetarian: recipe.vegetarian,
           glutenFree: recipe.glutenFree,
-          viewed: recipe.viewed,
+          viewed: recipe.viewed || false, // Default to false if not provided
           // Set favorite and liked states based on API response
-          favorited: recipe.favorite,
+          favorited: recipe.favorite || false, // Default to false if not provided
           liked: false // API doesn't provide liked status for own recipes, assuming false
         }));
         
+        console.log('Transformed recipes:', this.myRecipes);
         this.hasLoaded = true;
         
       } catch (error) {
@@ -132,6 +137,16 @@ export default {
           recipe.favorited = data.isActive;
         }
       }
+    },
+
+    onRecipeDeleted(data) {
+      console.log('Recipe deleted:', data);
+      
+      // Remove the recipe from the local list
+      this.myRecipes = this.myRecipes.filter(recipe => recipe.id !== data.recipeId);
+      
+      // Show success message
+      this.toast("Success", `"${data.recipeName}" has been deleted successfully!`, "success");
     },
 
     createNewRecipe() {

@@ -113,7 +113,7 @@
           <div class="form-section">
             <h5>Ingredients</h5>
             <div v-for="(ingredient, index) in newRecipe.ingredients" :key="`ingredient-${index}`" class="ingredient-row">
-              <div class="row align-items-end">
+              <div class="row">
                 <div class="col-md-4">
                   <FormField
                     v-model="ingredient.name"
@@ -121,7 +121,7 @@
                     :name="`ingredient-name-${index}`"
                     type="text"
                     placeholder="e.g., carrot"
-                    :required="true"
+                    :required="index === 0"
                   />
                 </div>
                 <div class="col-md-2">
@@ -132,7 +132,7 @@
                     type="number"
                     step="0.1"
                     placeholder="3"
-                    :required="true"
+                    :required="index === 0"
                   />
                 </div>
                 <div class="col-md-2">
@@ -142,7 +142,7 @@
                     :name="`ingredient-unit-${index}`"
                     type="text"
                     placeholder="large"
-                    :required="true"
+                    :required="index === 0"
                   />
                 </div>
                 <div class="col-md-3">
@@ -152,11 +152,12 @@
                     :name="`ingredient-description-${index}`"
                     type="text"
                     placeholder="washed and chopped"
+                    :required="false"
                   />
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-1 delete-btn-container">
                   <button
-                    v-if="index > 0"
+                    v-if="newRecipe.ingredients.length > 1 && index > 0"
                     type="button"
                     class="btn btn-danger btn-sm delete-btn"
                     @click="removeIngredient(index)"
@@ -176,7 +177,7 @@
           <div class="form-section">
             <h5>Instructions</h5>
             <div v-for="(instruction, index) in newRecipe.instructions" :key="`instruction-${index}`" class="instruction-row">
-              <div class="row align-items-end">
+              <div class="row">
                 <div class="col-md-11">
                   <FormField
                     v-model="newRecipe.instructions[index]"
@@ -184,12 +185,12 @@
                     :name="`instruction-${index}`"
                     type="textarea"
                     :placeholder="`Describe step ${index + 1}...`"
-                    :required="true"
+                    :required="index === 0"
                   />
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-1 delete-btn-container">
                   <button
-                    v-if="index > 0"
+                    v-if="newRecipe.instructions.length > 1 && index > 0"
                     type="button"
                     class="btn btn-danger btn-sm delete-btn"
                     @click="removeInstruction(index)"
@@ -209,7 +210,7 @@
           <div class="form-section">
             <h5>Equipment</h5>
             <div v-for="(equipment, index) in newRecipe.equipment" :key="`equipment-${index}`" class="equipment-row">
-              <div class="row align-items-end">
+              <div class="row">
                 <div class="col-md-11">
                   <FormField
                     v-model="newRecipe.equipment[index]"
@@ -217,12 +218,12 @@
                     :name="`equipment-${index}`"
                     type="text"
                     placeholder="e.g., sauce pan"
-                    :required="true"
+                    :required="index === 0"
                   />
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-1 delete-btn-container">
                   <button
-                    v-if="index > 0"
+                    v-if="newRecipe.equipment.length > 1 && index > 0"
                     type="button"
                     class="btn btn-danger btn-sm delete-btn"
                     @click="removeEquipment(index)"
@@ -252,14 +253,16 @@
 
           <!-- Form Actions -->
           <div class="form-actions">
-            <button type="button" class="btn btn-secondary me-2" @click="cancelCreate">
+            <button type="button" class="btn btn-secondary cancel-btn" @click="cancelCreate">
               Cancel
             </button>
-            <SubmitButton
-              :is-submitting="isSubmitting"
-              submit-text="Create Recipe"
-              submitting-text="Creating Recipe..."
-            />
+            <div class="submit-btn-wrapper">
+              <SubmitButton
+                :is-loading="isSubmitting"
+                default-text="Create"
+                loading-text="Creating..."
+              />
+            </div>
           </div>
         </form>
       </div>
@@ -476,17 +479,47 @@ export default {
   margin-bottom: 1rem;
 }
 
+.delete-btn-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 10px; // Align with form field bottom padding
+}
+
 .delete-btn {
-  margin-top: 1.5rem; // Align with form fields when no label is present
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0;
 }
 
 .form-actions {
   display: flex;
   justify-content: center;
+  align-items: flex-start;
   gap: 1rem;
   margin-top: 2rem;
   padding-top: 2rem;
   border-top: 1px solid #dee2e6;
+}
+
+.cancel-btn {
+  padding: 0.5rem 1rem;
+  min-width: 100px; // Ensure consistent button width
+}
+
+.submit-btn-wrapper {
+  min-width: 100px; // Match cancel button width
+}
+
+// Override SubmitButton's w-100 class to match cancel button size
+.submit-btn-wrapper :deep(.btn) {
+  width: 100px !important;
+  padding: 0.5rem 1rem;
 }
 
 .row {

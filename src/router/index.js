@@ -69,6 +69,11 @@ const routes = [
     name: "usersNewRecipe",
     component: UsersNewRecipe,
   },
+  {
+    path: "/users/my-recipes/:recipeId",
+    name: "userRecipeView",
+    component: RecipeView,
+  },
   // {
   //   path: "/users/family-recipes",
   //   name: "usersFamilyRecipes",
