@@ -33,7 +33,7 @@
       <span><router-link
         v-if="$root.store.username"
         :to="{ name: 'usersFamilyRecipes' }"
-        class="navbar-nav"
+        class="nav-link"
       >
         Family Recipes
       </router-link>

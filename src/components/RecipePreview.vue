@@ -8,6 +8,9 @@
         alt="Recipe image"
         @click="goToRecipe"
       />
+      <div v-else class="no-image-placeholder" @click="goToRecipe">
+        <i class="fas fa-utensils"></i>
+      </div>
     </div>
     
     <div class="card-body text-center" @click="goToRecipe">
@@ -246,6 +249,18 @@ export default {
   width: 100%;
   height: 200px;
   object-fit: cover;
+  cursor: pointer;
+}
+
+.no-image-placeholder {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 3rem;
   cursor: pointer;
 }
 

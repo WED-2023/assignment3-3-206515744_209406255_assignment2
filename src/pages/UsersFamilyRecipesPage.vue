@@ -1,13 +1,23 @@
 <template>
   <div class="container">
-    <h1 class="title">My Family Recipes</h1>    
-
-    <!-- Loading State -->
+    <h1 class="title">My Family Recipes</h1>
+    
+    <!-- Add New Family Recipe Button -->
+    <div class="text-center mb-4">
+      <router-link 
+        :to="{ name: 'usersNewFamilyRecipe' }" 
+        class="btn btn-primary btn-lg"
+      >
+        <i class="fas fa-plus"></i> Add New Family Recipe
+      </router-link>
+    </div>
+    
+    <!-- Loading state -->
     <div v-if="loading" class="text-center mt-4">
       <p>Loading your family recipes...</p>
     </div>
 
-    <!-- Family Recipes -->
+    <!-- Family recipes -->
     <div v-if="familyRecipes.length > 0 && !loading" class="family-recipes mt-4">
       <p class="subtitle">You have {{ familyRecipes.length }} family recipe{{ familyRecipes.length === 1 ? '' : 's' }}</p>
       <div class="row center">

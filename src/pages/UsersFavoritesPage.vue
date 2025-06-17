@@ -10,12 +10,18 @@
     <!-- Favorite recipes -->
     <div v-if="favoriteRecipes.length > 0 && !loading" class="favorite-recipes mt-4">
       <p class="subtitle">You have {{ favoriteRecipes.length }} favorite recipe{{ favoriteRecipes.length === 1 ? '' : 's' }}</p>
-      <RecipePreviewList 
-        :recipes="favoriteRecipes" 
-        title="" 
-        class="center"
-        @recipe-action-changed="onRecipeActionChanged"
-      />
+      <div class="row center">
+        <div 
+          v-for="recipe in favoriteRecipes" 
+          :key="recipe.id"
+          class="col-md-6 col-lg-4 mb-4"
+        >
+          <RecipePreview 
+            :recipe="recipe"
+            @recipe-action-changed="onRecipeActionChanged"
+          />
+        </div>
+      </div>
     </div>
 
     <!-- No favorites message -->
@@ -43,12 +49,12 @@
 
 <script>
 import { getCurrentInstance } from 'vue';
-import RecipePreviewList from "../components/RecipePreviewList.vue";
+import RecipePreview from "../components/RecipePreview.vue";
 
 export default {
   name: "UsersFavoritesPage",
   components: {
-    RecipePreviewList
+    RecipePreview
   },
   data() {
     return {
@@ -79,12 +85,17 @@ export default {
         const response = await window.axios.get('/users/favorites');
         console.log('Favorite recipes response:', response);
         
-        // Just pass the raw recipe data - RecipePreview will handle state
-        const recipes = response.data.recipes || response.data || [];
-        this.favoriteRecipes = recipes.map(recipe => ({
-          ...recipe,
-          favorited: true // Hint for RecipePreview to optimize (since they come from favorites endpoint)
-        }));
+        if (response.status === 200) {
+          // Just pass the raw recipe data - RecipePreview will handle state
+          const recipes = response.data.recipes || response.data || [];
+          this.favoriteRecipes = recipes.map(recipe => ({
+            ...recipe,
+            favorited: true // Hint for RecipePreview to optimize (since they come from favorites endpoint)
+          }));
+          console.log('Loaded favorite recipes:', this.favoriteRecipes);
+        } else {
+          throw new Error('Failed to fetch favorite recipes');
+        }
         
         this.hasLoaded = true;
         
@@ -197,6 +208,57 @@ export default {
 }
 
 .center {
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.col-md-6 {
+  position: relative;
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+.col-lg-4 {
+  position: relative;
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+@media (min-width: 768px) {
+  .col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (min-width: 992px) {
+  .col-lg-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+  }
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mt-4 {
+  margin-top: 1.5rem;
+}
+
+.text-center {
   text-align: center;
 }
 </style>
