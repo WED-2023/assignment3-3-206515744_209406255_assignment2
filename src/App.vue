@@ -30,6 +30,14 @@
       >
         My Recipes
       </router-link></span>
+      <span><router-link
+        v-if="$root.store.username"
+        :to="{ name: 'usersFamilyRecipes' }"
+        class="navbar-nav"
+      >
+        Family Recipes
+      </router-link>
+      </span>
       </span>
     </div>
     <router-view />

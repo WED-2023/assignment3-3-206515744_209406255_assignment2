@@ -4,12 +4,14 @@ import Login from "../pages/LoginPage.vue";
 import SearchPage from "../pages/SearchPage.vue";
 // import RecipesRandom from "../pages/RecipesRandomPage.vue";
 import RecipeView from "../pages/RecipeViewPage.vue";
+import FamilyRecipeView from "../pages/FamilyRecipeViewPage.vue";
 // import UsersLastView from "../pages/UsersLastViewPage.vue";
 import UsersLiked from "../pages/UsersLikedPage.vue";
 import UsersFavorites from "../pages/UsersFavoritesPage.vue";
 import UsersMyRecipes from "../pages/UsersMyRecipesPage.vue";
 import UsersNewRecipe from "../pages/UsersNewRecipePage.vue";
-// import UsersFamilyRecipes from "../pages/UsersFamilyRecipesPage.vue";
+import UsersFamilyRecipes from "../pages/UsersFamilyRecipesPage.vue";
+import UsersNewFamilyRecipe from "../pages/UsersNewFamilyRecipePage.vue";
 // import UsersMealPlan from "../pages/UsersMealPlanPage.vue";
 import NotFound from "../pages/NotFoundPage.vue";
 
@@ -74,11 +76,21 @@ const routes = [
     name: "userRecipeView",
     component: RecipeView,
   },
-  // {
-  //   path: "/users/family-recipes",
-  //   name: "usersFamilyRecipes",
-  //   component: UsersFamilyRecipes,
-  // },
+  {
+    path: "/users/family-recipes",
+    name: "usersFamilyRecipes",
+    component: UsersFamilyRecipes,
+  },
+  {
+    path: "/users/family-recipes/new",
+    name: "usersNewFamilyRecipe",
+    component: UsersNewFamilyRecipe,
+  },
+  {
+    path: "/family-recipes/:recipeId",
+    name: "familyRecipeView",
+    component: FamilyRecipeView,
+  },
   // {
   //   path: "/users/meal-plan",
   //   name: "usersMealPlan",
