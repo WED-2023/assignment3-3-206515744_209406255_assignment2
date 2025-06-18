@@ -20,18 +20,12 @@
     <!-- Family recipes -->
     <div v-if="familyRecipes.length > 0 && !loading" class="family-recipes mt-4">
       <p class="subtitle">You have {{ familyRecipes.length }} family recipe{{ familyRecipes.length === 1 ? '' : 's' }}</p>
-      <div class="row center">
-        <div 
-          v-for="recipe in familyRecipes" 
-          :key="recipe.id"
-          class="col-md-6 col-lg-4 mb-4"
-        >
-          <FamilyRecipePreview 
-            :recipe="recipe"
-            @recipe-deleted="handleRecipeDeleted"
-          />
-        </div>
-      </div>
+      
+      <FamilyRecipePreviewList 
+        title=""
+        :recipes="familyRecipes"
+        @recipe-deleted="handleRecipeDeleted"
+      />
     </div>
 
     <!-- No family recipes message -->
@@ -61,12 +55,12 @@
 </template>
 
 <script>
-import FamilyRecipePreview from '@/components/FamilyRecipePreview.vue';
+import FamilyRecipePreviewList from '@/components/FamilyRecipePreviewList.vue';
 
 export default {
   name: 'UsersFamilyRecipesPage',
   components: {
-    FamilyRecipePreview
+    FamilyRecipePreviewList
   },
   data() {
     return {
@@ -91,8 +85,9 @@ export default {
         console.log('Family recipes response:', response);
         
         if (response.status === 200) {
+          // Keep the family recipes in their original format
           this.familyRecipes = response.data || [];
-          console.log('Loaded family recipes:', this.familyRecipes);
+          console.log('Processed family recipes:', this.familyRecipes);
         } else {
           throw new Error('Failed to fetch family recipes');
         }
@@ -116,12 +111,12 @@ export default {
       }
     },
     
-    handleRecipeDeleted(deletedRecipeId) {
-      console.log('Recipe deleted on family recipes page:', deletedRecipeId);
+    handleRecipeDeleted(recipeId) {
+      console.log('Recipe deleted on family recipes page:', recipeId);
       
       // Remove the deleted recipe from the list
       this.familyRecipes = this.familyRecipes.filter(
-        recipe => recipe.id !== deletedRecipeId
+        recipe => recipe.id !== recipeId
       );
     }
   }
@@ -210,45 +205,6 @@ export default {
 .btn-lg {
   padding: 0.75rem 1.5rem;
   font-size: 1.125rem;
-}
-
-.center {
-  text-align: center;
-}
-
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  margin-right: -15px;
-  margin-left: -15px;
-}
-
-.col-md-6 {
-  position: relative;
-  width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
-}
-
-.col-lg-4 {
-  position: relative;
-  width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
-}
-
-@media (min-width: 768px) {
-  .col-md-6 {
-    flex: 0 0 50%;
-    max-width: 50%;
-  }
-}
-
-@media (min-width: 992px) {
-  .col-lg-4 {
-    flex: 0 0 33.333333%;
-    max-width: 33.333333%;
-  }
 }
 
 .mb-4 {

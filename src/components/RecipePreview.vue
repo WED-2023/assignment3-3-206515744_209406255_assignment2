@@ -37,15 +37,20 @@
     </div>
     
     <div class="card-body text-center" @click="goToRecipe">
+      <!-- Recipe title -->
       <h5 class="card-title">{{ recipe.title }}</h5>
-      <p class="card-text">{{ recipe.readyInMinutes }} minutes</p>
       
-      <!-- Diet information row -->
+      <!-- Recipe time info -->
+      <p class="card-text">
+        <i class="fas fa-clock"></i> {{ recipe.readyInMinutes }} minutes
+      </p>
+      
+      <!-- Diet information badges -->
       <div class="diet-info">
-        <span v-if="recipe.vegan" class="diet-badge vegan">🌱 Vegan</span>
-        <span v-else-if="recipe.vegetarian" class="diet-badge vegetarian">🥬 Vegetarian</span>
-        <span v-if="recipe.glutenFree" class="diet-badge gluten-free">🌾 Gluten Free</span>
-        <span v-if="isViewed" class="diet-badge viewed">👁️ Viewed</span>
+        <span v-if="recipe.vegan" class="badge badge-success">🌱 Vegan</span>
+        <span v-else-if="recipe.vegetarian" class="badge badge-warning">🥬 Vegetarian</span>
+        <span v-if="recipe.glutenFree" class="badge badge-info">🌾 Gluten Free</span>
+        <span v-if="isViewed" class="badge badge-secondary">👁️ Viewed</span>
       </div>
       
       <!-- Action buttons in their own row -->
@@ -58,7 +63,7 @@
           active-emoji="❤️"
           inactive-emoji="🤍"
           color="red"
-          size="medium"
+          size="small"
           active-tooltip="Remove from liked"
           inactive-tooltip="Add to liked"
           add-endpoint="/users/liked"
@@ -74,13 +79,22 @@
           active-emoji="⭐"
           inactive-emoji="☆"
           color="yellow"
-          size="medium"
+          size="small"
           active-tooltip="Remove from favorites"
           inactive-tooltip="Add to favorites"
           add-endpoint="/users/favorites"
           @action-changed="onActionChanged"
           @click.stop
         />
+        
+        <!-- View button -->
+        <button
+          type="button"
+          class="btn btn-outline-primary btn-sm"
+          @click.stop="goToRecipe"
+        >
+          <i class="fas fa-eye"></i> View
+        </button>
         
         <!-- Delete button (only show if showDeleteButton prop is true) -->
         <button
@@ -390,7 +404,7 @@ export default {
 }
 
 .card-text {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
   color: #666;
   font-size: 0.9rem;
 }
@@ -401,52 +415,66 @@ export default {
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.25rem;
-  margin-bottom: 0.75rem;
-  min-height: 20px;
+  margin-bottom: 1rem;
+  min-height: 25px;
 }
 
-.diet-badge {
-  background-color: #f8f9fa;
-  color: #495057;
-  padding: 0.15rem 0.4rem;
-  border-radius: 12px;
-  font-size: 0.7rem;
-  font-weight: 500;
-  border: 1px solid #dee2e6;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
+.badge {
+  display: inline-block;
+  padding: 0.25em 0.5em;
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.375rem;
 }
 
-.diet-badge.vegan {
-  background-color: #d4eddd;
-  color: #155724;
-  border-color: #c3e6cb;
+.badge-success {
+  color: #fff;
+  background-color: #28a745;
 }
 
-.diet-badge.vegetarian {
-  background-color: #fff3cd;
-  color: #856404;
-  border-color: #ffeaa7;
+.badge-warning {
+  color: #212529;
+  background-color: #ffc107;
 }
 
-.diet-badge.gluten-free {
-  background-color: #d1ecf1;
-  color: #0c5460;
-  border-color: #bee5eb;
+.badge-info {
+  color: #fff;
+  background-color: #17a2b8;
 }
 
-.diet-badge.viewed {
-  background-color: #e2e3e5;
-  color: #495057;
-  border-color: #ced4da;
+.badge-secondary {
+  color: #fff;
+  background-color: #6c757d;
 }
 
 .action-buttons-row {
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  align-items: center;
+  gap: 0.5rem;
   margin-top: 0.5rem;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.25rem;
+}
+
+.btn-outline-primary {
+  color: #0d6efd;
+  border-color: #0d6efd;
+  background-color: transparent;
+}
+
+.btn-outline-primary:hover {
+  color: #fff;
+  background-color: #0d6efd;
+  border-color: #0d6efd;
 }
 
 .delete-recipe-btn {
@@ -476,9 +504,9 @@ export default {
     font-size: 12px;
   }
   
-  .diet-badge {
-    font-size: 0.65rem;
-    padding: 0.1rem 0.3rem;
+  .action-buttons-row {
+    flex-wrap: wrap;
+    gap: 0.25rem;
   }
 }
 </style>
