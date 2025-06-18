@@ -7,67 +7,49 @@
       <div class="recipe-section">
         <div class="section-header">
           <h2>Random Recipes</h2>
-          <div class="number-selector">
-            <label for="randomNumber">Number of recipes:</label>
-            <select 
-              id="randomNumber" 
-              v-model="randomRecipesNumber" 
-              @change="fetchRandomRecipes"
-              class="form-select"
-            >
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-            </select>
-          </div>
         </div>
         
         <!-- Loading state for random recipes -->
-        <div v-if="loadingRandom" class="text-center py-4">
+        <div v-if="loadingRandom && randomRecipes.length === 0" class="text-center py-4">
           <p>Loading random recipes...</p>
         </div>
         
         <!-- Random recipes error -->
         <div v-else-if="randomError" class="alert alert-danger">
           <p>{{ randomError }}</p>
-          <button @click="fetchRandomRecipes" class="btn btn-sm btn-outline-danger">
+          <button @click="fetchRandomRecipes(true)" class="btn btn-sm btn-outline-danger">
             Try Again
           </button>
         </div>
         
         <!-- Random recipes list -->
-        <RecipePreviewList
-          v-else
-          title=""
-          :recipes="randomRecipes"
-          class="recipe-list"
-          @recipe-action-changed="onRecipeActionChanged"
-        />
+        <div v-else>
+          <RecipePreviewList
+            title=""
+            :recipes="randomRecipes"
+            class="recipe-list"
+            @recipe-action-changed="onRecipeActionChanged"
+          />
+          
+          <!-- Load More Button for Random Recipes -->
+          <div class="text-center mt-3">
+            <button 
+              @click="fetchRandomRecipes(false)"
+              :disabled="loadingRandom"
+              class="btn btn-outline-primary load-more-btn"
+            >
+              <i v-if="loadingRandom" class="fas fa-spinner fa-spin"></i>
+              <i v-else class="fas fa-plus"></i>
+              {{ loadingRandom ? 'Loading...' : 'Load 3 More Random Recipes' }}
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Right side - Last Viewed Recipes -->
       <div class="recipe-section">
         <div class="section-header">
           <h2>Last Viewed Recipes</h2>
-          <div v-if="store.username" class="number-selector">
-            <label for="viewedNumber">Number of recipes:</label>
-            <select 
-              id="viewedNumber" 
-              v-model="lastViewedNumber" 
-              @change="fetchLastViewedRecipes"
-              class="form-select"
-            >
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-            </select>
-          </div>
         </div>
 
         <!-- Not logged in message -->
@@ -82,14 +64,14 @@
         </div>
 
         <!-- Loading state for last viewed -->
-        <div v-else-if="loadingViewed" class="text-center py-4">
+        <div v-else-if="loadingViewed && lastViewedRecipes.length === 0" class="text-center py-4">
           <p>Loading last viewed recipes...</p>
         </div>
         
         <!-- Last viewed recipes error -->
         <div v-else-if="viewedError" class="alert alert-danger">
           <p>{{ viewedError }}</p>
-          <button @click="fetchLastViewedRecipes" class="btn btn-sm btn-outline-danger">
+          <button @click="fetchLastViewedRecipes(true)" class="btn btn-sm btn-outline-danger">
             Try Again
           </button>
         </div>
@@ -106,13 +88,27 @@
         </div>
         
         <!-- Last viewed recipes list -->
-        <RecipePreviewList
-          v-else
-          title=""
-          :recipes="lastViewedRecipes"
-          class="recipe-list"
-          @recipe-action-changed="onRecipeActionChanged"
-        />
+        <div v-else>
+          <RecipePreviewList
+            title=""
+            :recipes="lastViewedRecipes"
+            class="recipe-list"
+            @recipe-action-changed="onRecipeActionChanged"
+          />
+          
+          <!-- Load More Button for Last Viewed Recipes -->
+          <div class="text-center mt-3">
+            <button 
+              @click="fetchLastViewedRecipes(false)"
+              :disabled="loadingViewed"
+              class="btn btn-outline-primary load-more-btn"
+            >
+              <i v-if="loadingViewed" class="fas fa-spinner fa-spin"></i>
+              <i v-else class="fas fa-plus"></i>
+              {{ loadingViewed ? 'Loading...' : 'Load 3 More Viewed Recipes' }}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -137,78 +133,92 @@ export default {
     return {
       // Random recipes data
       randomRecipes: [],
-      randomRecipesNumber: 3,
       loadingRandom: false,
       randomError: '',
       
       // Last viewed recipes data
       lastViewedRecipes: [],
-      lastViewedNumber: 3,
+      lastViewedNumber: 3, // Start with 3, increment by 3 each time
       loadingViewed: false,
       viewedError: ''
     };
   },
   async mounted() {
-    // Fetch random recipes immediately
-    await this.fetchRandomRecipes();
+    // Fetch initial random recipes
+    await this.fetchRandomRecipes(true);
     
-    // Fetch last viewed recipes if user is logged in
+    // Fetch initial last viewed recipes if user is logged in
     if (this.store.username) {
-      await this.fetchLastViewedRecipes();
+      await this.fetchLastViewedRecipes(true);
     }
   },
   watch: {
     // Watch for login state changes
     'store.username'(newValue) {
       if (newValue) {
-        // User just logged in, fetch their viewed recipes
-        this.fetchLastViewedRecipes();
+        // User just logged in, reset and fetch their viewed recipes
+        this.lastViewedNumber = 3;
+        this.fetchLastViewedRecipes(true);
       } else {
-        // User logged out, clear viewed recipes
+        // User logged out, clear viewed recipes and reset counter
         this.lastViewedRecipes = [];
+        this.lastViewedNumber = 3;
         this.viewedError = '';
       }
     }
   },
   methods: {
-    async fetchRandomRecipes() {
+    async fetchRandomRecipes(reset = false) {
+      // If reset is true, we're starting fresh (clear existing recipes)
+      // If reset is false, we're adding more recipes to the existing list
+      
       this.loadingRandom = true;
       this.randomError = '';
       
       try {
-        console.log(`Fetching ${this.randomRecipesNumber} random recipes...`);
+        console.log('Fetching 3 random recipes...');
         
         const response = await this.axios.get('/recipes/random', {
           params: {
-            number: this.randomRecipesNumber
+            number: 3
           }
         });
         
         console.log('Random recipes response:', response.data);
         
         // Handle different response formats
-        this.randomRecipes = response.data.recipes || response.data || [];
+        let newRecipes = response.data.recipes || response.data || [];
         
         // Ensure each recipe has the required properties
-        this.randomRecipes = this.randomRecipes.map(recipe => ({
+        newRecipes = newRecipes.map(recipe => ({
           ...recipe,
           viewed: recipe.viewed || false,
           favorite: recipe.favorite || false,
           liked: recipe.liked || false
         }));
         
+        if (reset) {
+          // Replace all recipes
+          this.randomRecipes = newRecipes;
+        } else {
+          // Add new recipes to the end of the list
+          this.randomRecipes = [...this.randomRecipes, ...newRecipes];
+        }
+        
         console.log('Processed random recipes:', this.randomRecipes);
         
       } catch (error) {
         console.error('Error fetching random recipes:', error);
         this.randomError = 'Failed to load random recipes. Please try again.';
-        this.randomRecipes = [];
+        if (reset) {
+          this.randomRecipes = [];
+        }
       } finally {
         this.loadingRandom = false;
       }
     },
 
-    async fetchLastViewedRecipes() {
+    async fetchLastViewedRecipes(reset = false) {
       if (!this.store.username) {
         console.log('User not logged in, skipping last viewed recipes fetch');
         return;
@@ -218,6 +228,14 @@ export default {
       this.viewedError = '';
       
       try {
+        // If reset is true, start with 3 recipes
+        // If reset is false, increment by 3 to get more recipes
+        if (reset) {
+          this.lastViewedNumber = 3;
+        } else {
+          this.lastViewedNumber += 3;
+        }
+        
         console.log(`Fetching ${this.lastViewedNumber} last viewed recipes...`);
         
         const response = await this.axios.get('/users/last-view', {
@@ -239,7 +257,7 @@ export default {
           liked: recipe.liked || false
         }));
         
-        console.log('Processed last viewed recipes:', this.lastViewedRecipes);
+        console.log(`Processed ${this.lastViewedRecipes.length} last viewed recipes:`, this.lastViewedRecipes);
         
       } catch (error) {
         console.error('Error fetching last viewed recipes:', error);
@@ -250,7 +268,13 @@ export default {
           this.viewedError = 'Failed to load last viewed recipes. Please try again.';
         }
         
-        this.lastViewedRecipes = [];
+        if (reset) {
+          this.lastViewedRecipes = [];
+          this.lastViewedNumber = 3;
+        } else {
+          // If load more failed, revert the number back
+          this.lastViewedNumber -= 3;
+        }
       } finally {
         this.loadingViewed = false;
       }
@@ -307,11 +331,9 @@ export default {
 
 .section-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  gap: 1rem;
 }
 
 .section-header h2 {
@@ -320,35 +342,31 @@ export default {
   font-size: 1.5rem;
 }
 
-.number-selector {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.number-selector label {
-  font-size: 0.9rem;
-  color: #666;
-  white-space: nowrap;
-}
-
-.form-select {
-  min-width: 80px;
-  padding: 0.25rem 0.5rem;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  background-color: white;
-  font-size: 0.9rem;
-}
-
-.form-select:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-  outline: none;
-}
-
 .recipe-list {
   margin-top: 0;
+}
+
+.load-more-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  min-width: 200px;
+}
+
+.load-more-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.load-more-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.load-more-btn i {
+  margin-right: 0.5rem;
 }
 
 .alert {
@@ -407,6 +425,18 @@ export default {
   border-color: #0056b3;
 }
 
+.btn-outline-primary {
+  color: #007bff;
+  border-color: #007bff;
+  background-color: transparent;
+}
+
+.btn-outline-primary:hover:not(:disabled) {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
 .btn-sm {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
@@ -434,8 +464,21 @@ export default {
   padding-bottom: 1.5rem;
 }
 
+.mt-3 {
+  margin-top: 1rem;
+}
+
 .mt-4 {
   margin-top: 1.5rem;
+}
+
+.fa-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Responsive design */
@@ -446,13 +489,12 @@ export default {
   }
   
   .section-header {
-    flex-direction: column;
-    align-items: stretch;
     text-align: center;
   }
   
-  .number-selector {
-    justify-content: center;
+  .load-more-btn {
+    min-width: 180px;
+    font-size: 0.9rem;
   }
 }
 
@@ -467,6 +509,12 @@ export default {
   
   .section-header h2 {
     font-size: 1.25rem;
+  }
+  
+  .load-more-btn {
+    min-width: 160px;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
   }
 }
 </style>
