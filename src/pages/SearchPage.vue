@@ -520,6 +520,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/scss/form-style.scss";
+
 .search-form {
   max-width: 800px;
   margin: 2rem auto;
@@ -692,5 +694,17 @@ export default {
 
 .text-muted {
   color: #6c757d;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #333;
 }
 </style>

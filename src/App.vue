@@ -130,90 +130,58 @@ export default {
 }
 
 #nav {
-  padding: 30px;
-  position: relative;
+  display: flex;
+  justify-content: flex-start;      // ← align all items to the left
+  align-items: center;
+  gap: 1rem;                         // ← uniform spacing between buttons
+  background: linear-gradient(135deg, #42b983 0%, #2c3e50 100%);
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 0 0 8px 8px;
 }
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
+#nav a,
+#nav .dropdown-toggle {
+  margin: 0;                         // ← remove old margin-right
+  color: #fff;
+  font-weight: 600;
+  padding: 0.4rem 0.75rem;
+  border-radius: 4px;
   text-decoration: none;
+  transition: background 0.3s, color 0.3s;
+  border-bottom: 2px solid transparent;    // ← reserve space for underline
+  display: inline-flex;
+  align-items: center;
 }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+#nav a.router-link-exact-active,
+#nav .dropdown-toggle.active {
+  background: rgba(255,255,255,0.3);
+  border-bottom-color: #fff;                // ← now just change border-color
 }
 
-// Dropdown styles
+/* remove the ::after block entirely */
 .dropdown {
   position: relative;
-  
-  .dropdown-toggle {
-    font-weight: bold;
-    color: #2c3e50;
-    text-decoration: none;
-    cursor: pointer;
-    transition: color 0.15s ease-in-out;
-    
-    &:hover {
-      color: #42b983 !important;
-    }
-    
-    &.active {
-      color: #42b983 !important;
-    }
-  }
-  
   .dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
+    background: #fff;
     z-index: 1000;
-    display: none;
-    min-width: 160px;
-    padding: 0.5rem 0;
-    margin: 0.125rem 0 0;
-    background-color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 0.375rem;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
-    
-    &.show {
-      display: block;
-    }
-    
+    color: #2c3e50;              // ← make all text dark
     .dropdown-item {
-      display: block;
-      width: 100%;
-      padding: 0.375rem 1rem;
-      clear: both;
-      font-weight: 400;
-      color: #212529;
-      text-align: inherit;
-      text-decoration: none;
-      white-space: nowrap;
-      background-color: transparent;
-      border: 0;
-      transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
-      
-      &:hover, &:focus {
-        color: #1e2125;
-        background-color: #e9ecef;
-        text-decoration: none;
+      color: inherit !important; // enforce the dark color
+      transition: background 0.2s, color 0.2s;
+      &:hover {
+        background: #f0f0f0;
+        color: #42b983;          // optional hover accent
       }
-      
       &.router-link-active {
-        color: #42b983;
         font-weight: bold;
       }
     }
-    
-    .dropdown-divider {
-      height: 0;
-      margin: 0.5rem 0;
-      overflow: hidden;
-      border-top: 1px solid rgba(0, 0, 0, 0.15);
-    }
+  }
+  .dropdown-divider {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 0.5rem 0;
   }
 }
 </style>
