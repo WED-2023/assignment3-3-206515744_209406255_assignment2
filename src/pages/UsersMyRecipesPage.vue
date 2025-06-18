@@ -11,8 +11,8 @@
     <div v-if="myRecipes.length > 0 && !loading" class="my-recipes mt-4">
       <div class="recipes-header">
         <p class="subtitle">You have {{ myRecipes.length }} recipe{{ myRecipes.length === 1 ? '' : 's' }}</p>
-        <button class="btn btn-primary" @click="createNewRecipe">
-          Create New Recipe
+        <button class="btn btn-primary" @click="showCreateModal = true">
+          <i class="fas fa-plus"></i> Create New Recipe
         </button>
       </div>
       <RecipePreviewList 
@@ -32,8 +32,8 @@
         <h4>No recipes created yet</h4>
         <p>You haven't created any recipes yet.</p>
         <p>Start creating your own delicious recipes!</p>
-        <button class="btn btn-primary mt-2" @click="createNewRecipe">
-          Create New Recipe
+        <button class="btn btn-primary mt-2" @click="showCreateModal = true">
+          <i class="fas fa-plus"></i> Create New Recipe
         </button>
       </div>
     </div>
@@ -46,24 +46,34 @@
         Try Again
       </button>
     </div>
+
+    <!-- Create Recipe Modal -->
+    <UsersNewRecipeModal
+      :show="showCreateModal"
+      @close="showCreateModal = false"
+      @recipe-created="onRecipeCreated"
+    />
   </div>
 </template>
 
 <script>
 import { getCurrentInstance } from 'vue';
 import RecipePreviewList from "../components/RecipePreviewList.vue";
+import UsersNewRecipeModal from "../components/UsersNewRecipeModal.vue";
 
 export default {
   name: "UsersMyRecipesPage",
   components: {
-    RecipePreviewList
+    RecipePreviewList,
+    UsersNewRecipeModal
   },
   data() {
     return {
       myRecipes: [],
       loading: false,
       hasLoaded: false,
-      errorMessage: ""
+      errorMessage: "",
+      showCreateModal: false
     };
   },
   setup() {
@@ -149,8 +159,11 @@ export default {
       this.toast("Success", `"${data.recipeName}" has been deleted successfully!`, "success");
     },
 
-    createNewRecipe() {
-      this.$router.push('/users/my-recipes/new');
+    onRecipeCreated(data) {
+      console.log('Recipe created:', data);
+      
+      // Refresh the recipes list
+      this.fetchMyRecipes();
     }
   }
 };
@@ -208,5 +221,60 @@ export default {
 
 .center {
   text-align: center;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin: 0.25rem;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+  
+  &:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+  }
+}
+
+.btn-outline-primary {
+  color: #007bff;
+  background-color: transparent;
+  border-color: #007bff;
+  
+  &:hover {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mt-4 {
+  margin-top: 1.5rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .recipes-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
 }
 </style>

@@ -4,12 +4,12 @@
     
     <!-- Add New Family Recipe Button -->
     <div class="text-center mb-4">
-      <router-link 
-        :to="{ name: 'usersNewFamilyRecipe' }" 
+      <button 
         class="btn btn-primary btn-lg"
+        @click="showCreateModal = true"
       >
         <i class="fas fa-plus"></i> Add New Family Recipe
-      </router-link>
+      </button>
     </div>
     
     <!-- Loading state -->
@@ -34,12 +34,12 @@
         <h4>No family recipes yet</h4>
         <p>You haven't added any family recipes yet.</p>
         <p>Start building your family recipe collection by adding your first recipe!</p>
-        <router-link 
-          :to="{ name: 'usersNewFamilyRecipe' }" 
+        <button 
           class="btn btn-primary mt-2"
+          @click="showCreateModal = true"
         >
-          Add Your First Family Recipe
-        </router-link>
+          <i class="fas fa-plus"></i> Add Your First Family Recipe
+        </button>
       </div>
     </div>
 
@@ -51,23 +51,33 @@
         Try Again
       </button>
     </div>
+
+    <!-- Create Family Recipe Modal -->
+    <UsersNewFamilyRecipeModal
+      :show="showCreateModal"
+      @close="showCreateModal = false"
+      @recipe-created="onFamilyRecipeCreated"
+    />
   </div>
 </template>
 
 <script>
 import FamilyRecipePreviewList from '@/components/FamilyRecipePreviewList.vue';
+import UsersNewFamilyRecipeModal from '@/components/UsersNewFamilyRecipeModal.vue';
 
 export default {
   name: 'UsersFamilyRecipesPage',
   components: {
-    FamilyRecipePreviewList
+    FamilyRecipePreviewList,
+    UsersNewFamilyRecipeModal
   },
   data() {
     return {
       familyRecipes: [],
       loading: false,
       hasLoaded: false,
-      errorMessage: ''
+      errorMessage: '',
+      showCreateModal: false
     };
   },
   async created() {
@@ -118,6 +128,13 @@ export default {
       this.familyRecipes = this.familyRecipes.filter(
         recipe => recipe.id !== recipeId
       );
+    },
+
+    onFamilyRecipeCreated(data) {
+      console.log('Family recipe created:', data);
+      
+      // Refresh the family recipes list
+      this.fetchFamilyRecipes();
     }
   }
 };

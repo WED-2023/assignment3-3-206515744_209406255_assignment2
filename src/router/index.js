@@ -9,9 +9,7 @@ import FamilyRecipeView from "../pages/FamilyRecipeViewPage.vue";
 import UsersLiked from "../pages/UsersLikedPage.vue";
 import UsersFavorites from "../pages/UsersFavoritesPage.vue";
 import UsersMyRecipes from "../pages/UsersMyRecipesPage.vue";
-import UsersNewRecipe from "../pages/UsersNewRecipePage.vue";
 import UsersFamilyRecipes from "../pages/UsersFamilyRecipesPage.vue";
-import UsersNewFamilyRecipe from "../pages/UsersNewFamilyRecipePage.vue";
 // import UsersMealPlan from "../pages/UsersMealPlanPage.vue";
 import NotFound from "../pages/NotFoundPage.vue";
 
@@ -67,11 +65,6 @@ const routes = [
     component: UsersMyRecipes,
   },
   {
-    path: "/users/my-recipes/new",
-    name: "usersNewRecipe",
-    component: UsersNewRecipe,
-  },
-  {
     path: "/users/my-recipes/:recipeId",
     name: "userRecipeView",
     component: RecipeView,
@@ -80,11 +73,6 @@ const routes = [
     path: "/users/family-recipes",
     name: "usersFamilyRecipes",
     component: UsersFamilyRecipes,
-  },
-  {
-    path: "/users/family-recipes/new",
-    name: "usersNewFamilyRecipe",
-    component: UsersNewFamilyRecipe,
   },
   {
     path: "/family-recipes/:recipeId",
