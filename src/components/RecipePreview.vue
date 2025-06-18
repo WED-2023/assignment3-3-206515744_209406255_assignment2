@@ -11,11 +11,42 @@
       <div v-else class="no-image-placeholder" @click="goToRecipe">
         <i class="fas fa-utensils"></i>
       </div>
+      
+      <!-- Recipe indicators overlay -->
+      <div class="recipe-indicators">
+        <!-- Viewed indicator -->
+        <div v-if="isViewed" class="indicator viewed-indicator" title="You've viewed this recipe">
+          👁️
+        </div>
+        
+        <!-- Vegan indicator -->
+        <div v-if="recipe.vegan" class="indicator vegan-indicator" title="Vegan">
+          🌱
+        </div>
+        
+        <!-- Vegetarian indicator (only if not vegan) -->
+        <div v-else-if="recipe.vegetarian" class="indicator vegetarian-indicator" title="Vegetarian">
+          🥬
+        </div>
+        
+        <!-- Gluten-free indicator -->
+        <div v-if="recipe.glutenFree" class="indicator gluten-free-indicator" title="Gluten Free">
+          🌾
+        </div>
+      </div>
     </div>
     
     <div class="card-body text-center" @click="goToRecipe">
       <h5 class="card-title">{{ recipe.title }}</h5>
       <p class="card-text">{{ recipe.readyInMinutes }} minutes</p>
+      
+      <!-- Diet information row -->
+      <div class="diet-info">
+        <span v-if="recipe.vegan" class="diet-badge vegan">🌱 Vegan</span>
+        <span v-else-if="recipe.vegetarian" class="diet-badge vegetarian">🥬 Vegetarian</span>
+        <span v-if="recipe.glutenFree" class="diet-badge gluten-free">🌾 Gluten Free</span>
+        <span v-if="isViewed" class="diet-badge viewed">👁️ Viewed</span>
+      </div>
       
       <!-- Action buttons in their own row -->
       <div class="action-buttons-row">
@@ -93,6 +124,7 @@ export default {
     return {
       isLiked: false,
       isFavorited: false,
+      isViewed: false,
       stateLoaded: false
     };
   },
@@ -121,6 +153,13 @@ export default {
         } else {
           // Fetch user's favorite recipes to check if this recipe is favorited
           await this.checkFavoritedState();
+        }
+
+        // Check viewed state
+        if (this.recipe.viewed !== undefined) {
+          this.isViewed = this.recipe.viewed;
+        } else {
+          await this.checkViewedState();
         }
       } catch (error) {
         console.error('Error loading recipe state:', error);
@@ -151,7 +190,35 @@ export default {
       }
     },
 
-    goToRecipe() {
+    async checkViewedState() {
+      try {
+        const response = await window.axios.get('/users/viewed');
+        const viewedRecipes = response.data.recipes || response.data || [];
+        this.isViewed = viewedRecipes.some(r => r.id === this.recipe.id);
+      } catch (error) {
+        console.error('Error checking viewed state:', error);
+        this.isViewed = false;
+      }
+    },
+
+    async goToRecipe() {
+      // Track view if user is logged in and recipe hasn't been viewed yet
+      if (window.store && window.store.username && !this.isViewed) {
+        try {
+          await window.axios.post('/users/last-view', {
+            recipe_id: parseInt(this.recipe.id)
+          });
+          
+          // Update local state
+          this.isViewed = true;
+          
+          console.log('Recipe view tracked successfully');
+        } catch (error) {
+          console.error('Error tracking recipe view:', error);
+          // Continue with navigation even if tracking fails
+        }
+      }
+
       // Use custom route prefix if provided, otherwise default to /recipes
       const route = `${this.customRoutePrefix}/${this.recipe.id}`;
       console.log('Navigating to:', route);
@@ -264,6 +331,53 @@ export default {
   cursor: pointer;
 }
 
+/* Recipe indicators overlay */
+.recipe-indicators {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 2;
+}
+
+.indicator {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.indicator:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 1);
+}
+
+.viewed-indicator {
+  border-color: #6c757d;
+}
+
+.vegan-indicator {
+  border-color: #28a745;
+}
+
+.vegetarian-indicator {
+  border-color: #ffc107;
+}
+
+.gluten-free-indicator {
+  border-color: #17a2b8;
+}
+
 .card-body {
   cursor: pointer;
   padding: 1rem;
@@ -276,9 +390,56 @@ export default {
 }
 
 .card-text {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   color: #666;
   font-size: 0.9rem;
+}
+
+/* Diet information badges */
+.diet-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+  min-height: 20px;
+}
+
+.diet-badge {
+  background-color: #f8f9fa;
+  color: #495057;
+  padding: 0.15rem 0.4rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  border: 1px solid #dee2e6;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.diet-badge.vegan {
+  background-color: #d4eddd;
+  color: #155724;
+  border-color: #c3e6cb;
+}
+
+.diet-badge.vegetarian {
+  background-color: #fff3cd;
+  color: #856404;
+  border-color: #ffeaa7;
+}
+
+.diet-badge.gluten-free {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  border-color: #bee5eb;
+}
+
+.diet-badge.viewed {
+  background-color: #e2e3e5;
+  color: #495057;
+  border-color: #ced4da;
 }
 
 .action-buttons-row {
@@ -300,5 +461,24 @@ export default {
 .delete-recipe-btn:hover {
   background-color: #c82333;
   border-color: #bd2130;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .recipe-indicators {
+    top: 4px;
+    right: 4px;
+  }
+  
+  .indicator {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  
+  .diet-badge {
+    font-size: 0.65rem;
+    padding: 0.1rem 0.3rem;
+  }
 }
 </style>
