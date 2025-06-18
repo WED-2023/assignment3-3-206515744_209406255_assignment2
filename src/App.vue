@@ -54,14 +54,36 @@ export default {
     const store = internalInstance.appContext.config.globalProperties.store;
     const toast = internalInstance.appContext.config.globalProperties.toast;
     const router = internalInstance.appContext.config.globalProperties.$router;
+    const axios = internalInstance.appContext.config.globalProperties.axios;
 
-    const logout = () => {
-      store.logout();
-      toast("Logout", "User logged out successfully", "success");
-      router.push("/").catch(() => {});
+    const logout = async () => {
+      try {
+        // Send logout request to backend
+        await axios.post('/logout');
+        
+        // Clear local state
+        store.logout();
+        
+        toast("Logout", "User logged out successfully", "success");
+        router.push("/").catch(() => {});
+      } catch (error) {
+        console.error('Logout error:', error);
+        
+        // Even if the backend request fails, still clear local state
+        store.logout();
+        
+        // Show different message based on error
+        if (error.response?.status === 401) {
+          toast("Logout", "Already logged out", "info");
+        } else {
+          toast("Logout", "Logged out locally (server error)", "warning");
+        }
+        
+        router.push("/").catch(() => {});
+      }
     };
 
-    return { store, logout };
+    return { store, logout, axios };
   }
 }
 </script>
