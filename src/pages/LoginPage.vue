@@ -113,7 +113,7 @@ export default {
     // Form submission
     const handleSubmit = async () => {
       v$.value.$touch();
-        if (!await v$.value.$validate()) {
+      if (!await v$.value.$validate()) {
         window.toast('Validation Error', 'Please fill in all required fields', 'error');
         return;
       }
@@ -128,9 +128,16 @@ export default {
 
         await window.axios.post('/login', payload);
         
-        // Store user data and token if provided
-
+        // Store user data
         window.store.login(state.username);
+        // Fetch and store profile picture
+        try {
+          const res = await window.axios.get('/user_information');
+          window.store.setProfilePic(res.data.data.profilePic);
+        } catch (picErr) {
+          console.error('Failed to fetch profile picture:', picErr);
+        }
+        
         window.toast('Login Successful', 'Welcome back!', 'success');
         router.push('/'); // Redirect to home or dashboard
       } catch (error) {

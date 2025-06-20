@@ -94,6 +94,17 @@
         :disabled="isLoadingCountries"
       />
 
+      <FormField
+        v-model="state.profilePic"
+        label="Profile Picture URL (Optional)"
+        name="profilePic"
+        type="text"
+        autocomplete="off"
+        :has-error="v$.profilePic.$error"
+        :errors="getProfilePicErrors"
+        :requirements="['Must be a valid URL if provided']"
+      />
+
       <SubmitButton
         :is-loading="isSubmitting"
         :is-form-valid="isFormValid"
@@ -115,14 +126,15 @@ import axios from 'axios';
 import FormField from '@/components/FormField.vue';
 import SubmitButton from '@/components/SubmitButton.vue';
 
+// Custom URL validator
+const isValidUrl = (value) => {
+  if (!value) return true;
+  try { new URL(value); return true; } catch { return false; }
+};
+
 // Custom validators
 const hasSpecialChar = (value) => /[!@#$%^&*(),.?":{}|<>]/.test(value);
 const hasAtLeastOneNumber = (value) => /\d/.test(value);
-
-// Environment configuration
-const env = {
-  COUNTRIES_API_KEY: process.env.VUE_APP_COUNTRIES_API_KEY
-};
 
 export default {
   name: "RegisterPage",
@@ -139,7 +151,8 @@ export default {
       firstName: '',
       lastName: '',
       email: '',
-      country: ''
+      country: '',
+      profilePic: ''  // optional
     });
 
     // Validation rules
@@ -163,7 +176,8 @@ export default {
       firstName: { required },
       lastName: { required },
       email: { required, email },
-      country: { required }
+      country: { required },
+      profilePic: { isValidUrl }
     }));
 
     const v$ = useVuelidate(rules, state);
@@ -257,29 +271,24 @@ export default {
       }
       return errors;
     });
+    const getProfilePicErrors = computed(() => {
+      const errors = [];
+      const field = v$.value.profilePic;
+      if (!field.isValidUrl && field.$dirty) {
+        errors.push('Please enter a valid URL.');
+      }
+      return errors;
+    });
 
     // Country fetching
     const fetchCountries = async () => {
       try {
         isLoadingCountries.value = true;
-        const apiKey = env.COUNTRIES_API_KEY;
-
-        const response = await axios.get('https://restfulcountries.com/api/v1/countries', {
-          headers: {
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-          },
-          params: {
-            per_page: 250
-          }
-        });
-
-        countries.value = response.data.data
-          .map(country => ({
-            code: country.iso2,
-            name: country.name
-          }))
-          .sort((a, b) => a.name.localeCompare(b.name));
+        // Fetch countries through our backend proxy to avoid CORS
+        const response = await axios.get('/countries');
+        const countryNames = Array.isArray(response.data) ? response.data : [];
+        countries.value = countryNames
+          .map(name => ({ value: name, text: name }));
 
       } catch (error) {
         console.error('Failed to fetch countries:', error);
@@ -297,9 +306,9 @@ export default {
     const handleSubmit = async () => {
       v$.value.$touch();
         if (!await v$.value.$validate()) {
-        window.toast('Validation Error', 'Please fix the form errors', 'error');
-        return;
-      }
+         window.toast('Validation Error', 'Please fix the form errors', 'error');
+         return;
+       }
 
       isSubmitting.value = true;
 
@@ -310,7 +319,8 @@ export default {
           firstname: state.firstName,
           lastname: state.lastName,
           email: state.email,
-          country: state.country
+          country: state.country,
+          profilePic: state.profilePic  // include optional URL
         };
 
         await window.axios.post('/register', payload);
@@ -342,7 +352,8 @@ export default {
       handleSubmit,
       getUsernameErrors,
       getPasswordErrors,
-      getEmailErrors
+      getEmailErrors,
+      getProfilePicErrors
     };
   }
 };
