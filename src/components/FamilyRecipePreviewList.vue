@@ -1,15 +1,13 @@
 <template>
-  <b-container>
-    <b-row>
-      <b-col v-for="r in recipes" :key="r.id">
-        <FamilyRecipePreview 
-          class="recipePreview" 
-          :recipe="r" 
-          @recipe-deleted="$emit('recipe-deleted', $event)"
-        />
-      </b-col>
-    </b-row>
-  </b-container>
+  <div class="grid-container">
+    <FamilyRecipePreview 
+      v-for="r in recipes" 
+      :key="r.id"
+      class="recipePreview" 
+      :recipe="r" 
+      @recipe-deleted="$emit('recipe-deleted', $event)"
+    />
+  </div>
 </template>
 
 <script>
@@ -35,7 +33,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container {
-  min-height: 400px;
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* grid-template-rows: repeat(3, auto); */
+  gap: 1rem;
 }
 </style>
