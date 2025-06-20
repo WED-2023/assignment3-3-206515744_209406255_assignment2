@@ -13,12 +13,12 @@
         <div v-if="loadingRandom && randomRecipes.length === 0" class="text-center py-4">
           <p>Loading random recipes...</p>
         </div>
-        
-        <!-- Random recipes error -->
+          <!-- Random recipes error -->
         <div v-else-if="randomError" class="alert alert-danger">
+          <h4>Error Loading Random Recipes</h4>
           <p>{{ randomError }}</p>
-          <button @click="fetchRandomRecipes(true)" class="btn btn-sm btn-outline-danger">
-            Try Again
+          <button @click="fetchRandomRecipes(true)" class="btn btn-outline-primary">
+            <i class="fas fa-redo"></i> Try Again
           </button>
         </div>
         
@@ -30,13 +30,12 @@
             class="recipe-list"
             @recipe-action-changed="onRecipeActionChanged"
           />
-          
-          <!-- Load More Button for Random Recipes -->
+            <!-- Load More Button for Random Recipes -->
           <div class="text-center mt-3">
             <button 
               @click="fetchRandomRecipes(false)"
               :disabled="loadingRandom"
-              class="btn btn-outline-primary load-more-btn"
+              class="btn btn-primary load-more-btn"
             >
               <i v-if="loadingRandom" class="fas fa-spinner fa-spin"></i>
               <i v-else class="fas fa-plus"></i>
@@ -67,12 +66,12 @@
         <div v-else-if="loadingViewed && lastViewedRecipes.length === 0" class="text-center py-4">
           <p>Loading last viewed recipes...</p>
         </div>
-        
-        <!-- Last viewed recipes error -->
+          <!-- Last viewed recipes error -->
         <div v-else-if="viewedError" class="alert alert-danger">
+          <h4>Error Loading Viewed Recipes</h4>
           <p>{{ viewedError }}</p>
-          <button @click="fetchLastViewedRecipes(true)" class="btn btn-sm btn-outline-danger">
-            Try Again
+          <button @click="fetchLastViewedRecipes(true)" class="btn btn-outline-primary">
+            <i class="fas fa-redo"></i> Try Again
           </button>
         </div>
         
@@ -95,13 +94,12 @@
             class="recipe-list"
             @recipe-action-changed="onRecipeActionChanged"
           />
-          
-          <!-- Load More Button for Last Viewed Recipes -->
+            <!-- Load More Button for Last Viewed Recipes -->
           <div class="text-center mt-3">
             <button 
               @click="fetchLastViewedRecipes(false)"
               :disabled="loadingViewed"
-              class="btn btn-outline-primary load-more-btn"
+              class="btn btn-primary load-more-btn"
             >
               <i v-if="loadingViewed" class="fas fa-spinner fa-spin"></i>
               <i v-else class="fas fa-plus"></i>
@@ -354,20 +352,16 @@ export default {
   box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
 }
 
-.load-more-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 .load-more-btn i {
   margin-right: 0.5rem;
 }
 
 .alert {
-  padding: 1rem;
-  margin: 1rem 0;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
   border: 1px solid transparent;
-  border-radius: 0.375rem;
+  border-radius: 0.5rem;
+  text-align: center;
 }
 
 .alert-danger {
@@ -393,42 +387,42 @@ export default {
 
 .btn {
   display: inline-block;
-  padding: 0.375rem 0.75rem;
-  margin-bottom: 0;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  text-align: center;
-  text-decoration: none;
-  vertical-align: middle;
-  cursor: pointer;
+  padding: 0.5rem 1rem;
+  margin: 0.25rem;
   border: 1px solid transparent;
-  border-radius: 0.375rem;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .btn-primary {
   color: #fff;
   background-color: #007bff;
   border-color: #007bff;
-}
-
-.btn-primary:hover {
-  color: #fff;
-  background-color: #0056b3;
-  border-color: #0056b3;
+  
+  &:hover:not(:disabled) {
+    background-color: #0056b3;
+    border-color: #0056b3;
+  }
 }
 
 .btn-outline-primary {
   color: #007bff;
-  border-color: #007bff;
   background-color: transparent;
+  border-color: #007bff;
+  
+  &:hover:not(:disabled) {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+  }
 }
 
-.btn-outline-primary:hover:not(:disabled) {
-  color: #fff;
-  background-color: #007bff;
-  border-color: #007bff;
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-sm {
@@ -437,16 +431,16 @@ export default {
   border-radius: 0.25rem;
 }
 
-.btn-outline-danger {
-  color: #dc3545;
-  border-color: #dc3545;
-  background-color: transparent;
+.mt-2 {
+  margin-top: 0.5rem;
 }
 
-.btn-outline-danger:hover {
-  color: #fff;
-  background-color: #dc3545;
-  border-color: #dc3545;
+.mt-3 {
+  margin-top: 1rem;
+}
+
+.mt-4 {
+  margin-top: 1.5rem;
 }
 
 .text-center {
@@ -456,14 +450,6 @@ export default {
 .py-4 {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
-}
-
-.mt-3 {
-  margin-top: 1rem;
-}
-
-.mt-4 {
-  margin-top: 1.5rem;
 }
 
 .fa-spinner {
