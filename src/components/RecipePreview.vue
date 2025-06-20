@@ -1,15 +1,26 @@
-<template>
-  <div class="card h-100 recipe-card">
-    <div class="recipe-image-container">
+<template>  <div 
+    class="card h-100 recipe-card clickable-card"
+    role="button"
+    tabindex="0"
+    :aria-label="`View recipe: ${recipe.title}`"
+    @click="goToRecipe"
+    @keydown.enter="goToRecipe"
+    @keydown.space.prevent="goToRecipe"
+  >    <div class="recipe-image-container">
       <img
         v-if="recipe.image"
         :src="recipe.image"
         class="card-img-top recipe-image"
         alt="Recipe image"
-        @click="goToRecipe"
       />
-      <div v-else class="no-image-placeholder" @click="goToRecipe">
+      <div v-else class="no-image-placeholder">
         <i class="fas fa-utensils"></i>
+      </div>
+      
+      <!-- Clickable indicator overlay -->
+      <div class="clickable-indicator">
+        <i class="fas fa-eye"></i>
+        <span>Click to view</span>
       </div>
       
       <!-- Recipe indicators overlay -->
@@ -32,18 +43,22 @@
         <!-- Gluten-free indicator -->
         <div v-if="recipe.glutenFree" class="indicator gluten-free-indicator" title="Gluten Free">
           🌾
-        </div>
-      </div>
+        </div>      </div>
     </div>
     
-    <div class="card-body text-center" @click="goToRecipe">
+    <div class="card-body text-center clickable-area">
       <!-- Recipe title -->
       <h5 class="card-title">{{ recipe.title }}</h5>
       
-      <!-- Recipe time info -->
-      <p class="card-text">
-        <i class="fas fa-clock"></i> {{ recipe.readyInMinutes }} minutes
-      </p>
+      <!-- Recipe time and score info -->
+      <div class="recipe-info">
+        <p class="card-text time-info">
+          <i class="fas fa-clock"></i> {{ recipe.readyInMinutes }} min
+        </p>
+        <p v-if="recipe.spoonacularScore" class="card-text score-info">
+          <i class="fas fa-star"></i> {{ Math.round(recipe.spoonacularScore) }}/100
+        </p>
+      </div>
       
       <!-- Diet information badges -->
       <div class="diet-info">
@@ -86,12 +101,12 @@
           @action-changed="onActionChanged"
           @click.stop
         />
-        
-        <!-- View button -->
+          <!-- View button -->
         <button
           type="button"
           class="btn btn-outline-primary btn-sm"
           @click.stop="goToRecipe"
+          title="View recipe details"
         >
           <i class="fas fa-eye"></i> View
         </button>
@@ -312,13 +327,21 @@ export default {
   cursor: pointer;
   transition:
     transform 0.2s ease-in-out,
-    box-shadow 0.2s ease-in-out;
+    box-shadow 0.2s ease-in-out,
+    border-color 0.2s ease-in-out;
   position: relative;
+  border: 2px solid #e9ecef;
 }
 
-.recipe-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.recipe-card.clickable-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: #007bff;
+}
+
+.recipe-card.clickable-card:hover .clickable-indicator {
+  opacity: 1;
+  visibility: visible;
 }
 
 .recipe-image-container {
@@ -331,6 +354,11 @@ export default {
   height: 200px;
   object-fit: cover;
   cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.recipe-card:hover .recipe-image {
+  transform: scale(1.05);
 }
 
 .no-image-placeholder {
@@ -343,6 +371,34 @@ export default {
   color: white;
   font-size: 3rem;
   cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.recipe-card:hover .no-image-placeholder {
+  transform: scale(1.05);
+}
+
+/* Clickable indicator overlay */
+.clickable-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 123, 255, 0.9);
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease-in-out;
+  z-index: 3;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Recipe indicators overlay */
@@ -397,16 +453,71 @@ export default {
   padding: 1rem;
 }
 
-.card-title {
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-  color: #333;
+.card-body.clickable-area {
+  position: relative;
 }
 
-.card-text {
+.card-body.clickable-area::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  transition: background 0.2s ease-in-out;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.recipe-card:hover .card-body.clickable-area::before {
+  background: rgba(0, 123, 255, 0.02);
+}
+
+.card-title {
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+  color: #2c3e50;
+  font-weight: 600;
+  line-height: 1.3;
+  position: relative;
+  z-index: 2;
+}
+
+.recipe-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1rem;
+  position: relative;
+  z-index: 2;
+}
+
+.time-info {
   color: #666;
   font-size: 0.9rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.time-info i {
+  color: #007bff;
+}
+
+.score-info {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 600;
+}
+
+.score-info i {
+  color: #ffc107;
 }
 
 /* Diet information badges */
@@ -417,6 +528,8 @@ export default {
   gap: 0.25rem;
   margin-bottom: 1rem;
   min-height: 25px;
+  position: relative;
+  z-index: 2;
 }
 
 .badge {
@@ -457,6 +570,8 @@ export default {
   align-items: center;
   gap: 0.5rem;
   margin-top: 0.5rem;
+  position: relative;
+  z-index: 2;
 }
 
 .btn-sm {
@@ -508,5 +623,33 @@ export default {
     flex-wrap: wrap;
     gap: 0.25rem;
   }
+
+  .recipe-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .clickable-indicator {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Add a subtle pulse animation to indicate interactivity */
+@keyframes pulse-border {
+  0% {
+    border-color: #e9ecef;
+  }
+  50% {
+    border-color: #007bff;
+  }
+  100% {
+    border-color: #e9ecef;
+  }
+}
+
+.recipe-card:focus-within {
+  animation: pulse-border 2s ease-in-out infinite;
+  outline: none;
 }
 </style>
