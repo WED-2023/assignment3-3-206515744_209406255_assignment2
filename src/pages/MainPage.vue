@@ -219,66 +219,60 @@ export default {
     },
 
     async fetchLastViewedRecipes(reset = false) {
-      if (!this.store.username) {
-        console.log('User not logged in, skipping last viewed recipes fetch');
-        return;
-      }
+    if (!this.store.username) {
+      console.log('User not logged in, skipping last viewed recipes fetch');
+      return;
+    }
+    this.loadingViewed = true;
+    this.viewedError = '';
 
-      this.loadingViewed = true;
-      this.viewedError = '';
-      
-      try {
-        // If reset is true, start with 3 recipes
-        // If reset is false, increment by 3 to get more recipes
-        if (reset) {
-          this.lastViewedNumber = 3;
-        } else {
-          this.lastViewedNumber += 3;
-        }
-        
-        console.log(`Fetching ${this.lastViewedNumber} last viewed recipes...`);
-        
-        const response = await this.axios.get('/users/last-view', {
-          params: {
-            number: this.lastViewedNumber
-          }
-        });
-        
-        console.log('Last viewed recipes response:', response.data);
-        
-        // Handle different response formats
-        this.lastViewedRecipes = response.data.recipes || response.data || [];
-        
-        // Ensure each recipe has the required properties
-        this.lastViewedRecipes = this.lastViewedRecipes.map(recipe => ({
-          ...recipe,
-          viewed: recipe.viewed !== undefined ? recipe.viewed : true, // Default to true for viewed recipes
-          favorite: recipe.favorite || false,
-          liked: recipe.liked || false
-        }));
-        
-        console.log(`Processed ${this.lastViewedRecipes.length} last viewed recipes:`, this.lastViewedRecipes);
-        
-      } catch (error) {
-        console.error('Error fetching last viewed recipes:', error);
-        
-        if (error.response?.status === 401) {
-          this.viewedError = 'Please log in to view your last viewed recipes.';
-        } else {
-          this.viewedError = 'Failed to load last viewed recipes. Please try again.';
-        }
-        
-        if (reset) {
-          this.lastViewedRecipes = [];
-          this.lastViewedNumber = 3;
-        } else {
-          // If load more failed, revert the number back
-          this.lastViewedNumber -= 3;
-        }
-      } finally {
-        this.loadingViewed = false;
+    try {
+      // remember how many we already had
+      const oldCount = reset ? 0 : this.lastViewedRecipes.length;
+
+      // bump counter
+      if (reset) {
+        this.lastViewedNumber = 3;
+      } else {
+        this.lastViewedNumber += 3;
       }
-    },
+      console.log(`Fetching ${this.lastViewedNumber} last viewed recipes…`);
+
+      const response = await this.axios.get('/users/last-view', {
+        params: { number: this.lastViewedNumber }
+      });
+      const fetched = response.data.recipes || response.data || [];
+
+      // normalize
+      const processed = fetched.map(recipe => ({
+        ...recipe,
+        viewed: recipe.viewed !== undefined ? recipe.viewed : true,
+        favorite: recipe.favorite || false,
+        liked: recipe.liked || false
+      }));
+
+      if (reset) {
+        // first load → replace
+        this.lastViewedRecipes = processed;
+      } else {
+        // load more → append only the new ones
+        const newOnes = processed.slice(oldCount);
+        this.lastViewedRecipes = [
+          ...this.lastViewedRecipes,
+          ...newOnes
+        ];
+      }
+      console.log(`Now showing ${this.lastViewedRecipes.length} last viewed recipes`);
+    } catch (error) {
+      console.error('Error fetching last viewed recipes:', error);
+      this.viewedError = 'Failed to load viewed recipes. Try again.';
+      if (reset) {
+        this.lastViewedRecipes = [];
+      }
+    } finally {
+      this.loadingViewed = false;
+    }
+  },
 
     onRecipeActionChanged(data) {
       console.log('Recipe action changed on main page:', data);
