@@ -286,7 +286,10 @@ export default {
         isLoadingCountries.value = true;
         // Fetch countries through our backend proxy to avoid CORS
         const response = await axios.get('/countries');
-        const countryNames = Array.isArray(response.data) ? response.data : [];
+        console.log('Countries fetched:', response.data);
+        const countryNames = response.data.success && Array.isArray(response.data.data)
+          ? response.data.data
+          : [];
         countries.value = countryNames
           .map(name => ({ value: name, text: name }));
 
@@ -294,8 +297,8 @@ export default {
         console.error('Failed to fetch countries:', error);
         // Fallback countries
         countries.value = [
-          { code: 'US', name: 'United States' },
-          { code: 'IL', name: 'Israel' },
+          { value: 'US', text: 'United States' },
+          { value: 'IL', text: 'Israel' },
         ];
       } finally {
         isLoadingCountries.value = false;
