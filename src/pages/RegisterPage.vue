@@ -296,9 +296,8 @@ export default {
     // Form submission
     const handleSubmit = async () => {
       v$.value.$touch();
-      
-      if (!await v$.value.$validate()) {
-        window.toast('Please fix the form errors', '', 'danger');
+        if (!await v$.value.$validate()) {
+        window.toast('Validation Error', 'Please fix the form errors', 'error');
         return;
       }
 
@@ -321,7 +320,7 @@ export default {
       } catch (error) {
         console.error('Registration failed:', error);
         const message = error.response?.data?.message || 'Registration failed. Please try again.';
-        window.toast('Registration Failed', message, 'danger');
+        window.toast('Registration Failed', message, 'error');
       } finally {
         isSubmitting.value = false;
       }

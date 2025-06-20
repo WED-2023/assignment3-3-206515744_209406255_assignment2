@@ -110,8 +110,7 @@ export default {
         if (response.data.success || response.status === 200) {
           // Emit event to parent to remove recipe from list
           this.$emit('recipe-deleted', this.recipe.id);
-          
-          // Show success message if toast is available
+            // Show success message if toast is available
           if (window.toast) {
             window.toast("Success", response.data.message || "Family recipe deleted successfully!", "success");
           }
@@ -130,8 +129,7 @@ export default {
         } else if (error.response?.data?.message) {
           errorMessage = error.response.data.message;
         }
-        
-        if (window.toast) {
+          if (window.toast) {
           window.toast("Error", errorMessage, "error");
         } else {
           alert(errorMessage);

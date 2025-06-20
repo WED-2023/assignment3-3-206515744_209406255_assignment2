@@ -60,6 +60,7 @@
 import { getCurrentInstance } from 'vue';
 import RecipePreviewList from "../components/RecipePreviewList.vue";
 import UsersNewRecipeModal from "../components/UsersNewRecipeModal.vue";
+import { useToast } from "../composables/useToast.js";
 
 export default {
   name: "UsersMyRecipesPage",
@@ -80,9 +81,9 @@ export default {
     const internalInstance = getCurrentInstance();
     const store = internalInstance.appContext.config.globalProperties.store;
     const axios = internalInstance.appContext.config.globalProperties.axios;
-    const toast = internalInstance.appContext.config.globalProperties.toast;
+    const { showSuccess, showError } = useToast();
 
-    return { store, axios, toast };
+    return { store, axios, showSuccess, showError };
   },
   async created() {
     await this.fetchMyRecipes();
@@ -154,9 +155,8 @@ export default {
       
       // Remove the recipe from the local list
       this.myRecipes = this.myRecipes.filter(recipe => recipe.id !== data.recipeId);
-      
-      // Show success message
-      this.toast("Success", `"${data.recipeName}" has been deleted successfully!`, "success");
+        // Show success message
+      this.showSuccess("Success", `"${data.recipeName}" has been deleted successfully!`);
     },
 
     onRecipeCreated(data) {

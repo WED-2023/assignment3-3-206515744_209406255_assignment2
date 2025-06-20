@@ -113,9 +113,8 @@ export default {
     // Form submission
     const handleSubmit = async () => {
       v$.value.$touch();
-      
-      if (!await v$.value.$validate()) {
-        window.toast('Please fill in all required fields', '', 'danger');
+        if (!await v$.value.$validate()) {
+        window.toast('Validation Error', 'Please fill in all required fields', 'error');
         return;
       }
 
@@ -137,7 +136,7 @@ export default {
       } catch (error) {
         console.error('Login failed:', error);
         const message = error.response?.data?.message || 'Login failed. Please check your credentials.';
-        window.toast('Login Failed', message, 'danger');
+        window.toast('Login Failed', message, 'error');
       } finally {
         isSubmitting.value = false;
       }

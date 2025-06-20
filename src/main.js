@@ -27,10 +27,26 @@ app.config.globalProperties.store = store;
 
 app.config.globalProperties.toast = function (
   title,
-  content,
+  content = "",
   variant = null,
   append = false
 ) {
+  // Normalize variant names for consistency
+  const normalizeVariant = (v) => {
+    const variantMap = {
+      danger: "danger",
+      error: "danger",
+      warning: "warning",
+      success: "success",
+      info: "info",
+      primary: "primary",
+      secondary: "secondary",
+    };
+    return variantMap[v] || "info";
+  };
+
+  const normalizedVariant = normalizeVariant(variant);
+
   const toastContainerId = "toast-container";
   let toastContainer = document.getElementById(toastContainerId);
   if (!toastContainer) {
@@ -44,9 +60,7 @@ app.config.globalProperties.toast = function (
   }
 
   const toast = document.createElement("div");
-  toast.className = `toast align-items-center text-bg-${
-    variant || "info"
-  } border-0 show`;
+  toast.className = `toast align-items-center text-bg-${normalizedVariant} border-0 show`;
   toast.setAttribute("role", "alert");
   toast.setAttribute("aria-live", "assertive");
   toast.setAttribute("aria-atomic", "true");
@@ -54,7 +68,7 @@ app.config.globalProperties.toast = function (
   toast.innerHTML = `
     <div class="d-flex">
       <div class="toast-body">
-        <strong>${title}</strong><br>${content}
+        <strong>${title}</strong>${content ? "<br>" + content : ""}
       </div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
