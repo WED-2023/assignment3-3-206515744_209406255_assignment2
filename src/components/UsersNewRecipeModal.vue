@@ -138,23 +138,23 @@
                   :key="`ingredient-${index}`" 
                   class="ingredient-item"
                 >
-                  <div class="row">
-                    <div class="col-md-4">
+                  <div class="row">                    <div class="col-md-4">
                       <input
                         v-model="ingredient.name"
                         type="text"
                         class="form-control"
-                        :placeholder="index === 0 ? 'Ingredient name (e.g., carrot)' : 'Ingredient name'"
+                        :placeholder="index === 0 ? 'Ingredient name (e.g., carrot) *' : 'Ingredient name'"
+                        :required="index === 0"
                         @blur="validateIngredients"
                       />
-                    </div>
-                    <div class="col-md-2">
+                    </div>                    <div class="col-md-2">
                       <input
                         v-model="ingredient.amount"
                         type="number"
                         step="0.1"
                         class="form-control"
-                        :placeholder="index === 0 ? 'Amount' : ''"
+                        :placeholder="index === 0 ? 'Amount *' : 'Amount'"
+                        :required="index === 0"
                         @blur="validateIngredients"
                       />
                     </div>
@@ -163,7 +163,8 @@
                         v-model="ingredient.unit"
                         type="text"
                         class="form-control"
-                        :placeholder="index === 0 ? 'Unit' : ''"
+                        :placeholder="index === 0 ? 'Unit *' : 'Unit'"
+                        :required="index === 0"
                         @blur="validateIngredients"
                       />
                     </div>
@@ -175,15 +176,14 @@
                         :placeholder="index === 0 ? 'Description (optional)' : ''"
                       />
                     </div>
-                    <div class="col-md-1">
-                      <button
+                    <div class="col-md-1">                      <button
                         v-if="newRecipe.ingredients.length > 1"
                         type="button"
-                        class="btn btn-outline-danger btn-sm"
+                        class="btn btn-danger btn-sm"
                         @click="removeIngredient(index)"
                         title="Remove ingredient"
                       >
-                        <i class="fas fa-minus"></i>
+                        <i class="fas fa-times text-white"></i>
                       </button>
                     </div>
                   </div>
@@ -215,23 +215,22 @@
                   <div class="input-group">
                     <div class="input-group-prepend">
                       <span class="input-group-text">{{ index + 1 }}</span>
-                    </div>
-                    <textarea
+                    </div>                    <textarea
                       v-model="newRecipe.instructions[index]"
                       class="form-control"
-                      :placeholder="`Step ${index + 1} instructions`"
+                      :placeholder="index === 0 ? `Step ${index + 1} instructions *` : `Step ${index + 1} instructions`"
+                      :required="index === 0"
                       rows="2"
                       @blur="validateInstructions"
                     ></textarea>
-                    <div class="input-group-append">
-                      <button
+                    <div class="input-group-append">                      <button
                         v-if="newRecipe.instructions.length > 1"
                         type="button"
-                        class="btn btn-outline-danger"
+                        class="btn btn-danger"
                         @click="removeInstruction(index)"
                         title="Remove step"
                       >
-                        <i class="fas fa-minus"></i>
+                        <i class="fas fa-times text-white"></i>
                       </button>
                     </div>
                   </div>
@@ -260,23 +259,22 @@
                   :key="`equipment-${index}`"
                   class="equipment-item"
                 >
-                  <div class="input-group">
-                    <input
+                  <div class="input-group">                    <input
                       v-model="newRecipe.equipment[index]"
                       type="text"
                       class="form-control"
-                      :placeholder="index === 0 ? 'Equipment (e.g., sauce pan)' : 'Equipment'"
+                      :placeholder="index === 0 ? 'Equipment (e.g., sauce pan) *' : 'Equipment'"
+                      :required="index === 0"
                       @blur="validateEquipment"
                     />
-                    <div class="input-group-append">
-                      <button
+                    <div class="input-group-append">                      <button
                         v-if="newRecipe.equipment.length > 1"
                         type="button"
-                        class="btn btn-outline-danger"
+                        class="btn btn-danger"
                         @click="removeEquipment(index)"
                         title="Remove equipment"
                       >
-                        <i class="fas fa-minus"></i>
+                        <i class="fas fa-times text-white"></i>
                       </button>
                     </div>
                   </div>
@@ -298,13 +296,12 @@
 
             <!-- Summary Section -->
             <div class="form-section">
-              <h5><i class="fas fa-align-left"></i> Recipe Summary</h5>
-              <FormField
+              <h5><i class="fas fa-align-left"></i> Recipe Summary</h5>              <FormField
                 v-model="newRecipe.summary"
-                label=""
+                label="Recipe Summary"
                 name="summary"
                 type="textarea"
-                rows="4"
+                :rows="4"
                 placeholder="Describe your recipe, its flavors, dietary benefits, etc."
                 :required="false"
               />
@@ -355,11 +352,10 @@ export default {
   emits: ['close', 'recipe-created'],
   data() {
     return {
-      isSubmitting: false,
-      newRecipe: {
+      isSubmitting: false,      newRecipe: {
         title: "",
         image: "",
-        readyInMinutes: null,
+        readyInMinutes: "",
         aggregateLikes: 0,
         vegan: false,
         vegetarian: false,
@@ -375,7 +371,7 @@ export default {
           }
         ],
         instructions: [""],
-        numberOfPortions: null,
+        numberOfPortions: "",
         equipment: [""],
         summary: ""
       },
@@ -390,11 +386,10 @@ export default {
       }
     };
   },
-  computed: {
-    isFormValid() {
+  computed: {    isFormValid() {
       return this.newRecipe.title.trim() !== '' &&
-             this.newRecipe.readyInMinutes && this.newRecipe.readyInMinutes > 0 &&
-             this.newRecipe.numberOfPortions && this.newRecipe.numberOfPortions > 0 &&
+             this.newRecipe.readyInMinutes && Number(this.newRecipe.readyInMinutes) > 0 &&
+             this.newRecipe.numberOfPortions && Number(this.newRecipe.numberOfPortions) > 0 &&
              this.newRecipe.ingredients.some(ing => ing.name && ing.name.trim() !== '') &&
              this.newRecipe.instructions.some(inst => inst.trim() !== '') &&
              Object.values(this.errors).every(errorArray => errorArray.length === 0);
@@ -413,12 +408,11 @@ export default {
       }
     }
   },
-  methods: {
-    resetForm() {
+  methods: {    resetForm() {
       this.newRecipe = {
         title: "",
         image: "",
-        readyInMinutes: null,
+        readyInMinutes: "",
         aggregateLikes: 0,
         vegan: false,
         vegetarian: false,
@@ -434,7 +428,7 @@ export default {
           }
         ],
         instructions: [""],
-        numberOfPortions: null,
+        numberOfPortions: "",
         equipment: [""],
         summary: ""
       };
@@ -459,12 +453,11 @@ export default {
       if (!this.newRecipe.title.trim()) {
         this.errors.title.push('Recipe title is required');
       }
-      
-      if (!this.newRecipe.readyInMinutes || this.newRecipe.readyInMinutes <= 0) {
+        if (!this.newRecipe.readyInMinutes || Number(this.newRecipe.readyInMinutes) <= 0) {
         this.errors.readyInMinutes.push('Ready time must be a positive number');
       }
       
-      if (!this.newRecipe.numberOfPortions || this.newRecipe.numberOfPortions <= 0) {
+      if (!this.newRecipe.numberOfPortions || Number(this.newRecipe.numberOfPortions) <= 0) {
         this.errors.numberOfPortions.push('Number of portions must be a positive number');
       }
       
@@ -508,14 +501,12 @@ export default {
       } catch (_) {
         return false;
       }
-    },
-
-    getInvalidFields() {
+    },    getInvalidFields() {
       const invalidFields = [];
       
       if (!this.newRecipe.title.trim()) invalidFields.push('Recipe title');
-      if (!this.newRecipe.readyInMinutes || this.newRecipe.readyInMinutes <= 0) invalidFields.push('Ready time');
-      if (!this.newRecipe.numberOfPortions || this.newRecipe.numberOfPortions <= 0) invalidFields.push('Number of portions');
+      if (!this.newRecipe.readyInMinutes || Number(this.newRecipe.readyInMinutes) <= 0) invalidFields.push('Ready time');
+      if (!this.newRecipe.numberOfPortions || Number(this.newRecipe.numberOfPortions) <= 0) invalidFields.push('Number of portions');
       if (!this.newRecipe.ingredients.some(ing => ing.name && ing.name.trim() !== '')) invalidFields.push('At least one ingredient');
       if (!this.newRecipe.instructions.some(inst => inst.trim() !== '')) invalidFields.push('At least one instruction');
       

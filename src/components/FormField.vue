@@ -2,10 +2,24 @@
   <div class="form-group">
     <label :for="name" class="form-label">
       {{ label }} <span v-if="required" class="text-danger">*</span>
-    </label>
-    <div class="input-wrapper">
+    </label>    <div class="input-wrapper">
+      <textarea
+        v-if="type === 'textarea'"
+        :id="name"
+        :value="modelValue"
+        :name="name"
+        :autocomplete="autocomplete"
+        :placeholder="placeholder"
+        :class="['form-control', { 'is-invalid': hasError }]"
+        :disabled="disabled"
+        :rows="rows || 3"
+        @input="$emit('update:modelValue', $event.target.value)"
+        @focus="showHint = true"
+        @blur="showHint = false"
+      ></textarea>
+
       <input
-        v-if="type !== 'select'"
+        v-else-if="type !== 'select'"
         :id="name"
         :value="modelValue"
         :type="type"
@@ -74,11 +88,10 @@ export default {
     name: {
       type: String,
       required: true
-    },
-    type: {
+    },    type: {
       type: String,
       default: 'text',
-      validator: (value) => ['text', 'password', 'email', 'select'].includes(value)
+      validator: (value) => ['text', 'password', 'email', 'select', 'number', 'textarea'].includes(value)
     },
     autocomplete: {
       type: String,
@@ -107,10 +120,13 @@ export default {
     requirements: {
       type: Array,
       default: () => []
-    },
-    options: {
+    },    options: {
       type: Array,
       default: () => []
+    },
+    rows: {
+      type: Number,
+      default: 3
     }
   },
   emits: ['update:modelValue'],

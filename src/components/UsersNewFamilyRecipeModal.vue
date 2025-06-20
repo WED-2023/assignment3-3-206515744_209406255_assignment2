@@ -67,22 +67,21 @@
                   :key="index"
                   class="ingredient-item"
                 >
-                  <div class="input-group">
-                    <input
+                  <div class="input-group">                    <input
                       v-model="form.ingredients[index]"
                       type="text"
                       class="form-control"
-                      :placeholder="`Ingredient ${index + 1}`"
+                      :placeholder="index === 0 ? `Ingredient ${index + 1} *` : `Ingredient ${index + 1}`"
+                      :required="index === 0"
                       @blur="validateIngredients"
                     />
-                    <div class="input-group-append">
-                      <button
+                    <div class="input-group-append">                      <button
                         type="button"
-                        class="btn btn-outline-danger"
+                        class="btn btn-danger"
                         @click="removeIngredient(index)"
                         :disabled="form.ingredients.length <= 1"
                       >
-                        <i class="fas fa-minus"></i>
+                        <i class="fas fa-times text-white"></i>
                       </button>
                     </div>
                   </div>
@@ -116,22 +115,21 @@
                   <div class="input-group">
                     <div class="input-group-prepend">
                       <span class="input-group-text">{{ index + 1 }}</span>
-                    </div>
-                    <textarea
+                    </div>                    <textarea
                       v-model="form.instructions[index]"
                       class="form-control"
-                      :placeholder="`Step ${index + 1} instructions`"
+                      :placeholder="index === 0 ? `Step ${index + 1} instructions *` : `Step ${index + 1} instructions`"
+                      :required="index === 0"
                       rows="2"
                       @blur="validateInstructions"
                     ></textarea>
-                    <div class="input-group-append">
-                      <button
+                    <div class="input-group-append">                      <button
                         type="button"
-                        class="btn btn-outline-danger"
+                        class="btn btn-danger"
                         @click="removeInstruction(index)"
                         :disabled="form.instructions.length <= 1"
                       >
-                        <i class="fas fa-minus"></i>
+                        <i class="fas fa-times text-white"></i>
                       </button>
                     </div>
                   </div>
