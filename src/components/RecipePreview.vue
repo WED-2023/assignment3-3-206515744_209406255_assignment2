@@ -49,13 +49,12 @@
     <div class="card-body text-center clickable-area">
       <!-- Recipe title -->
       <h5 class="card-title">{{ recipe.title }}</h5>
-      
-      <!-- Recipe time and score info -->
+        <!-- Recipe time and score info -->
       <div class="recipe-info">
         <p class="card-text time-info">
           <i class="fas fa-clock"></i> {{ recipe.readyInMinutes }} min
         </p>
-        <p v-if="recipe.spoonacularScore" class="card-text score-info">
+        <p v-if="recipe.spoonacularScore && !isUserRecipesRoute" class="card-text score-info">
           <i class="fas fa-star"></i> {{ Math.round(recipe.spoonacularScore) }}/100
         </p>
       </div>
@@ -155,7 +154,11 @@ export default {
       isFavorited: false,
       isViewed: false,
       stateLoaded: false
-    };
+    };  },
+  computed: {
+    isUserRecipesRoute() {
+      return this.customRoutePrefix === '/users/my-recipes';
+    }
   },
   async mounted() {
     await this.loadRecipeState();
@@ -491,6 +494,15 @@ export default {
   margin-bottom: 1rem;
   position: relative;
   z-index: 2;
+}
+
+.recipe-info:has(.time-info:only-child) {
+  justify-content: center;
+}
+
+/* Fallback for browsers that don't support :has() */
+.recipe-info .time-info:only-child {
+  margin: 0 auto;
 }
 
 .time-info {
