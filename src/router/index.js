@@ -12,12 +12,18 @@ import UsersMyRecipes from "../pages/UsersMyRecipesPage.vue";
 import UsersFamilyRecipes from "../pages/UsersFamilyRecipesPage.vue";
 // import UsersMealPlan from "../pages/UsersMealPlanPage.vue";
 import NotFound from "../pages/NotFoundPage.vue";
+import UsersProfilePage from "../pages/UsersProfilePage.vue";
 
 const routes = [
   {
     path: "/",
     name: "main",
     component: Main,
+  },
+  {
+    path: "/profile",
+    name: "userProfile",
+    component: UsersProfilePage,
   },
   {
     path: "/register",

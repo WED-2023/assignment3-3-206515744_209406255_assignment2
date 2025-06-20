@@ -16,9 +16,15 @@
             @click.prevent="toggleDropdown"
             :class="{ active: isDropdownOpen }"
           >
+            <!-- Profile picture -->
+            <img v-if="store.profilePic" :src="store.profilePic" alt="Profile" class="profile-pic me-2" />
             {{ store.username }}
           </a>
           <div class="dropdown-menu" :class="{ show: isDropdownOpen }">
+            <!-- Profile link -->
+            <router-link class="dropdown-item" :to="{ name: 'userProfile' }" @click="closeDropdown">
+              Profile
+            </router-link>
             <router-link class="dropdown-item" :to="{ name: 'usersLiked' }" @click="closeDropdown">
               My Liked
             </router-link>
@@ -72,6 +78,15 @@ export default {
 
     onMounted(() => {
       document.addEventListener('click', handleClickOutside);
+      // Fetch user info for profile picture
+      if (store.username) {
+        axios.get('/user_information')
+          .then(response => {
+            const pic = response.data.data.profilePic;
+            store.setProfilePic(pic);
+          })
+          .catch(err => console.error('Failed to fetch user information:', err));
+      }
     });
 
     onUnmounted(() => {
@@ -183,5 +198,14 @@ export default {
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     margin: 0.5rem 0;
   }
+}
+
+/* New styles for profile picture */
+.profile-pic {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.5rem;
 }
 </style>
