@@ -13,6 +13,7 @@ import UsersFamilyRecipes from "../pages/UsersFamilyRecipesPage.vue";
 // import UsersMealPlan from "../pages/UsersMealPlanPage.vue";
 import NotFound from "../pages/NotFoundPage.vue";
 import UsersProfilePage from "../pages/UsersProfilePage.vue";
+import RecipePreparation from "../pages/RecipePreparationPage.vue";
 
 const routes = [
   {
@@ -44,6 +45,11 @@ const routes = [
     path: "/recipes/:recipeId",
     name: "recipe",
     component: RecipeView,
+  },
+  {
+    path: "/recipes/:recipeId/preparation",
+    name: "recipePreparation",
+    component: RecipePreparation,
   },
   // {
   //   path: "/recipes/random",

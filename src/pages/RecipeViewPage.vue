@@ -116,6 +116,11 @@
             <p class="text-muted">Switch to "Full Details" to see ingredients, instructions, equipment, servings, and detailed summary.</p>
           </div>
         </div>
+        
+        <!-- Prepare button -->
+        <div class="text-center mb-4">
+          <button class="btn btn-primary" @click="goToPreparation">Prepare this recipe</button>
+        </div>
       </div>
 
       <!-- Error message -->
@@ -187,6 +192,10 @@
         } finally {
           this.loading = false;
         }
+      },
+      goToPreparation() {
+        const id = this.recipe.id;
+        this.$router.push({ path: `/recipes/${id}/preparation` });
       }
     }
   };
