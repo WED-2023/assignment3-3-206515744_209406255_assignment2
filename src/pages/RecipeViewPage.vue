@@ -9,6 +9,13 @@
           <h1>{{ recipe.title }}</h1>
           <img :src="recipe.image" class="center" />
           
+          <!-- Dietary badges - styled same as preview -->
+          <div class="diet-info mt-2">
+            <span v-if="recipe.vegan" class="badge badge-success">🌱 Vegan</span>
+            <span v-else-if="recipe.vegetarian" class="badge badge-warning">🥬 Vegetarian</span>
+            <span v-if="recipe.glutenFree" class="badge badge-info">🌾 Gluten Free</span>
+          </div>
+          
           <!-- Toggle for full/basic view -->
           <div class="view-toggle mt-3 text-center">
             <div class="form-check form-check-inline">
@@ -47,13 +54,6 @@
               <div class="mb-3">
                 <div><strong>Ready in:</strong> {{ recipe.readyInMinutes }} minutes</div>
                 <div><strong>Spoonacular Score:</strong> {{ recipe.spoonacularScore }}</div>
-              </div>
-              
-              <!-- Dietary badges - always shown -->
-              <div class="mb-3">
-                <span v-if="recipe.vegan" class="badge badge-success mr-2">Vegan</span>
-                <span v-if="recipe.vegetarian" class="badge badge-success mr-2">Vegetarian</span>
-                <span v-if="recipe.glutenFree" class="badge badge-success mr-2">Gluten Free</span>
               </div>
               
               <!-- Additional info for full view only -->
@@ -250,16 +250,25 @@
     border: 1px solid #e9ecef;
   }
 
+  /* Dietary badges styling (same as preview) */
+  .diet-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+  }
+
   .badge {
     display: inline-block;
-    padding: 0.25em 0.4em;
-    font-size: 75%;
+    padding: 0.25em 0.5em;
+    font-size: 0.75em;
     font-weight: 700;
     line-height: 1;
     text-align: center;
     white-space: nowrap;
     vertical-align: baseline;
-    border-radius: 0.25rem;
+    border-radius: 0.375rem;
   }
 
   .badge-success {
@@ -267,8 +276,14 @@
     background-color: #28a745;
   }
 
-  .mr-2 {
-    margin-right: 0.5rem;
+  .badge-warning {
+    color: #212529;
+    background-color: #ffc107;
+  }
+
+  .badge-info {
+    color: #fff;
+    background-color: #17a2b8;
   }
 
   .recipe-summary {

@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <div id="nav">
+      <div class="nav-title">Grandma's Recipes</div>
       <router-link :to="{ name: 'main' }">Main Page</router-link> |
       <router-link :to="{ name: 'search' }">Search</router-link> |
       <span v-if="!store.username">
@@ -158,6 +159,17 @@ export default {
   padding: 0.75rem 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   border-radius: 0 0 8px 8px;
+  position: relative;              // for positioning title
+}
+
+/* Centered site title in navbar */
+.nav-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
 }
 
 #nav a,
@@ -225,7 +237,8 @@ export default {
   vertical-align: middle;  // ensure it's centered vertically
 }
 
-.badge {
+/* Positioning for meal plan count badge only */
+.nav-icon .badge {
   position: absolute;
   top: -5px;
   right: -10px;
