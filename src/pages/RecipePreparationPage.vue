@@ -15,39 +15,30 @@
         <label for="servings"><strong>Servings:</strong></label>
         <input type="number" id="servings" v-model.number="servings" min="1" class="form-control d-inline-block ml-2" style="width: 80px;" />
       </div>
-      <div class="steps">
-        <div v-for="step in recipe.preparationSteps" :key="step.stepNumber" class="step mb-4">
-          <h4>Step {{ step.stepNumber }}</h4>
-          <p>{{ step.instruction }}</p>
-          <div v-if="step.equipment.length">
-            <strong>Equipment:</strong>
-            <ul>
-              <li v-for="(item, idx) in step.equipment" :key="idx">{{ item }}</li>
-            </ul>
-          </div>
-          <div v-if="step.ingredients.length">
-            <strong>Ingredients:</strong>
-            <ul>
-              <li v-for="(ing, idx) in step.ingredients" :key="idx">
-                {{ formatAmount(ing.amount) }} {{ ing.unit }} {{ ing.name }}
-                <span v-if="ing.description"> - {{ ing.description }}</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <!-- Single step view -->
+      <RecipePreparationComponent
+        v-if="recipe.preparationSteps.length"
+        :step="recipe.preparationSteps[currentStepIndex]"
+        :current="currentStepIndex + 1"
+        :total="recipe.preparationSteps.length"
+        @prev="prevStep"
+        @next="nextStep"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import RecipePreparationComponent from "../components/RecipePreparationComponent.vue";
 export default {
+  components: { RecipePreparationComponent },
   data() {
     return {
       recipe: null,
       loading: false,
       error: "",
       servings: 1,
+      currentStepIndex: 0,
     };
   },
   async created() {
@@ -57,6 +48,7 @@ export default {
       const res = await window.axios.get(`/recipes/${id}/preparation`);
       this.recipe = res.data;
       this.servings = this.recipe.numberOfPortions || 1;
+      this.currentStepIndex = 0;
     } catch (err) {
       this.error = err.response?.data?.message || 'Failed to load preparation details.';
     } finally {
@@ -71,6 +63,13 @@ export default {
       const ratio = total > 0 ? this.servings / total : 1;
       const val = amount * ratio;
       return Math.round(val * 100) / 100;
+    },
+    prevStep() {
+      if (this.currentStepIndex > 0) this.currentStepIndex--;
+    },
+    nextStep() {
+      if (this.currentStepIndex < this.recipe.preparationSteps.length - 1)
+        this.currentStepIndex++;
     }
   }
 };
