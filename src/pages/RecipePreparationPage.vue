@@ -24,7 +24,7 @@
         @prev="prevStep"
         @next="nextStep"
         @toggleComplete="toggleCompleteStep"
-        :completed="completedSteps[currentStepIndex]"
+        :completed="entry.completedSteps[currentStepIndex]"
       />
     </div>
   </div>
@@ -40,8 +40,7 @@ export default {
       loading: false,
       error: "",
       servings: 1,
-      currentStepIndex: 0,
-      completedSteps: []
+      currentStepIndex: 0
     };
   },
   async created() {
@@ -52,12 +51,17 @@ export default {
       this.recipe = res.data;
       this.servings = this.recipe.numberOfPortions || 1;
       this.currentStepIndex = 0;
-      // initialize completed flags
-      this.completedSteps = new Array(this.recipe.preparationSteps.length).fill(false);
+      // initialize meal plan steps in store
+      window.store.initMealPlanSteps(this.recipe.id, this.recipe.preparationSteps.length);
     } catch (err) {
       this.error = err.response?.data?.message || 'Failed to load preparation details.';
     } finally {
       this.loading = false;
+    }
+  },
+  computed: {
+    entry() {
+      return window.store.mealPlan.find(r => r.id === this.recipe.id) || { completedSteps: [], totalSteps: 0 };
     }
   },
   methods: {
@@ -77,8 +81,8 @@ export default {
         this.currentStepIndex++;
     },
     toggleCompleteStep() {
-      // toggle current step completion (Vue 3 reactive arrays)
-      this.completedSteps[this.currentStepIndex] = !this.completedSteps[this.currentStepIndex];
+      // toggle completion in store
+      window.store.toggleMealPlanStep(this.recipe.id, this.currentStepIndex);
     }
   }
 };

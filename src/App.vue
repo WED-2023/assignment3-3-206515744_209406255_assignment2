@@ -8,7 +8,7 @@
         <router-link :to="{ name: 'register' }">Register</router-link> |
         <router-link :to="{ name: 'login' }">Login</router-link> |
       </span>
-      <span v-else>
+      <span v-else class="d-inline-flex align-items-center">
         <div class="dropdown d-inline-block">
           <a 
             href="#" 
@@ -41,6 +41,11 @@
             <a href="#" class="dropdown-item" @click.prevent="logout">Logout</a>
           </div>
         </div>
+        <!-- Meal plan icon -->
+        <span v-if="store.username" class="nav-separator">|</span>
+        <router-link v-if="store.username" :to="{ name: 'mealPlan' }" class="nav-icon me-2">
+          🍽️<span v-if="store.mealPlan.length" class="badge bg-danger ms-1">{{ store.mealPlan.length }}</span>
+        </router-link>
       </span>
     </div>
     <router-view />
@@ -207,5 +212,33 @@ export default {
   border-radius: 50%;
   object-fit: cover;
   margin-right: 0.5rem;
+}
+
+/* New styles for nav icon */
+.nav-icon {
+  font-size: 1.25rem;
+  color: #fff;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  vertical-align: middle;  // ensure it's centered vertically
+}
+
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  font-size: 0.75rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 10rem;
+}
+
+/* New styles for nav separator */
+.nav-separator {
+  color: #fff;
+  font-weight: 600;
+  padding: 0 0.5rem;
+  vertical-align: middle;  // ensure it's centered vertically
 }
 </style>

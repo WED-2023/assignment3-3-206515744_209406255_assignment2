@@ -195,6 +195,12 @@
       },
       goToPreparation() {
         const id = this.recipe.id;
+        // Only add if not already in meal plan
+        const exists = window.store.mealPlan.some(r => r.id === id);
+        if (!exists) {
+          window.store.addToMealPlan({ id, title: this.recipe.title, image: this.recipe.image });
+        }
+        // Navigate to preparation
         this.$router.push({ path: `/recipes/${id}/preparation` });
       }
     }
