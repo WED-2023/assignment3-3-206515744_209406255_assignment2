@@ -22,6 +22,8 @@ const store = reactive({
     localStorage.removeItem("profilePic");
     this.username = undefined;
     this.profilePic = null;
+    // Clear meal plan on logout
+    this.clearMealPlan();
   },
   // Meal plan management
   mealPlan: JSON.parse(localStorage.getItem("mealPlan") || "[]"),
