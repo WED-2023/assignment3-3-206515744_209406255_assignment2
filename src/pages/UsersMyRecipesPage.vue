@@ -1,6 +1,12 @@
 <template>
   <div class="container">
     <h1 class="title">My Recipes</h1>
+    <!-- Create New Recipe button under title -->
+    <div class="text-center mt-3 mb-4">
+      <button class="btn btn-primary" @click="showCreateModal = true">
+        <i class="fas fa-plus"></i> Create New Recipe
+      </button>
+    </div>
     
     <!-- Loading state -->
     <div v-if="loading" class="text-center mt-4">
@@ -11,10 +17,8 @@
     <div v-if="myRecipes.length > 0 && !loading" class="my-recipes mt-4">
       <div class="recipes-header">
         <p class="subtitle">You have {{ myRecipes.length }} recipe{{ myRecipes.length === 1 ? '' : 's' }}</p>
-        <button class="btn btn-primary" @click="showCreateModal = true">
-          <i class="fas fa-plus"></i> Create New Recipe
-        </button>
       </div>
+      <!-- removed duplicate create button -->
       <RecipePreviewList 
         :recipes="myRecipes" 
         title="" 

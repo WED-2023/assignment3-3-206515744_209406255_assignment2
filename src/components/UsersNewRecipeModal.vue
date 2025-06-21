@@ -138,7 +138,11 @@
                   :key="`ingredient-${index}`" 
                   class="ingredient-item"
                 >
-                  <div class="row">                    <div class="col-md-4">
+                  <div class="row align-items-center">
+                    <div class="col-auto d-flex align-items-center justify-content-center">
+                      <span class="input-group-text me-2">{{ index + 1 }}</span>
+                    </div>
+                    <div class="col-md-4">
                       <input
                         v-model="ingredient.name"
                         type="text"
@@ -214,7 +218,7 @@
                 >
                   <div class="input-group">
                     <div class="input-group-prepend">
-                      <span class="input-group-text">{{ index + 1 }}</span>
+                      <span class="input-group-text me-2">{{ index + 1 }}</span>
                     </div>                    <textarea
                       v-model="newRecipe.instructions[index]"
                       class="form-control"
@@ -259,15 +263,22 @@
                   :key="`equipment-${index}`"
                   class="equipment-item"
                 >
-                  <div class="input-group">                    <input
-                      v-model="newRecipe.equipment[index]"
-                      type="text"
-                      class="form-control"
-                      :placeholder="index === 0 ? 'Equipment (e.g., sauce pan) *' : 'Equipment'"
-                      :required="index === 0"
-                      @blur="validateEquipment"
-                    />
-                    <div class="input-group-append">                      <button
+                  <div class="row align-items-center">
+                    <div class="col-auto d-flex align-items-center justify-content-center">
+                      <span class="input-group-text me-2">{{ index + 1 }}</span>
+                    </div>
+                    <div class="col">
+                      <input
+                        v-model="newRecipe.equipment[index]"
+                        type="text"
+                        class="form-control"
+                        :placeholder="index === 0 ? 'Equipment (e.g., sauce pan) *' : 'Equipment'"
+                        :required="index === 0"
+                        @blur="validateEquipment"
+                      />
+                    </div>
+                    <div class="col-auto">
+                      <button
                         v-if="newRecipe.equipment.length > 1"
                         type="button"
                         class="btn btn-danger"
@@ -311,9 +322,13 @@
 
         <!-- Modal Footer -->
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" @click="closeModal">
-            <i class="fas fa-times"></i> Cancel
-          </button>
+          <SubmitButton
+            :is-loading="false"
+            :is-form-valid="true"
+            default-text="Cancel"
+            variant="btn-secondary"
+            @click="closeModal"
+          />
           <SubmitButton
             :is-loading="isSubmitting"
             :is-form-valid="isFormValid"
@@ -666,8 +681,25 @@ export default {
   padding: 1rem 2rem;
   border-top: 1px solid #dee2e6;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
+  align-items: center;
   gap: 1rem;
+}
+
+/* Remove top margin on submit button when in footer to align with other buttons */
+.modal-footer .submit-section {
+  margin-top: 0;
+}
+
+/* Match cancel button style to submit button */
+.modal-footer .btn-secondary {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease-in-out;
 }
 
 .form-section {
@@ -732,18 +764,27 @@ export default {
   color: #dc3545;
 }
 
-@media (max-width: 768px) {
-  .modal-xl {
-    max-width: 95%;
-  }
-  
-  .modal-body {
-    padding: 1rem;
-    max-height: 60vh;
-  }
-  
-  .modal-footer {
-    padding: 1rem;
-  }
+/* Spacing for step number badge */
+.input-group-text.me-2 {
+  margin-right: 0.5rem;
+}
+
+/* Ingredient and equipment numbering icons styling to match instructions */
+.ingredient-item .input-group-text,
+.equipment-item .input-group-text {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+  font-weight: 600;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Remove horizontal gutter for ingredient and equipment rows to match instruction spacing */
+.ingredient-item .row,
+.equipment-item .row {
+  --bs-gutter-x: 0;
 }
 </style>

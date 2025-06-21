@@ -51,7 +51,7 @@ export default {
     variant: {
       type: String,
       default: 'btn-primary',
-      validator: (value) => ['btn-primary', 'btn-success', 'btn-danger', 'btn-warning', 'btn-info'].includes(value)
+      validator: (value) => ['btn-primary', 'btn-secondary', 'btn-success', 'btn-danger', 'btn-warning', 'btn-info'].includes(value)
     },
     tooltipFields: {
       type: Array,
@@ -106,6 +106,15 @@ export default {
 
 .btn-primary:hover:not(:disabled) {
   background-color: #0b5ed7;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #5a6268;
 }
 
 .btn-success {

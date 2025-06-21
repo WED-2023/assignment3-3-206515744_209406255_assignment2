@@ -240,8 +240,8 @@ export default {
 /* Positioning for meal plan count badge only */
 .nav-icon .badge {
   position: absolute;
-  top: -5px;
-  right: -10px;
+  top: -2px;
+  right: -2px;
   font-size: 0.75rem;
   padding: 0.1rem 0.4rem;
   border-radius: 10rem;
@@ -249,8 +249,6 @@ export default {
 
 /* New styles for nav separator */
 .nav-separator {
-  color: #fff;
-  font-weight: 600;
   padding: 0 0.5rem;
   vertical-align: middle;  // ensure it's centered vertically
 }
