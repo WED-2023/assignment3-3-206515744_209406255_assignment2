@@ -56,7 +56,7 @@ export default {
       const id = this.$route.params.recipeId;
       const res = await window.axios.get(`/recipes/${id}/preparation`);
       this.recipe = res.data;
-      this.servings = this.recipe.numberOfPortions;
+      this.servings = this.recipe.numberOfPortions || 1;
     } catch (err) {
       this.error = err.response?.data?.message || 'Failed to load preparation details.';
     } finally {
@@ -65,8 +65,12 @@ export default {
   },
   methods: {
     formatAmount(amount) {
-      const ratio = this.recipe.numberOfPortions > 0 ? this.servings / this.recipe.numberOfPortions : 1;
-      return Math.round((amount * ratio) * 100) / 100;
+      // if no amount provided, return empty string
+      if (amount == null) return '';
+      const total = this.recipe.numberOfPortions || 1;
+      const ratio = total > 0 ? this.servings / total : 1;
+      const val = amount * ratio;
+      return Math.round(val * 100) / 100;
     }
   }
 };
