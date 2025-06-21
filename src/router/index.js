@@ -14,6 +14,7 @@ import UsersFamilyRecipes from "../pages/UsersFamilyRecipesPage.vue";
 import NotFound from "../pages/NotFoundPage.vue";
 import UsersProfilePage from "../pages/UsersProfilePage.vue";
 import RecipePreparation from "../pages/RecipePreparationPage.vue";
+import store from "../store.js";
 
 const routes = [
   {
@@ -50,6 +51,10 @@ const routes = [
     path: "/recipes/:recipeId/preparation",
     name: "recipePreparation",
     component: RecipePreparation,
+    beforeEnter: (to, from, next) => {
+      if (store.username) next();
+      else next({ name: "login" });
+    },
   },
   // {
   //   path: "/recipes/random",
