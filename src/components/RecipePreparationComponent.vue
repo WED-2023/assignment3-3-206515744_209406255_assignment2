@@ -2,12 +2,22 @@
   <div class="step-container">
     <ProgressBar :current="current" :total="total" />
     <!-- Moved navigation above content -->
-    <div class="navigation mt-4 text-center">
-      <button @click="$emit('prev')" :disabled="current <= 1" class="btn btn-secondary mr-2">
+    <div class="navigation mt-4 mb-3 text-center">
+      <button @click="$emit('prev')" :disabled="current <= 1" class="btn btn-secondary me-2">
         Previous
       </button>
-      <button @click="$emit('next')" :disabled="current >= total" class="btn btn-primary">
+      <button @click="$emit('next')" :disabled="current >= total" class="btn btn-primary ms-2">
         Next
+      </button>
+    </div>
+    <!-- Completed toggle -->
+    <div class="step-complete text-center mb-3">
+      <button
+        class="btn"
+        :class="completed ? 'btn-success' : 'btn-outline-success'"
+        @click="$emit('toggleComplete')"
+      >
+        {{ completed ? 'Step Completed' : 'Mark Completed' }}
       </button>
     </div>
     <h4>Step {{ step.stepNumber }}</h4>
@@ -40,7 +50,8 @@ export default {
   props: {
     step: { type: Object, required: true },
     current: { type: Number, required: true },
-    total: { type: Number, required: true }
+    total: { type: Number, required: true },
+    completed: { type: Boolean, default: false }
   },
   methods: {
     formatAmount(amount) {

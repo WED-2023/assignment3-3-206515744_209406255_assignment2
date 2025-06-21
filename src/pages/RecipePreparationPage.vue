@@ -23,6 +23,8 @@
         :total="recipe.preparationSteps.length"
         @prev="prevStep"
         @next="nextStep"
+        @toggleComplete="toggleCompleteStep"
+        :completed="completedSteps[currentStepIndex]"
       />
     </div>
   </div>
@@ -39,6 +41,7 @@ export default {
       error: "",
       servings: 1,
       currentStepIndex: 0,
+      completedSteps: []
     };
   },
   async created() {
@@ -49,6 +52,8 @@ export default {
       this.recipe = res.data;
       this.servings = this.recipe.numberOfPortions || 1;
       this.currentStepIndex = 0;
+      // initialize completed flags
+      this.completedSteps = new Array(this.recipe.preparationSteps.length).fill(false);
     } catch (err) {
       this.error = err.response?.data?.message || 'Failed to load preparation details.';
     } finally {
@@ -70,6 +75,10 @@ export default {
     nextStep() {
       if (this.currentStepIndex < this.recipe.preparationSteps.length - 1)
         this.currentStepIndex++;
+    },
+    toggleCompleteStep() {
+      // toggle current step completion (Vue 3 reactive arrays)
+      this.completedSteps[this.currentStepIndex] = !this.completedSteps[this.currentStepIndex];
     }
   }
 };
