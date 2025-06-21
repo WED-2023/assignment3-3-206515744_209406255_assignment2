@@ -1,5 +1,5 @@
 <template>
-  <div class="card h-100 recipe-card">
+  <div class="card h-100 recipe-card clickable-card">
     <div class="recipe-image-container">
       <img
         v-if="recipe.image"
@@ -13,7 +13,7 @@
       </div>
     </div>
     
-    <div class="card-body text-center" @click="goToRecipe">
+    <div class="card-body text-center clickable-area" @click="goToRecipe">
       <h5 class="card-title">{{ recipe.familyMember }}'s Recipe</h5>
       <p class="card-text">
         <span class="badge badge-primary">{{ recipe.occasion }}</span>
@@ -32,14 +32,6 @@
       
       <!-- Action buttons in their own row -->
       <div class="action-buttons-row">
-        <button
-          type="button"
-          class="btn btn-outline-primary btn-sm"
-          @click.stop="goToRecipe"
-        >
-          <i class="fas fa-eye"></i> View
-        </button>
-        
         <button
           type="button"
           class="btn btn-danger btn-sm delete-recipe-btn"
@@ -141,108 +133,16 @@ export default {
 </script>
 
 <style scoped>
-.recipe-card {
-  cursor: pointer;
-  transition:
-    transform 0.2s ease-in-out,
-    box-shadow 0.2s ease-in-out;
-  position: relative;
-}
+@import "@/scss/_recipe-card.scss";
 
-.recipe-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.recipe-image-container {
-  position: relative;
-  overflow: hidden;
-}
-
-.recipe-image {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  cursor: pointer;
-}
-
-.no-image-placeholder {
-  width: 100%;
-  height: 200px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 3rem;
-  cursor: pointer;
-}
-
-.card-body {
-  cursor: pointer;
-  padding: 1rem;
-}
-
-.card-title {
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-  color: #333;
-}
-
-.card-text {
-  margin-bottom: 1rem;
-  color: #666;
-  font-size: 0.9rem;
-}
-
-.badge {
-  display: inline-block;
-  padding: 0.375em 0.75em;
-  font-size: 0.75em;
-  font-weight: 700;
-  line-height: 1;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: baseline;
-  border-radius: 0.375rem;
-}
-
-.badge-primary {
-  color: #fff;
-  background-color: #0d6efd;
-}
-
+/* Quick-info styling (retained from original override) */
 .quick-info {
   font-size: 0.875rem;
   line-height: 1.4;
   margin-bottom: 1rem;
 }
 
-.action-buttons-row {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 0.5rem;
-}
-
-.btn-sm {
-  padding: 0.25rem 0.75rem;
-  font-size: 0.875rem;
-  border-radius: 0.25rem;
-}
-
-.btn-outline-primary {
-  color: #0d6efd;
-  border-color: #0d6efd;
-  background-color: transparent;
-}
-
-.btn-outline-primary:hover {
-  color: #fff;
-  background-color: #0d6efd;
-  border-color: #0d6efd;
-}
-
+/* Any additional overrides (e.g. delete button) */
 .delete-recipe-btn {
   font-size: 0.8rem;
   padding: 0.25rem 0.5rem;
@@ -255,9 +155,5 @@ export default {
 .delete-recipe-btn:hover {
   background-color: #c82333;
   border-color: #bd2130;
-}
-
-.text-muted {
-  color: #6c757d;
 }
 </style>

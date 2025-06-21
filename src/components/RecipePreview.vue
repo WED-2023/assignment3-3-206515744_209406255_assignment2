@@ -49,77 +49,63 @@
     <div class="card-body text-center clickable-area">
       <!-- Recipe title -->
       <h5 class="card-title">{{ recipe.title }}</h5>
+      
+      <!-- Bottom fixed container for time, score and actions -->
+      <div class="bottom-actions">
         <!-- Recipe time and score info -->
-      <div class="recipe-info">
-        <p class="card-text time-info">
-          <i class="fas fa-clock"></i> {{ recipe.readyInMinutes }} min
-        </p>
-        <p v-if="recipe.spoonacularScore && !isUserRecipesRoute" class="card-text score-info">
-          <i class="fas fa-star"></i> {{ Math.round(recipe.spoonacularScore) }}/100
-        </p>
-      </div>
-      
-      <!-- Diet information badges -->
-      <div class="diet-info">
-        <span v-if="recipe.vegan" class="badge badge-success">🌱 Vegan</span>
-        <span v-else-if="recipe.vegetarian" class="badge badge-warning">🥬 Vegetarian</span>
-        <span v-if="recipe.glutenFree" class="badge badge-info">🌾 Gluten Free</span>
-        <span v-if="isViewed" class="badge badge-secondary">👁️ Viewed</span>
-      </div>
-      
-      <!-- Action buttons in their own row -->
-      <div class="action-buttons-row">
-        <!-- Like button -->
-        <ActionButton
-          :item-id="recipe.id"
-          action-type="like"
-          :initial-active-state="isLiked"
-          active-emoji="❤️"
-          inactive-emoji="🤍"
-          color="red"
-          size="small"
-          active-tooltip="Remove from liked"
-          inactive-tooltip="Add to liked"
-          add-endpoint="/users/liked"
-          @action-changed="onActionChanged"
-          @click.stop
-        />
-        
-        <!-- Favorite button -->
-        <ActionButton
-          :item-id="recipe.id"
-          action-type="favorite"
-          :initial-active-state="isFavorited"
-          active-emoji="⭐"
-          inactive-emoji="☆"
-          color="yellow"
-          size="small"
-          active-tooltip="Remove from favorites"
-          inactive-tooltip="Add to favorites"
-          add-endpoint="/users/favorites"
-          @action-changed="onActionChanged"
-          @click.stop
-        />
-          <!-- View button -->
-        <button
-          type="button"
-          class="btn btn-outline-primary btn-sm"
-          @click.stop="goToRecipe"
-          title="View recipe details"
-        >
-          <i class="fas fa-eye"></i> View
-        </button>
-        
-        <!-- Delete button (only show if showDeleteButton prop is true) -->
-        <button
-          v-if="showDeleteButton"
-          type="button"
-          class="btn btn-danger btn-sm delete-recipe-btn"
-          @click.stop="deleteRecipe"
-          title="Delete recipe"
-        >
-          🗑️
-        </button>
+        <div class="recipe-info">
+          <p class="card-text time-info">
+            <i class="fas fa-clock"></i> {{ recipe.readyInMinutes }} min
+          </p>
+          <p v-if="recipe.spoonacularScore && !isUserRecipesRoute" class="card-text score-info">
+            <i class="fas fa-star"></i> {{ Math.round(recipe.spoonacularScore) }}/100
+          </p>
+        </div>
+        <!-- Action buttons in their own row -->
+        <div class="action-buttons-row">
+          <!-- Like button -->
+          <ActionButton
+            :item-id="recipe.id"
+            action-type="like"
+            :initial-active-state="isLiked"
+            active-emoji="❤️"
+            inactive-emoji="🤍"
+            color="red"
+            size="small"
+            active-tooltip="Remove from liked"
+            inactive-tooltip="Add to liked"
+            add-endpoint="/users/liked"
+            @action-changed="onActionChanged"
+            @click.stop
+          />
+          
+          <!-- Favorite button -->
+          <ActionButton
+            :item-id="recipe.id"
+            action-type="favorite"
+            :initial-active-state="isFavorited"
+            active-emoji="⭐"
+            inactive-emoji="☆"
+            color="yellow"
+            size="small"
+            active-tooltip="Remove from favorites"
+            inactive-tooltip="Add to favorites"
+            add-endpoint="/users/favorites"
+            @action-changed="onActionChanged"
+            @click.stop
+          />
+          
+          <!-- Delete button (only show if showDeleteButton prop is true) -->
+          <button
+            v-if="showDeleteButton"
+            type="button"
+            class="btn btn-danger btn-sm delete-recipe-btn"
+            @click.stop="deleteRecipe"
+            title="Delete recipe"
+          >
+            🗑️
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -454,37 +440,17 @@ export default {
 .card-body {
   cursor: pointer;
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
-.card-body.clickable-area {
-  position: relative;
-}
-
-.card-body.clickable-area::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: transparent;
-  transition: background 0.2s ease-in-out;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.recipe-card:hover .card-body.clickable-area::before {
-  background: rgba(0, 123, 255, 0.02);
-}
-
-.card-title {
-  font-size: 1.2rem;
-  margin-bottom: 0.75rem;
-  color: #2c3e50;
-  font-weight: 600;
-  line-height: 1.3;
-  position: relative;
-  z-index: 2;
+/* Container to push time/score and buttons to bottom */
+.bottom-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .recipe-info {
@@ -581,7 +547,7 @@ export default {
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 0.5rem;
+  margin-top: auto;
   position: relative;
   z-index: 2;
 }

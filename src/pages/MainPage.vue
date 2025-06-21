@@ -296,7 +296,7 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 2rem;
 }
@@ -317,7 +317,7 @@ export default {
 .recipe-section {
   background: #f8f9fa;
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 2rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -336,6 +336,10 @@ export default {
 
 .recipe-list {
   margin-top: 0;
+  
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .load-more-btn {
