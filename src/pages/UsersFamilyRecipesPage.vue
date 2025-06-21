@@ -2,8 +2,8 @@
   <div class="container">
     <h1 class="title">My Family Recipes</h1>
     
-    <!-- Add New Family Recipe Button -->
-    <div class="text-center mb-4">
+    <!-- Add New Family Recipe Button - only show when there are existing recipes -->
+    <div v-if="familyRecipes.length > 0" class="text-center mb-4">
       <button 
         class="btn btn-primary btn-lg"
         @click="showCreateModal = true"
