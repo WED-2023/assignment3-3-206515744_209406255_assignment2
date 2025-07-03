@@ -129,178 +129,167 @@
               </div>
             </div>
 
-            <!-- Ingredients Section -->
+            <!-- Recipe Steps Section -->
             <div class="form-section">
-              <h5><i class="fas fa-list"></i> Ingredients</h5>
-              <div class="ingredients-section">
+              <h5><i class="fas fa-list-ol"></i> Recipe Steps</h5>
+              <div class="steps-section">
                 <div 
-                  v-for="(ingredient, index) in newRecipe.ingredients" 
-                  :key="`ingredient-${index}`" 
-                  class="ingredient-item"
+                  v-for="(step, stepIndex) in newRecipe.steps" 
+                  :key="`step-${stepIndex}`"
+                  class="step-container"
                 >
-                  <div class="row align-items-center">
-                    <div class="col-auto d-flex align-items-center justify-content-center">
-                      <span class="input-group-text me-2">{{ index + 1 }}</span>
-                    </div>
-                    <div class="col-md-4">
-                      <input
-                        v-model="ingredient.name"
-                        type="text"
-                        class="form-control"
-                        :placeholder="index === 0 ? 'Ingredient name (e.g., carrot) *' : 'Ingredient name'"
-                        :required="index === 0"
-                        @blur="validateIngredients"
-                      />
-                    </div>                    <div class="col-md-2">
-                      <input
-                        v-model="ingredient.amount"
-                        type="number"
-                        step="0.1"
-                        class="form-control"
-                        :placeholder="index === 0 ? 'Amount *' : 'Amount'"
-                        :required="index === 0"
-                        @blur="validateIngredients"
-                      />
-                    </div>
-                    <div class="col-md-2">
-                      <input
-                        v-model="ingredient.unit"
-                        type="text"
-                        class="form-control"
-                        :placeholder="index === 0 ? 'Unit *' : 'Unit'"
-                        :required="index === 0"
-                        @blur="validateIngredients"
-                      />
-                    </div>
-                    <div class="col-md-3">
-                      <input
-                        v-model="ingredient.description"
-                        type="text"
-                        class="form-control"
-                        :placeholder="index === 0 ? 'Description (optional)' : ''"
-                      />
-                    </div>
-                    <div class="col-md-1">                      <button
-                        v-if="newRecipe.ingredients.length > 1"
-                        type="button"
-                        class="btn btn-danger btn-sm"
-                        @click="removeIngredient(index)"
-                        title="Remove ingredient"
-                      >
-                        <i class="fas fa-times text-white"></i>
-                      </button>
-                    </div>
+                  <div class="step-header">
+                    <h6 class="step-title">
+                      Step {{ stepIndex + 1 }}
+                    </h6>
+                    <button
+                      v-if="newRecipe.steps.length > 1"
+                      type="button"
+                      class="btn btn-danger btn-sm"
+                      @click="removeStep(stepIndex)"
+                      title="Remove entire step"
+                    >
+                      <i class="fas fa-trash"></i> Remove Step
+                    </button>
                   </div>
-                </div>
-                
-                <button
-                  type="button"
-                  class="btn btn-outline-primary btn-sm mt-2"
-                  @click="addIngredient"
-                >
-                  <i class="fas fa-plus"></i> Add Ingredient
-                </button>
-                
-                <div v-if="errors.ingredients.length > 0" class="invalid-feedback d-block">
-                  <div v-for="error in errors.ingredients" :key="error">{{ error }}</div>
-                </div>
-              </div>
-            </div>
 
-            <!-- Instructions Section -->
-            <div class="form-section">
-              <h5><i class="fas fa-tasks"></i> Instructions</h5>
-              <div class="instructions-section">
-                <div 
-                  v-for="(instruction, index) in newRecipe.instructions" 
-                  :key="`instruction-${index}`"
-                  class="instruction-item"
-                >
-                  <div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text me-2">{{ index + 1 }}</span>
-                    </div>                    <textarea
-                      v-model="newRecipe.instructions[index]"
+                  <!-- Step Ingredients -->
+                  <div class="step-subsection">
+                    <label class="subsection-label">
+                      <i class="fas fa-carrot"></i> Ingredients for this step:
+                    </label>
+                    <div 
+                      v-for="(ingredient, ingredientIndex) in step.ingredients" 
+                      :key="`step-${stepIndex}-ingredient-${ingredientIndex}`" 
+                      class="ingredient-item"
+                    >
+                      <div class="row align-items-center">
+                        <div class="col-md-4">
+                          <input
+                            v-model="ingredient.name"
+                            type="text"
+                            class="form-control"
+                            placeholder="Ingredient name (e.g., carrot)"
+                            @blur="validateSteps"
+                          />
+                        </div>
+                        <div class="col-md-2">
+                          <input
+                            v-model="ingredient.amount"
+                            type="number"
+                            step="0.1"
+                            class="form-control"
+                            placeholder="Amount"
+                            @blur="validateSteps"
+                          />
+                        </div>
+                        <div class="col-md-2">
+                          <input
+                            v-model="ingredient.unit"
+                            type="text"
+                            class="form-control"
+                            placeholder="Unit"
+                            @blur="validateSteps"
+                          />
+                        </div>
+                        <div class="col-md-3">
+                          <input
+                            v-model="ingredient.description"
+                            type="text"
+                            class="form-control"
+                            placeholder="Description (optional)"
+                          />
+                        </div>
+                        <div class="col-md-1">
+                          <button
+                            v-if="step.ingredients.length > 1"
+                            type="button"
+                            class="btn btn-danger btn-sm rounded-circle p-1 ms-2"
+                            @click="removeIngredientFromStep(stepIndex, ingredientIndex)"
+                            title="Remove ingredient"
+                          >
+                            <i class="fas fa-times text-white"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary btn-sm mt-1"
+                      @click="addIngredientToStep(stepIndex)"
+                    >
+                      <i class="fas fa-plus"></i> Add Ingredient
+                    </button>
+                  </div>
+
+                  <!-- Step Equipment -->
+                  <div class="step-subsection">
+                    <label class="subsection-label">
+                      <i class="fas fa-tools"></i> Equipment needed for this step:
+                    </label>
+                    <div 
+                      v-for="(equipment, equipmentIndex) in step.equipment" 
+                      :key="`step-${stepIndex}-equipment-${equipmentIndex}`"
+                      class="equipment-item"
+                    >
+                      <div class="row align-items-center">
+                        <div class="col">
+                          <input
+                            v-model="step.equipment[equipmentIndex]"
+                            type="text"
+                            class="form-control"
+                            placeholder="Equipment (e.g., sauce pan)"
+                            @blur="validateSteps"
+                          />
+                        </div>
+                        <div class="col-auto">
+                          <button
+                            v-if="step.equipment.length > 1"
+                            type="button"
+                            class="btn btn-danger btn-sm rounded-circle p-1 ms-2"
+                            @click="removeEquipmentFromStep(stepIndex, equipmentIndex)"
+                            title="Remove equipment"
+                          >
+                            <i class="fas fa-times text-white"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary btn-sm mt-1"
+                      @click="addEquipmentToStep(stepIndex)"
+                    >
+                      <i class="fas fa-plus"></i> Add Equipment
+                    </button>
+                  </div>
+
+                  <!-- Step Instructions -->
+                  <div class="step-subsection">
+                    <label class="subsection-label">
+                      <i class="fas fa-clipboard-list"></i> Instructions for this step:
+                    </label>
+                    <textarea
+                      v-model="step.instruction"
                       class="form-control"
-                      :placeholder="index === 0 ? `Step ${index + 1} instructions *` : `Step ${index + 1} instructions`"
-                      :required="index === 0"
-                      rows="2"
-                      @blur="validateInstructions"
+                      :placeholder="`Describe what to do in step ${stepIndex + 1}${stepIndex === 0 ? ' *' : ''}`"
+                      :required="stepIndex === 0"
+                      rows="3"
+                      @blur="validateSteps"
                     ></textarea>
-                    <div class="input-group-append">                      <button
-                        v-if="newRecipe.instructions.length > 1"
-                        type="button"
-                        class="btn btn-danger"
-                        @click="removeInstruction(index)"
-                        title="Remove step"
-                      >
-                        <i class="fas fa-times text-white"></i>
-                      </button>
-                    </div>
                   </div>
                 </div>
                 
                 <button
                   type="button"
-                  class="btn btn-outline-primary btn-sm mt-2"
-                  @click="addInstruction"
+                  class="btn btn-primary btn-sm mt-3"
+                  @click="addStep"
                 >
-                  <i class="fas fa-plus"></i> Add Step
+                  <i class="fas fa-plus"></i> Add New Step
                 </button>
                 
-                <div v-if="errors.instructions.length > 0" class="invalid-feedback d-block">
-                  <div v-for="error in errors.instructions" :key="error">{{ error }}</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Equipment Section -->
-            <div class="form-section">
-              <h5><i class="fas fa-tools"></i> Equipment</h5>
-              <div class="equipment-section">
-                <div 
-                  v-for="(equipment, index) in newRecipe.equipment" 
-                  :key="`equipment-${index}`"
-                  class="equipment-item"
-                >
-                  <div class="row align-items-center">
-                    <div class="col-auto d-flex align-items-center justify-content-center">
-                      <span class="input-group-text me-2">{{ index + 1 }}</span>
-                    </div>
-                    <div class="col">
-                      <input
-                        v-model="newRecipe.equipment[index]"
-                        type="text"
-                        class="form-control"
-                        :placeholder="index === 0 ? 'Equipment (e.g., sauce pan) *' : 'Equipment'"
-                        :required="index === 0"
-                        @blur="validateEquipment"
-                      />
-                    </div>
-                    <div class="col-auto">
-                      <button
-                        v-if="newRecipe.equipment.length > 1"
-                        type="button"
-                        class="btn btn-danger"
-                        @click="removeEquipment(index)"
-                        title="Remove equipment"
-                      >
-                        <i class="fas fa-times text-white"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                
-                <button
-                  type="button"
-                  class="btn btn-outline-primary btn-sm mt-2"
-                  @click="addEquipment"
-                >
-                  <i class="fas fa-plus"></i> Add Equipment
-                </button>
-                
-                <div v-if="errors.equipment.length > 0" class="invalid-feedback d-block">
-                  <div v-for="error in errors.equipment" :key="error">{{ error }}</div>
+                <div v-if="errors.steps.length > 0" class="invalid-feedback d-block">
+                  <div v-for="error in errors.steps" :key="error">{{ error }}</div>
                 </div>
               </div>
             </div>
@@ -377,17 +366,21 @@ export default {
         glutenFree: false,
         viewed: true,
         favorite: false,
-        ingredients: [
+        steps: [
           {
-            name: "",
-            amount: null,
-            unit: "",
-            description: ""
+            ingredients: [
+              {
+                name: "",
+                amount: null,
+                unit: "",
+                description: ""
+              }
+            ],
+            equipment: [""],
+            instruction: ""
           }
         ],
-        instructions: [""],
         numberOfPortions: "",
-        equipment: [""],
         summary: ""
       },
       errors: {
@@ -395,9 +388,7 @@ export default {
         image: [],
         readyInMinutes: [],
         numberOfPortions: [],
-        ingredients: [],
-        instructions: [],
-        equipment: []
+        steps: []
       }
     };
   },
@@ -405,8 +396,10 @@ export default {
       return this.newRecipe.title.trim() !== '' &&
              this.newRecipe.readyInMinutes && Number(this.newRecipe.readyInMinutes) > 0 &&
              this.newRecipe.numberOfPortions && Number(this.newRecipe.numberOfPortions) > 0 &&
-             this.newRecipe.ingredients.some(ing => ing.name && ing.name.trim() !== '') &&
-             this.newRecipe.instructions.some(inst => inst.trim() !== '') &&
+             this.newRecipe.steps.some(step => 
+               step.ingredients.some(ing => ing.name && ing.name.trim() !== '') &&
+               step.instruction.trim() !== ''
+             ) &&
              Object.values(this.errors).every(errorArray => errorArray.length === 0);
     }
   },
@@ -434,17 +427,21 @@ export default {
         glutenFree: false,
         viewed: true,
         favorite: false,
-        ingredients: [
+        steps: [
           {
-            name: "",
-            amount: null,
-            unit: "",
-            description: ""
+            ingredients: [
+              {
+                name: "",
+                amount: null,
+                unit: "",
+                description: ""
+              }
+            ],
+            equipment: [""],
+            instruction: ""
           }
         ],
-        instructions: [""],
         numberOfPortions: "",
-        equipment: [""],
         summary: ""
       };
       
@@ -481,32 +478,22 @@ export default {
         this.errors.image.push('Please enter a valid URL');
       }
       
-      this.validateIngredients();
-      this.validateInstructions();
-      this.validateEquipment();
+      this.validateSteps();
     },
 
-    validateIngredients() {
-      this.errors.ingredients = [];
-      const validIngredients = this.newRecipe.ingredients.filter(ing => ing.name && ing.name.trim() !== '');
+    validateSteps() {
+      this.errors.steps = [];
       
-      if (validIngredients.length === 0) {
-        this.errors.ingredients.push('At least one ingredient is required');
-      }
-    },
-
-    validateInstructions() {
-      this.errors.instructions = [];
-      const validInstructions = this.newRecipe.instructions.filter(inst => inst.trim() !== '');
+      // Check if there's at least one step with valid content
+      const validSteps = this.newRecipe.steps.filter(step => {
+        const hasValidIngredient = step.ingredients.some(ing => ing.name && ing.name.trim() !== '');
+        const hasValidInstruction = step.instruction.trim() !== '';
+        return hasValidIngredient && hasValidInstruction;
+      });
       
-      if (validInstructions.length === 0) {
-        this.errors.instructions.push('At least one instruction is required');
+      if (validSteps.length === 0) {
+        this.errors.steps.push('At least one step with ingredients and instructions is required');
       }
-    },
-
-    validateEquipment() {
-      this.errors.equipment = [];
-      // Equipment is optional, so no validation needed
     },
 
     isValidUrl(string) {
@@ -522,8 +509,10 @@ export default {
       if (!this.newRecipe.title.trim()) invalidFields.push('Recipe title');
       if (!this.newRecipe.readyInMinutes || Number(this.newRecipe.readyInMinutes) <= 0) invalidFields.push('Ready time');
       if (!this.newRecipe.numberOfPortions || Number(this.newRecipe.numberOfPortions) <= 0) invalidFields.push('Number of portions');
-      if (!this.newRecipe.ingredients.some(ing => ing.name && ing.name.trim() !== '')) invalidFields.push('At least one ingredient');
-      if (!this.newRecipe.instructions.some(inst => inst.trim() !== '')) invalidFields.push('At least one instruction');
+      if (!this.newRecipe.steps.some(step => 
+        step.ingredients.some(ing => ing.name && ing.name.trim() !== '') &&
+        step.instruction.trim() !== ''
+      )) invalidFields.push('At least one complete step');
       
       return invalidFields;
     },
@@ -538,7 +527,28 @@ export default {
       this.isSubmitting = true;
       
       try {
-        // Prepare data for API
+        // Prepare data for API - flatten steps into separate arrays
+        const allIngredients = [];
+        const allInstructions = [];
+        const allEquipment = [];
+        
+        this.newRecipe.steps.forEach((step) => {
+          // Add ingredients with step context
+          step.ingredients
+            .filter(ing => ing.name && ing.name.trim())
+            .forEach(ing => allIngredients.push(ing));
+          
+          // Add instruction
+          if (step.instruction.trim()) {
+            allInstructions.push(step.instruction.trim());
+          }
+          
+          // Add equipment
+          step.equipment
+            .filter(eq => eq.trim())
+            .forEach(eq => allEquipment.push(eq));
+        });
+
         const recipeData = {
           title: this.newRecipe.title,
           image: this.newRecipe.image || "",
@@ -549,10 +559,10 @@ export default {
           glutenFree: this.newRecipe.glutenFree,
           viewed: this.newRecipe.viewed,
           favorite: this.newRecipe.favorite,
-          ingredients: this.newRecipe.ingredients.filter(ing => ing.name && ing.name.trim()),
-          instructions: this.newRecipe.instructions.filter(inst => inst.trim()),
+          ingredients: allIngredients,
+          instructions: allInstructions,
           numberOfPortions: parseInt(this.newRecipe.numberOfPortions),
-          equipment: this.newRecipe.equipment.filter(eq => eq.trim()),
+          equipment: allEquipment,
           summary: this.newRecipe.summary || ""
         };
 
@@ -588,9 +598,32 @@ export default {
       }
     },
 
-    // Dynamic form methods
-    addIngredient() {
-      this.newRecipe.ingredients.push({
+    // Step management methods
+    addStep() {
+      this.newRecipe.steps.push({
+        ingredients: [
+          {
+            name: "",
+            amount: null,
+            unit: "",
+            description: ""
+          }
+        ],
+        equipment: [""],
+        instruction: ""
+      });
+    },
+
+    removeStep(stepIndex) {
+      if (this.newRecipe.steps.length > 1) {
+        this.newRecipe.steps.splice(stepIndex, 1);
+        this.validateSteps();
+      }
+    },
+
+    // Ingredient management within steps
+    addIngredientToStep(stepIndex) {
+      this.newRecipe.steps[stepIndex].ingredients.push({
         name: "",
         amount: null,
         unit: "",
@@ -598,32 +631,22 @@ export default {
       });
     },
 
-    removeIngredient(index) {
-      if (this.newRecipe.ingredients.length > 1) {
-        this.newRecipe.ingredients.splice(index, 1);
-        this.validateIngredients();
+    removeIngredientFromStep(stepIndex, ingredientIndex) {
+      if (this.newRecipe.steps[stepIndex].ingredients.length > 1) {
+        this.newRecipe.steps[stepIndex].ingredients.splice(ingredientIndex, 1);
+        this.validateSteps();
       }
     },
 
-    addInstruction() {
-      this.newRecipe.instructions.push("");
+    // Equipment management within steps
+    addEquipmentToStep(stepIndex) {
+      this.newRecipe.steps[stepIndex].equipment.push("");
     },
 
-    removeInstruction(index) {
-      if (this.newRecipe.instructions.length > 1) {
-        this.newRecipe.instructions.splice(index, 1);
-        this.validateInstructions();
-      }
-    },
-
-    addEquipment() {
-      this.newRecipe.equipment.push("");
-    },
-
-    removeEquipment(index) {
-      if (this.newRecipe.equipment.length > 1) {
-        this.newRecipe.equipment.splice(index, 1);
-        this.validateEquipment();
+    removeEquipmentFromStep(stepIndex, equipmentIndex) {
+      if (this.newRecipe.steps[stepIndex].equipment.length > 1) {
+        this.newRecipe.steps[stepIndex].equipment.splice(equipmentIndex, 1);
+        this.validateSteps();
       }
     }
   }
@@ -732,6 +755,66 @@ export default {
   border-radius: 0.5rem;
   padding: 1rem;
   background-color: #f8f9fa;
+}
+
+.steps-section {
+  border: 1px solid #e9ecef;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+}
+
+.step-container {
+  border: 2px solid #dee2e6;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.step-container:last-child {
+  margin-bottom: 0;
+}
+
+.step-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.step-title {
+  color: #495057;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.step-title i {
+  color: #007bff;
+}
+
+.step-subsection {
+  margin-bottom: 1.5rem;
+}
+
+.step-subsection:last-child {
+  margin-bottom: 0;
+}
+
+.subsection-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #6c757d;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
 }
 
 .ingredient-item, .instruction-item, .equipment-item {
