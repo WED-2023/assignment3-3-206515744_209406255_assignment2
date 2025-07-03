@@ -200,8 +200,14 @@
         if (!exists) {
           window.store.addToMealPlan({ id, title: this.recipe.title, image: this.recipe.image });
         }
-        // Navigate to preparation
-        this.$router.push({ path: `/recipes/${id}/preparation` });
+        
+        // Navigate to correct preparation route based on current route
+        const isUserRecipe = this.$route.path.includes('/users/my-recipes/');
+        const preparationPath = isUserRecipe 
+          ? `/users/my-recipes/${id}/preparation`
+          : `/recipes/${id}/preparation`;
+          
+        this.$router.push({ path: preparationPath });
       }
     }
   };

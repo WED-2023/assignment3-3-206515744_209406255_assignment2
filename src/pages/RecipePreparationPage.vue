@@ -47,7 +47,14 @@ export default {
     this.loading = true;
     try {
       const id = this.$route.params.recipeId;
-      const res = await window.axios.get(`/recipes/${id}/preparation`);
+      
+      // Determine API endpoint based on route
+      const isUserRecipe = this.$route.path.includes('/users/my-recipes/');
+      const endpoint = isUserRecipe 
+        ? `/users/my-recipes/${id}/preparation`
+        : `/recipes/${id}/preparation`;
+      
+      const res = await window.axios.get(endpoint);
       this.recipe = res.data;
       this.servings = this.recipe.numberOfPortions || 1;
       this.currentStepIndex = 0;
