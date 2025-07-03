@@ -9,7 +9,16 @@
     <div v-else>
       <div class="prep-header mt-3 mb-4 text-center">
         <h1>{{ recipeTitle }}</h1>
-        <img :src="recipe.image" class="center" />
+        <img 
+          v-if="recipe.image" 
+          :src="recipe.image" 
+          class="center" 
+          :alt="recipeTitle"
+        />
+        <div v-else class="center no-image-placeholder">
+          <i class="fas fa-utensils"></i>
+          <p>No image available</p>
+        </div>
       </div>
       <div v-if="!isFamilyRecipe" class="servings-control mb-3 text-center">
         <label for="servings"><strong>Servings:</strong></label>
@@ -118,6 +127,23 @@ export default {
   margin-right: auto;
   max-width: 50%;
 }
+
+.no-image-placeholder {
+  margin: 2rem auto;
+  padding: 3rem;
+  background: linear-gradient(135deg, #42b983 0%, #2c3e50 100%);
+  color: white;
+  text-align: center;
+  border-radius: 10px;
+  max-width: 400px;
+}
+
+.no-image-placeholder i {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
 .alert {
   padding: 0.75rem 1.25rem;
   margin-bottom: 1rem;

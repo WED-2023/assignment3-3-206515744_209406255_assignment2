@@ -239,7 +239,7 @@
   .no-image-placeholder {
     margin: 2rem auto;
     padding: 3rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #42b983 0%, #2c3e50 100%);
     color: white;
     text-align: center;
     border-radius: 10px;

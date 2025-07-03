@@ -9,7 +9,15 @@
         <li v-for="(item, idx) in mealPlan" :key="item.id" class="list-group-item d-flex align-items-center justify-content-between">
           <div class="d-flex flex-column flex-grow-1">
             <div class="d-flex align-items-center mb-2">
-              <img :src="item.image" alt="" class="meal-img me-3" />
+              <img 
+                v-if="item.image" 
+                :src="item.image" 
+                alt="" 
+                class="meal-img me-3" 
+              />
+              <div v-else class="meal-img-placeholder me-3">
+                <i class="fas fa-utensils"></i>
+              </div>
               <router-link :to="{ name: 'recipe', params: { recipeId: item.id } }">{{ item.title }}</router-link>
             </div>
             <ProgressBar
@@ -66,5 +74,17 @@ export default {
   height: 50px;
   object-fit: cover;
   border-radius: 4px;
+}
+
+.meal-img-placeholder {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #42b983 0%, #2c3e50 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 1.2rem;
 }
 </style>
