@@ -1,53 +1,59 @@
 <template>
   <div id="app">
     <div id="nav">
-      <div class="nav-title">Grandma's Recipes</div>
-      <router-link :to="{ name: 'main' }">Main Page</router-link> |
-      <router-link :to="{ name: 'search' }">Search</router-link> |
-      <span v-if="!store.username">
-        Guest:
-        <router-link :to="{ name: 'register' }">Register</router-link> |
-        <router-link :to="{ name: 'login' }">Login</router-link> |
-      </span>
-      <span v-else class="d-inline-flex align-items-center">
-        <div class="dropdown d-inline-block">
-          <a 
-            href="#" 
-            class="dropdown-toggle" 
-            @click.prevent="toggleDropdown"
-            :class="{ active: isDropdownOpen }"
-          >
-            <!-- Profile picture -->
-            <img v-if="store.profilePic" :src="store.profilePic" alt="Profile" class="profile-pic me-2" />
-            {{ store.username }}
-          </a>
-          <div class="dropdown-menu" :class="{ show: isDropdownOpen }">
-            <!-- Profile link -->
-            <router-link class="dropdown-item" :to="{ name: 'userProfile' }" @click="closeDropdown">
-              Profile
-            </router-link>
-            <router-link class="dropdown-item" :to="{ name: 'usersLiked' }" @click="closeDropdown">
-              My Liked
-            </router-link>
-            <router-link class="dropdown-item" :to="{ name: 'usersFavorites' }" @click="closeDropdown">
-              My Favorites
-            </router-link>
-            <router-link class="dropdown-item" :to="{ name: 'usersMyRecipes' }" @click="closeDropdown">
-              My Recipes
-            </router-link>
-            <router-link class="dropdown-item" :to="{ name: 'usersFamilyRecipes' }" @click="closeDropdown">
-              Family Recipes
-            </router-link>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item" @click.prevent="logout">Logout</a>
+      <div class="nav-left">
+        <router-link :to="{ name: 'main' }">Main Page</router-link> |
+        <router-link :to="{ name: 'search' }">Search</router-link> |
+        <span v-if="!store.username" class="guest-links">
+          Guest:
+          <router-link :to="{ name: 'register' }">Register</router-link> |
+          <router-link :to="{ name: 'login' }">Login</router-link>
+        </span>
+        <!-- User controls moved from the right -->
+        <span v-if="store.username" class="d-inline-flex align-items-center">
+          <div class="dropdown d-inline-block">
+            <a
+              href="#"
+              class="dropdown-toggle"
+              @click.prevent="toggleDropdown"
+              :class="{ active: isDropdownOpen }"
+            >
+              <!-- Profile picture -->
+              <img v-if="store.profilePic" :src="store.profilePic" alt="Profile" class="profile-pic me-2" />
+              {{ store.username }}
+            </a>
+            <div class="dropdown-menu" :class="{ show: isDropdownOpen }">
+              <!-- Profile link -->
+              <router-link class="dropdown-item" :to="{ name: 'userProfile' }" @click="closeDropdown">
+                Profile
+              </router-link>
+              <router-link class="dropdown-item" :to="{ name: 'usersLiked' }" @click="closeDropdown">
+                My Liked
+              </router-link>
+              <router-link class="dropdown-item" :to="{ name: 'usersFavorites' }" @click="closeDropdown">
+                My Favorites
+              </router-link>
+              <router-link class="dropdown-item" :to="{ name: 'usersMyRecipes' }" @click="closeDropdown">
+                My Recipes
+              </router-link>
+              <router-link class="dropdown-item" :to="{ name: 'usersFamilyRecipes' }" @click="closeDropdown">
+                Family Recipes
+              </router-link>
+              <div class="dropdown-divider"></div>
+              <a href="#" class="dropdown-item" @click.prevent="logout">Logout</a>
+            </div>
           </div>
-        </div>
-        <!-- Meal plan icon -->
-        <span v-if="store.username" class="nav-separator">|</span>
-        <router-link v-if="store.username" :to="{ name: 'mealPlan' }" class="nav-icon me-2">
-          🍽️<span v-if="store.mealPlan.length" class="badge bg-danger ms-1">{{ store.mealPlan.length }}</span>
-        </router-link>
-      </span>
+          <span class="nav-separator">|</span>
+          <!-- Meal plan icon -->
+          <router-link v-if="store.username" :to="{ name: 'mealPlan' }" class="nav-icon me-2">
+            🍽️<span v-if="store.mealPlan.length" class="badge bg-danger ms-1">{{ store.mealPlan.length }}</span>
+          </router-link>
+        </span>
+      </div>
+      <div class="nav-title">Grandma's Recipes</div>
+      <div class="nav-right">
+        <!-- This section is now empty -->
+      </div>
     </div>
     <router-view />
   </div>
@@ -151,25 +157,41 @@ export default {
 }
 
 #nav {
-  display: flex;
-  justify-content: flex-start;      // ← align all items to the left
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 1rem;                         // ← uniform spacing between buttons
+  gap: 1rem;
   background: linear-gradient(135deg, #42b983 0%, #2c3e50 100%);
   padding: 0.75rem 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   border-radius: 0 0 8px 8px;
-  position: relative;              // for positioning title
+}
+
+.nav-left,
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap; /* Allow items within left/right to wrap */
+}
+
+.nav-right {
+  justify-content: flex-end;
+}
+
+.guest-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem; /* Smaller gap for guest links */
 }
 
 /* Centered site title in navbar */
 .nav-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  justify-self: center;
   font-size: 1.5rem;
   font-weight: bold;
   color: #fff;
+  flex-shrink: 0;
 }
 
 #nav a,
