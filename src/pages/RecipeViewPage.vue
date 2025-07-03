@@ -4,10 +4,18 @@
         <p>Loading recipe...</p>
       </div>
       
-      <div v-if="recipe && !loading">
-        <div class="recipe-header mt-3 mb-4">
-          <h1>{{ recipe.title }}</h1>
-          <img :src="recipe.image" class="center" />
+      <div v-if="recipe && !loading">      <div class="recipe-header mt-3 mb-4">
+        <h1>{{ recipe.title }}</h1>
+        <img 
+          v-if="recipe.image" 
+          :src="recipe.image" 
+          class="center" 
+          :alt="recipe.title"
+        />
+        <div v-else class="center no-image-placeholder">
+          <i class="fas fa-utensils"></i>
+          <p>No image available</p>
+        </div>
           
           <!-- Dietary badges - styled same as preview -->
           <div class="diet-info mt-2">
@@ -226,6 +234,22 @@
     margin-left: auto;
     margin-right: auto;
     width: 50%;
+  }
+
+  .no-image-placeholder {
+    margin: 2rem auto;
+    padding: 3rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-align: center;
+    border-radius: 10px;
+    max-width: 400px;
+  }
+
+  .no-image-placeholder i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    display: block;
   }
 
   .view-toggle {

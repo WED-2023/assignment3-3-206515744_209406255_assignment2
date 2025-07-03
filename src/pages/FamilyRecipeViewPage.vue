@@ -1,100 +1,124 @@
 <template>
   <div class="container">
     <div v-if="loading" class="text-center mt-4">
-      <div class="spinner-border" role="status">
-        <span class="sr-only">Loading...</span>
-      </div>
-      <p class="mt-2">Loading family recipe...</p>
+      <p>Loading family recipe...</p>
     </div>
     
     <div v-if="recipe && !loading">
       <div class="recipe-header mt-3 mb-4">
-        <div class="family-recipe-badge">
-          <i class="fas fa-heart"></i> Family Recipe
-        </div>
-        
-        <h1>{{ recipe.familyMember }}'s Special Recipe</h1>
-        
-        <div class="occasion-info">
-          <span class="badge badge-primary badge-lg">{{ recipe.occasion }}</span>
-        </div>
-        
+        <h1>{{ recipe.familyMember }}'s {{ recipe.occasion }} Recipe</h1>
         <img 
           v-if="recipe.image" 
           :src="recipe.image" 
-          class="recipe-image" 
+          class="center" 
           :alt="`${recipe.familyMember}'s recipe`"
         />
-        <div v-else class="no-image-placeholder">
+        <div v-else class="center no-image-placeholder">
           <i class="fas fa-utensils"></i>
           <p>No image available</p>
+        </div>
+        
+        <!-- Family recipe badges -->
+        <div class="diet-info mt-2">
+          <span class="badge badge-primary">👨‍👩‍👧‍👦 Family Recipe</span>
+          <span class="badge badge-success">{{ recipe.occasion }}</span>
+        </div>
+        
+        <!-- Toggle for full/basic view -->
+        <div class="view-toggle mt-3 text-center">
+          <div class="form-check form-check-inline">
+            <input 
+              class="form-check-input" 
+              type="radio" 
+              name="viewType" 
+              id="basicView" 
+              value="basic"
+              v-model="viewType"
+            >
+            <label class="form-check-label" for="basicView">
+              Basic View
+            </label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input 
+              class="form-check-input" 
+              type="radio" 
+              name="viewType" 
+              id="fullView" 
+              value="full"
+              v-model="viewType"
+            >
+            <label class="form-check-label" for="fullView">
+              Full Details
+            </label>
+          </div>
         </div>
       </div>
       
       <div class="recipe-body">
-        <div class="row">
-          <div class="col-md-6">
-            <!-- Ingredients section -->
-            <div class="recipe-section">
-              <h3><i class="fas fa-list"></i> Ingredients</h3>
+        <div class="wrapper">
+          <div class="wrapped">
+            <!-- Basic view information - always shown -->
+            <div class="mb-3">
+              <div><strong>Family Member:</strong> {{ recipe.familyMember }}</div>
+              <div><strong>Special Occasion:</strong> {{ recipe.occasion }}</div>
+            </div>
+            
+            <!-- Ingredients section - only show in full view -->
+            <div v-if="viewType === 'full'" class="ingredients-section">
+              <h4>Ingredients:</h4>
               <div v-if="!recipe.ingredients || recipe.ingredients.length === 0">
-                <p class="text-muted">No ingredients listed</p>
+                <p>No ingredients available</p>
               </div>
-              <ul v-else class="ingredients-list">
+              <ul v-else>
                 <li v-for="(ingredient, index) in recipe.ingredients" :key="index">
-                  {{ ingredient }}
+                  <span v-if="typeof ingredient === 'object'">
+                    {{ ingredient.amount }} {{ ingredient.unit }} {{ ingredient.name }}
+                    <span v-if="ingredient.description"> - {{ ingredient.description }}</span>
+                  </span>
+                  <span v-else>
+                    {{ ingredient }}
+                  </span>
                 </li>
               </ul>
             </div>
           </div>
           
-          <div class="col-md-6">
-            <!-- Instructions section -->
-            <div class="recipe-section">
-              <h3><i class="fas fa-tasks"></i> Instructions</h3>
+          <div class="wrapped">
+            <!-- Instructions section - only show in full view -->
+            <div v-if="viewType === 'full'" class="instructions-section">
+              <h4>Instructions:</h4>
               <div v-if="!recipe.instructions || recipe.instructions.length === 0">
-                <p class="text-muted">No instructions provided</p>
+                <p>No instructions available</p>
               </div>
-              <ol v-else class="instructions-list">
+              <ol v-else>
                 <li v-for="(instruction, index) in recipe.instructions" :key="index">
                   {{ instruction }}
                 </li>
               </ol>
             </div>
-          </div>
-        </div>
-        
-        <!-- Family Recipe Info -->
-        <div class="family-info-section mt-4">
-          <div class="card">
-            <div class="card-body">
-              <h4><i class="fas fa-users"></i> About This Recipe</h4>
-              <p class="mb-2">
-                <strong>Family Member:</strong> {{ recipe.familyMember }}
-              </p>
-              <p class="mb-0">
-                <strong>Special Occasion:</strong> {{ recipe.occasion }}
-              </p>
+            
+            <!-- Equipment section - only show in full view -->
+            <div v-if="viewType === 'full' && recipe.equipment && recipe.equipment.length > 0" class="equipment-section mt-3">
+              <h4>Equipment needed:</h4>
+              <ul>
+                <li v-for="(item, index) in recipe.equipment" :key="index">
+                  {{ item }}
+                </li>
+              </ul>
             </div>
           </div>
         </div>
         
-        <!-- Action buttons -->
-        <div class="action-section mt-4 text-center">
-          <router-link 
-            :to="{ name: 'usersFamilyRecipes' }" 
-            class="btn btn-secondary me-3"
-          >
-            <i class="fas fa-arrow-left"></i> Back to Family Recipes
-          </router-link>
-          
-          <button 
-            class="btn btn-outline-primary"
-            @click="printRecipe"
-          >
-            <i class="fas fa-print"></i> Print Recipe
-          </button>
+        <!-- Message for basic view -->
+        <div v-if="viewType === 'basic'" class="basic-view-message mt-4 text-center">
+          <p class="text-muted">Switch to "Full Details" to see ingredients, instructions, and equipment details.</p>
         </div>
+      </div>
+      
+      <!-- Prepare button -->
+      <div class="text-center mb-4">
+        <button class="btn btn-primary" @click="goToPreparation">Prepare this recipe</button>
       </div>
     </div>
 
@@ -112,7 +136,8 @@ export default {
     return {
       recipe: null,
       loading: false,
-      errorMessage: ""
+      errorMessage: "",
+      viewType: "basic"
     };
   },
   async created() {
@@ -177,90 +202,38 @@ export default {
       }
     },
     
-    printRecipe() {
-      const printWindow = window.open('', '_blank');
-      const recipeHtml = `
-        <html>
-          <head>
-            <title>${this.recipe.familyMember}'s ${this.recipe.occasion} Recipe</title>
-            <style>
-              body { font-family: Arial, sans-serif; margin: 20px; }
-              h1 { color: #333; border-bottom: 2px solid #333; padding-bottom: 10px; }
-              h2 { color: #666; margin-top: 20px; }
-              ul, ol { margin: 10px 0; padding-left: 20px; }
-              li { margin: 5px 0; }
-              .occasion { background: #007bff; color: white; padding: 5px 10px; border-radius: 5px; display: inline-block; }
-              .family-info { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; }
-            </style>
-          </head>
-          <body>
-            <h1>${this.recipe.familyMember}'s Special Recipe</h1>
-            <p class="occasion">${this.recipe.occasion}</p>
-            
-            <h2>Ingredients:</h2>
-            <ul>
-              ${this.recipe.ingredients?.map(ing => `<li>${ing}</li>`).join('') || '<li>No ingredients listed</li>'}
-            </ul>
-            
-            <h2>Instructions:</h2>
-            <ol>
-              ${this.recipe.instructions?.map(inst => `<li>${inst}</li>`).join('') || '<li>No instructions provided</li>'}
-            </ol>
-            
-            <div class="family-info">
-              <strong>Family Member:</strong> ${this.recipe.familyMember}<br>
-              <strong>Special Occasion:</strong> ${this.recipe.occasion}
-            </div>
-          </body>
-        </html>
-      `;
+    goToPreparation() {
+      const id = this.recipe.id;
+      // Only add if not already in meal plan
+      const exists = window.store.mealPlan.some(r => r.id === id);
+      if (!exists) {
+        window.store.addToMealPlan({ 
+          id, 
+          title: `${this.recipe.familyMember}'s ${this.recipe.occasion} Recipe`, 
+          image: this.recipe.image || '' 
+        });
+      }
       
-      printWindow.document.write(recipeHtml);
-      printWindow.document.close();
-      printWindow.print();
+      // Navigate to family recipe preparation route
+      this.$router.push({ path: `/users/family-recipes/${id}/preparation` });
     }
   }
 };
 </script>
 
 <style scoped>
-.recipe-header {
-  text-align: center;
-  margin-bottom: 2rem;
+.wrapper {
+  display: flex;
+  gap: 2rem;
 }
-
-.family-recipe-badge {
-  display: inline-block;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 25px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
+.wrapped {
+  width: 50%;
 }
-
-.family-recipe-badge i {
-  margin-right: 0.5rem;
-}
-
-.occasion-info {
-  margin: 1rem 0;
-}
-
-.badge-lg {
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-}
-
-.recipe-image {
+.center {
   display: block;
-  margin: 2rem auto;
-  max-width: 100%;
-  height: auto;
-  max-height: 400px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
 }
 
 .no-image-placeholder {
@@ -279,63 +252,46 @@ export default {
   display: block;
 }
 
-.recipe-section {
+.view-toggle {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  margin: 1rem auto;
+  max-width: 300px;
+}
+
+.form-check-inline {
+  margin-right: 2rem;
+}
+
+.form-check-input {
+  margin-right: 0.5rem;
+}
+
+.ingredients-section, .instructions-section, .equipment-section {
   margin-bottom: 2rem;
-  padding: 1.5rem;
+}
+
+.basic-view-message {
+  padding: 2rem;
   background-color: #f8f9fa;
-  border-radius: 10px;
-  border-left: 4px solid #007bff;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
 }
 
-.recipe-section h3 {
-  color: #333;
+/* Dietary badges styling (same as preview) */
+.diet-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem;
   margin-bottom: 1rem;
-  font-size: 1.5rem;
-}
-
-.recipe-section h3 i {
-  margin-right: 0.5rem;
-  color: #007bff;
-}
-
-.ingredients-list, .instructions-list {
-  margin: 0;
-  padding-left: 1.5rem;
-}
-
-.ingredients-list li, .instructions-list li {
-  margin-bottom: 0.5rem;
-  line-height: 1.6;
-}
-
-.family-info-section .card {
-  border: none;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  border-radius: 10px;
-}
-
-.family-info-section .card-body {
-  padding: 1.5rem;
-}
-
-.family-info-section h4 {
-  color: #333;
-  margin-bottom: 1rem;
-}
-
-.family-info-section h4 i {
-  margin-right: 0.5rem;
-  color: #28a745;
-}
-
-.action-section {
-  padding: 2rem 0;
-  border-top: 1px solid #e9ecef;
 }
 
 .badge {
   display: inline-block;
-  padding: 0.375em 0.75em;
+  padding: 0.25em 0.5em;
   font-size: 0.75em;
   font-weight: 700;
   line-height: 1;
@@ -350,24 +306,35 @@ export default {
   background-color: #0d6efd;
 }
 
-.spinner-border {
-  width: 3rem;
-  height: 3rem;
+.badge-success {
+  color: #fff;
+  background-color: #28a745;
 }
 
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+.badge-warning {
+  color: #212529;
+  background-color: #ffc107;
 }
 
-.me-3 {
-  margin-right: 1rem;
+.badge-info {
+  color: #fff;
+  background-color: #17a2b8;
+}
+
+.alert {
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+}
+
+.alert-danger {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+.text-muted {
+  color: #6c757d;
 }
 </style>

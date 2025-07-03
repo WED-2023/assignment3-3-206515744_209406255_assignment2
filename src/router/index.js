@@ -67,6 +67,15 @@ const routes = [
     },
   },
   {
+    path: "/users/family-recipes/:recipeId/preparation",
+    name: "familyRecipePreparation",
+    component: RecipePreparation,
+    beforeEnter: (to, from, next) => {
+      if (store.username) next();
+      else next({ name: "login" });
+    },
+  },
+  {
     path: "/meal-plan",
     name: "mealPlan",
     component: MealPlanPage,

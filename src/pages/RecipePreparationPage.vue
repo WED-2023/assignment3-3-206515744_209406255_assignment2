@@ -8,10 +8,10 @@
     </div>
     <div v-else>
       <div class="prep-header mt-3 mb-4 text-center">
-        <h1>{{ recipe.title }}</h1>
+        <h1>{{ recipeTitle }}</h1>
         <img :src="recipe.image" class="center" />
       </div>
-      <div class="servings-control mb-3 text-center">
+      <div v-if="!isFamilyRecipe" class="servings-control mb-3 text-center">
         <label for="servings"><strong>Servings:</strong></label>
         <input type="number" id="servings" v-model.number="servings" min="1" class="form-control d-inline-block ml-2" style="width: 80px;" />
       </div>
@@ -50,13 +50,20 @@ export default {
       
       // Determine API endpoint based on route
       const isUserRecipe = this.$route.path.includes('/users/my-recipes/');
-      const endpoint = isUserRecipe 
-        ? `/users/my-recipes/${id}/preparation`
-        : `/recipes/${id}/preparation`;
+      const isFamilyRecipe = this.$route.path.includes('/users/family-recipes/');
+      
+      let endpoint;
+      if (isUserRecipe) {
+        endpoint = `/users/my-recipes/${id}/preparation`;
+      } else if (isFamilyRecipe) {
+        endpoint = `/users/family-recipes/${id}/preparation`;
+      } else {
+        endpoint = `/recipes/${id}/preparation`;
+      }
       
       const res = await window.axios.get(endpoint);
       this.recipe = res.data;
-      this.servings = this.recipe.numberOfPortions || 1;
+      this.servings = this.recipe.numberOfPortions || this.recipe.servings || 1;
       this.currentStepIndex = 0;
       // initialize meal plan steps in store
       window.store.initMealPlanSteps(this.recipe.id, this.recipe.preparationSteps.length);
@@ -69,6 +76,15 @@ export default {
   computed: {
     entry() {
       return window.store.mealPlan.find(r => r.id === this.recipe.id) || { completedSteps: [], totalSteps: 0 };
+    },
+    isFamilyRecipe() {
+      return this.$route.path.includes('/users/family-recipes/');
+    },
+    recipeTitle() {
+      if (this.isFamilyRecipe && this.recipe.familyMember && this.recipe.occasion) {
+        return `${this.recipe.familyMember}'s ${this.recipe.occasion} Recipe`;
+      }
+      return this.recipe.title || 'Recipe';
     }
   },
   methods: {
