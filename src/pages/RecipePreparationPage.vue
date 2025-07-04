@@ -30,6 +30,7 @@
         :step="recipe.preparationSteps[currentStepIndex]"
         :current="currentStepIndex + 1"
         :total="recipe.preparationSteps.length"
+        :servings-ratio="servingsRatio"
         @prev="prevStep"
         @next="nextStep"
         @toggleComplete="toggleCompleteStep"
@@ -94,6 +95,11 @@ export default {
         return `${this.recipe.familyMember}'s ${this.recipe.occasion} Recipe`;
       }
       return this.recipe.title || 'Recipe';
+    },
+    servingsRatio() {
+      if (!this.recipe) return 1;
+      const originalServings = this.recipe.numberOfPortions || this.recipe.servings || 1;
+      return this.servings / originalServings;
     }
   },
   methods: {

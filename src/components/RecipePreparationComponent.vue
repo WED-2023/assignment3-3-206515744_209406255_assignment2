@@ -51,13 +51,15 @@ export default {
     step: { type: Object, required: true },
     current: { type: Number, required: true },
     total: { type: Number, required: true },
-    completed: { type: Boolean, default: false }
+    completed: { type: Boolean, default: false },
+    servingsRatio: { type: Number, default: 1 }
   },
   methods: {
     formatAmount(amount) {
       if (amount == null) return '';
-      // amount is already per-step base amount
-      return amount;
+      // Apply servings ratio to scale the amount
+      const scaledAmount = amount * this.servingsRatio;
+      return Math.round(scaledAmount * 100) / 100;
     }
   }
 };
