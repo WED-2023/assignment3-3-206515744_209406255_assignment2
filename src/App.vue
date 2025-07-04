@@ -148,22 +148,51 @@ export default {
 <style lang="scss">
 @import "@/scss/form-style.scss";
 
+/* Global Background Styles */
+body {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-fonts;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
   min-height: 100vh;
 }
 
+/* Card-based layout for main containers */
+.container {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 2rem;
+  margin: 2rem auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Special styling for modals to maintain their appearance */
+.modal .container {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  border: none;
+}
+
+/* Navbar styles */
 #nav {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 1rem;
   background: linear-gradient(135deg, #42b983 0%, #2c3e50 100%);
+  margin: 0;
+  border-radius: 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 0.75rem 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   border-radius: 0 0 8px 8px;
 }
 
@@ -273,5 +302,43 @@ export default {
 .nav-separator {
   padding: 0 0.5rem;
   vertical-align: middle;  // ensure it's centered vertically
+}
+
+/* Modal enhancements for new background */
+.modal.fade.show {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background: rgba(255, 255, 255, 0.98);
+  border: none;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.modal-header {
+  background: linear-gradient(135deg, #42b983 0%, #2c3e50 100%);
+  color: white;
+  border-bottom: none;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.modal-header h2 {
+  color: white;
+  margin-bottom: 0;
+}
+
+.modal-header .text-muted {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.btn-close {
+  color: white;
+  opacity: 0.8;
+}
+
+.btn-close:hover {
+  opacity: 1;
 }
 </style>

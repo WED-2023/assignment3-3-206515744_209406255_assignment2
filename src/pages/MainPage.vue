@@ -306,8 +306,10 @@ export default {
 
 .title {
   text-align: center;
-  margin-bottom: 2rem;
-  color: #333;
+  margin-bottom: 3rem;
+  color: #2c3e50;
+  font-weight: 700;
+  font-size: 2.5rem;
 }
 
 .main-content {
@@ -318,10 +320,18 @@ export default {
 }
 
 .recipe-section {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 15px;
+  padding: 2.5rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.recipe-section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
 }
 
 .section-header {
@@ -333,8 +343,9 @@ export default {
 
 .section-header h2 {
   margin: 0;
-  color: #333;
+  color: #2c3e50;
   font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .recipe-list {

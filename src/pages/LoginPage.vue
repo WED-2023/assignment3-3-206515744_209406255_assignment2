@@ -170,8 +170,43 @@ export default {
 <style scoped>
 .login-page {
   max-width: 400px;
-  margin: auto;
-  padding: 2rem;
+  margin: 2rem auto;
+  padding: 3rem 2.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.login-page h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Ensure form field hints are visible with new card styling */
+.login-page .form-group {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 2rem; /* Add more space for hints */
+}
+
+.login-page .input-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+.login-page .validation-hint {
+  background-color: rgba(227, 242, 253, 0.98);
+  backdrop-filter: blur(5px);
+  border: 1px solid #90caf9;
+  z-index: 1000 !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  position: relative !important; /* Changed to relative */
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .mt-3 {

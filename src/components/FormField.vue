@@ -142,11 +142,13 @@ export default {
 
 <style scoped>
 .form-group {
-  margin-bottom: 1rem;
+  position: relative;
+  margin-bottom: 1.5rem;
 }
 
 .input-wrapper {
   position: relative;
+  z-index: 1;
 }
 
 .form-label {
@@ -187,8 +189,8 @@ export default {
 }
 
 .validation-hint {
-  position: absolute;
-  top: 100%;
+  position: relative;
+  top: 0;
   left: 0;
   right: 0;
   background-color: #e3f2fd;
@@ -196,9 +198,10 @@ export default {
   border-radius: 0.25rem;
   padding: 0.5rem;
   font-size: 0.875rem;
-  margin-top: 0.25rem;
-  z-index: 10;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .validation-hint strong {

@@ -903,6 +903,29 @@ export default {
   transform: scale(1.1);
 }
 
+/* Ensure form field hints are visible with new card styling */
+.modal-body .form-group {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 2rem;
+}
+
+.modal-body .input-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+.modal-body .validation-hint {
+  background-color: rgba(227, 242, 253, 0.98);
+  backdrop-filter: blur(5px);
+  border: 1px solid #90caf9;
+  z-index: 1000 !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  position: relative !important;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
