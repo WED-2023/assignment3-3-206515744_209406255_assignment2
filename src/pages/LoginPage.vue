@@ -1,33 +1,38 @@
 <template>
-  <div class="login-page">
-    <h1>Login</h1>
-    <form @submit.prevent="handleSubmit" novalidate>
-      <FormField
-        v-model="state.username"
-        label="Username"
-        name="username"
-        type="text"
-        autocomplete="username"
-        :required="true"
-        :has-error="v$.username.$error"
-        :errors="['Username is required.']"
-        :requirements="['Required field']"
-      />
+  <div class="login-page fade-in">
+    <h1 class="fade-in-down">Login</h1>
+    <form @submit.prevent="handleSubmit" novalidate class="slide-in-up">
+      <div class="fade-in-up-delayed">
+        <FormField
+          v-model="state.username"
+          label="Username"
+          name="username"
+          type="text"
+          autocomplete="username"
+          :required="true"
+          :has-error="v$.username.$error"
+          :errors="['Username is required.']"
+          :requirements="['Required field']"
+        />
+      </div>
 
-      <FormField
-        v-model="state.password"
-        label="Password"
-        name="password"
-        type="password"
-        autocomplete="current-password"
-        :required="true"
-        :has-error="v$.password.$error"
-        :errors="['Password is required.']"
-        :requirements="['Required field']"
-      />
+      <div class="fade-in-up-delayed" style="animation-delay: 0.2s;">
+        <FormField
+          v-model="state.password"
+          label="Password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          :required="true"
+          :has-error="v$.password.$error"
+          :errors="['Password is required.']"
+          :requirements="['Required field']"
+        />
+      </div>
 
-      <SubmitButton
-        :is-loading="isSubmitting"
+      <div class="slide-in-up" style="animation-delay: 0.4s;">
+        <SubmitButton
+          :is-loading="isSubmitting"
         :is-form-valid="isFormValid"
         default-text="Login"
         loading-text="Logging in..."
@@ -35,12 +40,13 @@
         :tooltip-fields="missingRequiredFields"
         tooltip-title="Form incomplete"
       />
+      </div>
 
       <!-- Register Link -->
-      <div class="text-center mt-3">
+      <div class="text-center mt-3 slide-in-up" style="animation-delay: 0.6s;">
         <p class="mb-0">
           Don't have an account? 
-          <router-link to="/register" class="link-primary">Register here</router-link>
+          <router-link to="/register" class="link-primary hover-scale">Register here</router-link>
         </p>
       </div>
     </form>
@@ -188,5 +194,75 @@ export default {
 .link-primary:hover {
   color: #0b5ed7;
   text-decoration: underline;
+}
+
+/* Animation classes */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.8s ease-in-out forwards;
+}
+
+.fade-in-down {
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: fadeInDown 1s ease-out forwards;
+}
+
+.fade-in-up-delayed {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.slide-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: slideInUp 0.8s ease-out forwards;
+}
+
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

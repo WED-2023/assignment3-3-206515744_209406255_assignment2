@@ -1,24 +1,24 @@
 <template>
   <!-- Modal -->
-  <div v-if="show" class="modal fade show d-block" tabindex="-1" role="dialog" aria-labelledby="newFamilyRecipeModalLabel">
-    <div class="modal-dialog modal-xl" role="document">
+  <div v-if="show" class="modal fade show d-block fade-in" tabindex="-1" role="dialog" aria-labelledby="newFamilyRecipeModalLabel">
+    <div class="modal-dialog modal-xl slide-in-up" role="document">
       <div class="modal-content">
         <!-- Modal Header -->
-        <div class="modal-header">
+        <div class="modal-header fade-in-down">
           <div class="modal-title-container">
             <h2 id="newFamilyRecipeModalLabel">Create New Family Recipe</h2>
-            <p class="text-muted mb-0">Share a treasured family recipe</p>
+            <p class="text-muted mb-0">Create and share your family recipe</p>
           </div>
-          <button type="button" class="btn-close" @click="closeModal" aria-label="Close">
+          <button type="button" class="btn-close hover-scale" @click="closeModal" aria-label="Close">
             <i class="fas fa-times"></i>
           </button>
         </div>
         
         <!-- Modal Body -->
-        <div class="modal-body">
+        <div class="modal-body slide-in-up">
           <form @submit.prevent="submitRecipe">
             <!-- Basic Information Section -->
-            <div class="form-section">
+            <div class="form-section fade-in-up-delayed">
               <h5><i class="fas fa-info-circle"></i> Basic Information</h5>
               
               <FormField
@@ -729,5 +729,75 @@ export default {
 .ingredient-item .row,
 .equipment-item .row {
   --bs-gutter-x: 0;
+}
+
+/* Animation classes */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.8s ease-in-out forwards;
+}
+
+.fade-in-down {
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: fadeInDown 1s ease-out forwards;
+}
+
+.fade-in-up-delayed {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease-out 0.2s forwards;
+}
+
+.slide-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: slideInUp 0.8s ease-out forwards;
+}
+
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

@@ -1,27 +1,29 @@
 <template>
-  <div class="container">
-    <h1 class="title">Search Page</h1>
+  <div class="container fade-in">
+    <h1 class="title fade-in-down">Search Page</h1>
     
-    <div class="search-form">
+    <div class="search-form slide-in-up">
       <form @submit.prevent="onSearch">
         <!-- Main search field -->
-        <FormField
-          label="Search Recipes:"
-          name="query"
-          type="text"
-          placeholder="Enter recipe name, ingredients, or keywords..."
-          v-model="form.query"
-          :required="true"
-          :requirements="['Required field']"
-          autocomplete="on"
-        />
+        <div class="fade-in-up-delayed">
+          <FormField
+            label="Search Recipes:"
+            name="query"
+            type="text"
+            placeholder="Enter recipe name, ingredients, or keywords..."
+            v-model="form.query"
+            :required="true"
+            :requirements="['Required field']"
+            autocomplete="on"
+          />
+        </div>
 
         <!-- Advanced filters toggle -->
-        <div class="advanced-toggle">
+        <div class="advanced-toggle slide-in-left">
           <button 
             type="button" 
             @click="showAdvanced = !showAdvanced"
-            class="btn btn-link"
+            class="btn btn-link hover-scale"
           >
             <i class="fas fa-filter"></i>
             {{ showAdvanced ? 'Hide' : 'Show' }} Advanced Filters
@@ -30,7 +32,7 @@
         </div>
 
         <!-- Advanced filters (collapsible) -->
-        <div v-if="showAdvanced" class="advanced-filters">
+        <div v-if="showAdvanced" class="advanced-filters slide-in-down">
           <div class="row">
             <div class="col-md-6">
               <!-- Number of results as radio buttons -->
@@ -187,26 +189,31 @@
           </div>
         </div>
         
-        <SubmitButton
-          :is-loading="loading"
-          :is-form-valid="!!form.query.trim()"
-          default-text="Search"
-          loading-text="Searching..."
-          variant="btn-primary"
-          :tooltip-fields="form.query.trim() ? [] : ['Search query is required']"
-          tooltip-title="Form incomplete"
-        />
+        <div class="slide-in-right">
+          <SubmitButton
+            :is-loading="loading"
+            :is-form-valid="!!form.query.trim()"
+            default-text="Search"
+            loading-text="Searching..."
+            variant="btn-primary"
+            :tooltip-fields="form.query.trim() ? [] : ['Search query is required']"
+            tooltip-title="Form incomplete"
+          />
+        </div>
       </form>
     </div>
 
     <!-- Loading state -->
-    <div v-if="loading" class="text-center mt-4">
-      <p>Searching...</p>
+    <div v-if="loading" class="text-center mt-4 pulse">
+      <div class="loading-animation">
+        <div class="spinner"></div>
+        <p class="pulse-text">Searching...</p>
+      </div>
     </div>
 
     <!-- Search results -->
-    <div v-if="searchResults.length > 0 && !loading" class="search-results mt-4">
-      <h3>Search Results ({{ searchResults.length }} found)</h3>
+    <div v-if="searchResults.length > 0 && !loading" class="search-results mt-4 fade-in-up-delayed">
+      <h3 class="slide-in-left">Search Results ({{ searchResults.length }} found)</h3>
       <RecipePreviewList 
         :recipes="searchResults" 
         title="" 
@@ -215,7 +222,7 @@
     </div>
 
     <!-- No results message -->
-    <div v-if="hasSearched && searchResults.length === 0 && !loading && !errorMessage" class="text-center mt-4">
+    <div v-if="hasSearched && searchResults.length === 0 && !loading && !errorMessage" class="text-center mt-4 slide-in-up">
       <div class="alert alert-info">
         <h4>No recipes found</h4>
         <p>No recipes found for "{{ lastSearchQuery }}"{{ getSearchCriteriaText() }}.</p>
@@ -705,6 +712,171 @@ export default {
 .title {
   text-align: center;
   margin-bottom: 2rem;
-  color: #333;
+}
+
+/* Animation classes */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.8s ease-in-out forwards;
+}
+
+.fade-in-down {
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: fadeInDown 1s ease-out forwards;
+}
+
+.fade-in-up-delayed {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease-out 0.4s forwards;
+}
+
+.slide-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: slideInUp 0.8s ease-out forwards;
+}
+
+.slide-in-left {
+  opacity: 0;
+  transform: translateX(-30px);
+  animation: slideInLeft 0.8s ease-out 0.2s forwards;
+}
+
+.slide-in-right {
+  opacity: 0;
+  transform: translateX(30px);
+  animation: slideInRight 0.8s ease-out 0.6s forwards;
+}
+
+.slide-in-down {
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: slideInDown 0.8s ease-out 0.3s forwards;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+.pulse-text {
+  animation: pulseText 2s ease-in-out infinite;
+}
+
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.loading-animation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #42b983;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes pulseText {
+  0%, 100% { 
+    color: inherit;
+    transform: scale(1);
+  }
+  50% { 
+    color: #42b983;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>

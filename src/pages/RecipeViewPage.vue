@@ -1,31 +1,36 @@
 <template>
-    <div class="container">
-      <div v-if="loading" class="text-center mt-4">
-        <p>Loading recipe...</p>
+    <div class="container fade-in">
+      <div v-if="loading" class="text-center mt-4 pulse">
+        <div class="loading-animation">
+          <div class="spinner"></div>
+          <p class="pulse-text">Loading recipe...</p>
+        </div>
       </div>
       
-      <div v-if="recipe && !loading">      <div class="recipe-header mt-3 mb-4">
-        <h1>{{ recipe.title }}</h1>
-        <img 
-          v-if="recipe.image" 
-          :src="recipe.image" 
-          class="center" 
-          :alt="recipe.title"
-        />
-        <div v-else class="center no-image-placeholder">
-          <i class="fas fa-utensils"></i>
-          <p>No image available</p>
+      <div v-if="recipe && !loading" class="slide-in-up">      <div class="recipe-header mt-3 mb-4">
+        <h1 class="fade-in-down">{{ recipe.title }}</h1>
+        <div class="image-container">
+          <img 
+            v-if="recipe.image" 
+            :src="recipe.image" 
+            class="center hover-lift" 
+            :alt="recipe.title"
+          />
+          <div v-else class="center no-image-placeholder hover-lift pulse-slow">
+            <i class="fas fa-utensils"></i>
+            <p>No image available</p>
+          </div>
         </div>
           
           <!-- Dietary badges - styled same as preview -->
-          <div class="diet-info mt-2">
-            <span v-if="recipe.vegan" class="badge badge-success">🌱 Vegan</span>
-            <span v-else-if="recipe.vegetarian" class="badge badge-warning">🥬 Vegetarian</span>
-            <span v-if="recipe.glutenFree" class="badge badge-info">🌾 Gluten Free</span>
+          <div class="diet-info mt-2 slide-in-left">
+            <span v-if="recipe.vegan" class="badge badge-success hover-scale">🌱 Vegan</span>
+            <span v-else-if="recipe.vegetarian" class="badge badge-warning hover-scale">🥬 Vegetarian</span>
+            <span v-if="recipe.glutenFree" class="badge badge-info hover-scale">🌾 Gluten Free</span>
           </div>
           
           <!-- Toggle for full/basic view -->
-          <div class="view-toggle mt-3 text-center">
+          <div class="view-toggle mt-3 text-center slide-in-right">
             <div class="form-check form-check-inline">
               <input 
                 class="form-check-input" 
@@ -336,5 +341,161 @@
 
   .text-muted {
     color: #6c757d;
+  }
+
+  /* Animation classes */
+  .fade-in {
+    opacity: 0;
+    animation: fadeIn 0.8s ease-in-out forwards;
+  }
+
+  .fade-in-down {
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeInDown 1s ease-out forwards;
+  }
+
+  .slide-in-up {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: slideInUp 0.8s ease-out forwards;
+  }
+
+  .slide-in-left {
+    opacity: 0;
+    transform: translateX(-30px);
+    animation: slideInLeft 0.8s ease-out 0.3s forwards;
+  }
+
+  .slide-in-right {
+    opacity: 0;
+    transform: translateX(30px);
+    animation: slideInRight 0.8s ease-out 0.5s forwards;
+  }
+
+  .pulse {
+    animation: pulse 2s infinite;
+  }
+
+  .pulse-text {
+    animation: pulseText 2s ease-in-out infinite;
+  }
+
+  .pulse-slow {
+    animation: pulseSlow 3s ease-in-out infinite;
+  }
+
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  }
+
+  .hover-scale {
+    transition: transform 0.3s ease;
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+
+  .loading-animation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #42b983;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  @keyframes pulseText {
+    0%, 100% { 
+      color: inherit;
+      transform: scale(1);
+    }
+    50% { 
+      color: #42b983;
+      transform: scale(1.02);
+    }
+  }
+
+  @keyframes pulseSlow {
+    0%, 100% { 
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% { 
+      opacity: 0.8;
+      transform: scale(1.02);
+    }
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
   </style>

@@ -1,112 +1,129 @@
 <template>
-  <div class="register-page">
-    <h1>Register</h1>
-    <form @submit.prevent="handleSubmit" novalidate>
-      <FormField
-        v-model="state.username"
-        label="Username"
-        name="username"
-        type="text"
-        autocomplete="username"
-        :required="true"
-        :has-error="v$.username.$error"
-        :errors="getUsernameErrors"
-        :requirements="['Required field', '3-8 characters long']"
-      />
+  <div class="register-page fade-in">
+    <h1 class="fade-in-down">Register</h1>
+    <form @submit.prevent="handleSubmit" novalidate class="slide-in-up">
+      <div class="fade-in-up-delayed">
+        <FormField
+          v-model="state.username"
+          label="Username"
+          name="username"
+          type="text"
+          autocomplete="username"
+          :required="true"
+          :has-error="v$.username.$error"
+          :errors="getUsernameErrors"
+          :requirements="['Required field', '3-8 characters long']"
+        />
+      </div>
 
-      <FormField
-        v-model="state.password"
-        label="Password"
-        name="password"
-        type="password"
-        autocomplete="new-password"
-        :required="true"
-        :has-error="v$.password.$error"
-        :errors="getPasswordErrors"
-        :requirements="[
-          'Required field',
-          '5-10 characters long',
-          'At least one special character',
-          'At least one number'
+      <div class="fade-in-up-delayed" style="animation-delay: 0.2s;">
+        <FormField
+          v-model="state.password"
+          label="Password"
+          name="password"
+          type="password"
+          autocomplete="new-password"
+          :required="true"
+          :has-error="v$.password.$error"
+          :errors="getPasswordErrors"
+          :requirements="[
+            'Required field',
+            '5-10 characters long',
+            'At least one special character',
+            'At least one number'
         ]"
       />
+      </div>
 
-      <FormField
-        v-model="state.confirmPassword"
-        label="Confirm Password"
-        name="confirmPassword"
-        type="password"
-        autocomplete="new-password"
-        :required="true"
-        :has-error="v$.confirmPassword.$error"
-        :errors="['Passwords must match.']"
-        :requirements="['Required field', 'Must match the password above']"
-      />
+      <div class="fade-in-up-delayed" style="animation-delay: 0.3s;">
+        <FormField
+          v-model="state.confirmPassword"
+          label="Confirm Password"
+          name="confirmPassword"
+          type="password"
+          autocomplete="new-password"
+          :required="true"
+          :has-error="v$.confirmPassword.$error"
+          :errors="['Passwords must match.']"
+          :requirements="['Required field', 'Must match the password above']"
+        />
+      </div>
 
-      <FormField
-        v-model="state.firstName"
-        label="First Name"
-        name="firstName"
-        type="text"
-        autocomplete="given-name"
-        :required="true"
-        :has-error="v$.firstName.$error"
-        :errors="['First name is required.']"
-        :requirements="['Required field']"
-      />
+      <div class="fade-in-up-delayed" style="animation-delay: 0.4s;">
+        <FormField
+          v-model="state.firstName"
+          label="First Name"
+          name="firstName"
+          type="text"
+          autocomplete="given-name"
+          :required="true"
+          :has-error="v$.firstName.$error"
+          :errors="['First name is required.']"
+          :requirements="['Required field']"
+        />
+      </div>
 
-      <FormField
-        v-model="state.lastName"
-        label="Last Name"
-        name="lastName"
-        type="text"
-        autocomplete="family-name"
-        :required="true"
-        :has-error="v$.lastName.$error"
-        :errors="['Last name is required.']"
-        :requirements="['Required field']"
-      />
+      <div class="fade-in-up-delayed" style="animation-delay: 0.5s;">
+        <FormField
+          v-model="state.lastName"
+          label="Last Name"
+          name="lastName"
+          type="text"
+          autocomplete="family-name"
+          :required="true"
+          :has-error="v$.lastName.$error"
+          :errors="['Last name is required.']"
+          :requirements="['Required field']"
+        />
+      </div>
 
-      <FormField
-        v-model="state.email"
-        label="Email"
-        name="email"
-        type="email"
-        autocomplete="email"
-        :required="true"
-        :has-error="v$.email.$error"
+      <div class="fade-in-up-delayed" style="animation-delay: 0.6s;">
+        <FormField
+          v-model="state.email"
+          label="Email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          :required="true"
+          :has-error="v$.email.$error"
         :errors="getEmailErrors"
         :requirements="['Required field', 'Valid email format (example@domain.com)']"
       />
+      </div>
 
-      <FormField
-        v-model="state.country"
-        label="Country"
-        name="country"
-        type="select"
-        autocomplete="country-name"
-        :required="true"
-        :has-error="v$.country.$error"
-        :errors="['Country is required.']"
-        :requirements="['Required field']"
-        :placeholder="isLoadingCountries ? 'Loading countries...' : 'Select a country'"
-        :options="countries"
-        :disabled="isLoadingCountries"
-      />
+      <div class="fade-in-up-delayed" style="animation-delay: 0.7s;">
+        <FormField
+          v-model="state.country"
+          label="Country"
+          name="country"
+          type="select"
+          autocomplete="country-name"
+          :required="true"
+          :has-error="v$.country.$error"
+          :errors="['Country is required.']"
+          :requirements="['Required field']"
+          :placeholder="isLoadingCountries ? 'Loading countries...' : 'Select a country'"
+          :options="countries"
+          :disabled="isLoadingCountries"
+        />
+      </div>
 
-      <FormField
-        v-model="state.profilePic"
-        label="Profile Picture URL (Optional)"
-        name="profilePic"
-        type="text"
-        autocomplete="off"
-        :has-error="v$.profilePic.$error"
-        :errors="getProfilePicErrors"
-        :requirements="['Must be a valid URL if provided']"
-      />
+      <div class="fade-in-up-delayed" style="animation-delay: 0.8s;">
+        <FormField
+          v-model="state.profilePic"
+          label="Profile Picture URL (Optional)"
+          name="profilePic"
+          type="text"
+          autocomplete="off"
+          :has-error="v$.profilePic.$error"
+          :errors="getProfilePicErrors"
+          :requirements="['Must be a valid URL if provided']"
+        />
+      </div>
 
-      <SubmitButton
-        :is-loading="isSubmitting"
+      <div class="slide-in-up" style="animation-delay: 0.9s;">
+        <SubmitButton
+          :is-loading="isSubmitting"
         :is-form-valid="isFormValid"
         default-text="Register"
         loading-text="Creating Account..."
@@ -114,6 +131,15 @@
         :tooltip-fields="missingRequiredFields"
         tooltip-title="Form incomplete"
       />
+      </div>
+
+      <!-- Login Link -->
+      <div class="text-center mt-3 slide-in-up" style="animation-delay: 1.0s;">
+        <p class="mb-0">
+          Already have an account? 
+          <router-link to="/login" class="link-primary hover-scale">Login here</router-link>
+        </p>
+      </div>
     </form>
   </div>
 </template>
@@ -367,5 +393,93 @@ export default {
   max-width: 400px;
   margin: auto;
   padding: 2rem;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.link-primary {
+  color: #0d6efd;
+  text-decoration: none;
+}
+
+.link-primary:hover {
+  color: #0b5ed7;
+  text-decoration: underline;
+}
+
+/* Animation classes */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.8s ease-in-out forwards;
+}
+
+.fade-in-down {
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: fadeInDown 1s ease-out forwards;
+}
+
+.fade-in-up-delayed {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.slide-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: slideInUp 0.8s ease-out forwards;
+}
+
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

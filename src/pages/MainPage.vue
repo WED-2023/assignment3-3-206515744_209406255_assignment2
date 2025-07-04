@@ -1,29 +1,32 @@
 <template>
-  <div class="container">
-    <h1 class="title">Main Page</h1>
+  <div class="container fade-in">
+    <h1 class="title fade-in-down">Main Page</h1>
 
-    <div class="main-content">
+    <div class="main-content slide-in-up">
       <!-- Left side - Random Recipes -->
-      <div class="recipe-section">
+      <div class="recipe-section slide-in-left">
         <div class="section-header">
-          <h2>Random Recipes</h2>
+          <h2 class="pulse-text">Random Recipes</h2>
         </div>
         
         <!-- Loading state for random recipes -->
-        <div v-if="loadingRandom && randomRecipes.length === 0" class="text-center py-4">
-          <p>Loading random recipes...</p>
+        <div v-if="loadingRandom && randomRecipes.length === 0" class="text-center py-4 pulse">
+          <div class="loading-animation">
+            <div class="spinner"></div>
+            <p class="pulse-text">Loading random recipes...</p>
+          </div>
         </div>
           <!-- Random recipes error -->
-        <div v-else-if="randomError" class="alert alert-danger">
+        <div v-else-if="randomError" class="alert alert-danger slide-in-right">
           <h4>Error Loading Random Recipes</h4>
           <p>{{ randomError }}</p>
-          <button @click="fetchRandomRecipes(true)" class="btn btn-outline-primary">
+          <button @click="fetchRandomRecipes(true)" class="btn btn-outline-primary hover-lift">
             <i class="fas fa-redo"></i> Try Again
           </button>
         </div>
         
         <!-- Random recipes list -->
-        <div v-else>
+        <div v-else class="fade-in-up-delayed">
           <RecipePreviewList
             title=""
             :recipes="randomRecipes"
@@ -35,7 +38,7 @@
             <button 
               @click="fetchRandomRecipes(false)"
               :disabled="loadingRandom"
-              class="btn btn-primary load-more-btn"
+              class="btn btn-primary load-more-btn hover-scale"
             >
               <i v-if="loadingRandom" class="fas fa-spinner fa-spin"></i>
               <i v-else class="fas fa-plus"></i>
@@ -46,9 +49,9 @@
       </div>
 
       <!-- Right side - Last Viewed Recipes -->
-      <div class="recipe-section">
+      <div class="recipe-section slide-in-right">
         <div class="section-header">
-          <h2>Last Viewed Recipes</h2>
+          <h2 class="pulse-text">Last Viewed Recipes</h2>
         </div>
 
         <!-- Not logged in message -->
@@ -463,6 +466,159 @@ export default {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Animation classes */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.8s ease-in-out forwards;
+}
+
+.fade-in-down {
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: fadeInDown 1s ease-out forwards;
+}
+
+.fade-in-up-delayed {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease-out 0.3s forwards;
+}
+
+.slide-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: slideInUp 0.8s ease-out forwards;
+}
+
+.slide-in-left {
+  opacity: 0;
+  transform: translateX(-30px);
+  animation: slideInLeft 0.8s ease-out 0.2s forwards;
+}
+
+.slide-in-right {
+  opacity: 0;
+  transform: translateX(30px);
+  animation: slideInRight 0.8s ease-out 0.4s forwards;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+.pulse-text {
+  animation: pulseText 2s ease-in-out infinite;
+}
+
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.loading-animation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #42b983;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes pulseText {
+  0%, 100% { 
+    color: inherit;
+    transform: scale(1);
+  }
+  50% { 
+    color: #42b983;
+    transform: scale(1.02);
+  }
 }
 
 /* Responsive design */

@@ -1,41 +1,55 @@
 <template>
-  <div class="container">
+  <div class="container fade-in">
     <div v-if="loading" class="text-center mt-4">
-      <p>Loading preparation details...</p>
+      <div class="loading-animation">
+        <div class="spinner"></div>
+        <p class="pulse-text">Loading preparation details...</p>
+      </div>
     </div>
-    <div v-else-if="error" class="alert alert-danger mt-4">
+    <div v-else-if="error" class="alert alert-danger mt-4 slide-in-left">
       {{ error }}
     </div>
-    <div v-else>
+    <div v-else class="slide-in-up">
       <div class="prep-header mt-3 mb-4 text-center">
-        <h1>{{ recipeTitle }}</h1>
-        <img 
-          v-if="recipe.image" 
-          :src="recipe.image" 
-          class="center" 
-          :alt="recipeTitle"
-        />
-        <div v-else class="center no-image-placeholder">
-          <i class="fas fa-utensils"></i>
-          <p>No image available</p>
+        <h1 class="fade-in-down">{{ recipeTitle }}</h1>
+        <div class="image-container">
+          <img 
+            v-if="recipe.image" 
+            :src="recipe.image" 
+            class="center recipe-image hover-lift" 
+            :alt="recipeTitle"
+          />
+          <div v-else class="center no-image-placeholder hover-lift pulse-slow">
+            <i class="fas fa-utensils"></i>
+            <p>No image available</p>
+          </div>
         </div>
       </div>
       <div v-if="!isFamilyRecipe" class="servings-control mb-3 text-center">
         <label for="servings"><strong>Servings:</strong></label>
-        <input type="number" id="servings" v-model.number="servings" min="1" class="form-control d-inline-block ml-2" style="width: 80px;" />
+        <input 
+          type="number" 
+          id="servings" 
+          v-model.number="servings" 
+          min="1" 
+          class="form-control d-inline-block ml-2 hover-scale" 
+          style="width: 80px;" 
+        />
       </div>
       <!-- Single step view -->
-      <RecipePreparationComponent
-        v-if="recipe.preparationSteps.length"
-        :step="recipe.preparationSteps[currentStepIndex]"
-        :current="currentStepIndex + 1"
-        :total="recipe.preparationSteps.length"
-        :servings-ratio="servingsRatio"
-        @prev="prevStep"
-        @next="nextStep"
-        @toggleComplete="toggleCompleteStep"
-        :completed="entry.completedSteps[currentStepIndex]"
-      />
+      <div class="step-wrapper fade-in-up-delayed">
+        <RecipePreparationComponent
+          v-if="recipe.preparationSteps.length"
+          :step="recipe.preparationSteps[currentStepIndex]"
+          :current="currentStepIndex + 1"
+          :total="recipe.preparationSteps.length"
+          :servings-ratio="servingsRatio"
+          @prev="prevStep"
+          @next="nextStep"
+          @toggleComplete="toggleCompleteStep"
+          :completed="entry.completedSteps[currentStepIndex]"
+        />
+      </div>
     </div>
   </div>
 </template>
