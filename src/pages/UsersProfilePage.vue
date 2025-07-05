@@ -3,7 +3,11 @@
     <h1>User Profile</h1>
     <div v-if="error" class="error">{{ error }}</div>
     <div v-else class="profile-card">
-      <img v-if="userInfo.profilePic" :src="userInfo.profilePic" alt="Profile Picture" class="profile-pic" />
+      <img 
+        :src="userInfo.profilePic || require('@/assets/default-profile.jpg')" 
+        alt="Profile Picture" 
+        class="profile-pic" 
+      />
       <div class="profile-details">
         <div class="profile-field">
           <span class="field-label">First Name:</span>
@@ -27,19 +31,17 @@
 </template>
 
 <script>
-import { getCurrentInstance, ref, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 
 export default {
   name: 'UsersProfilePage',
   setup() {
-    const instance = getCurrentInstance();
-    const axios = instance.appContext.config.globalProperties.axios;
     const userInfo = ref({ firstname: '', lastname: '', email: '', country: '', profilePic: '' });
     const error = ref('');
 
     onMounted(async () => {
       try {
-        const response = await axios.get('/user_information');
+        const response = await window.axios.get('/user_information');
         const data = response.data.data;
         userInfo.value = {
           firstname: data.firstname,

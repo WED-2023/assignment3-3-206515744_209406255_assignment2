@@ -19,8 +19,12 @@
               @click.prevent="toggleDropdown"
               :class="{ active: isDropdownOpen }"
             >
-              <!-- Profile picture -->
-              <img v-if="store.profilePic" :src="store.profilePic" alt="Profile" class="profile-pic me-2" />
+              <!-- Profile picture with placeholder -->
+              <img 
+                :src="store.profilePic || require('@/assets/default-profile.jpg')" 
+                alt="Profile" 
+                class="profile-pic me-2" 
+              />
               {{ store.username }}
             </a>
             <div class="dropdown-menu" :class="{ show: isDropdownOpen }">
