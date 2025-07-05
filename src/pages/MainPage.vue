@@ -6,7 +6,7 @@
       <!-- Left side - Random Recipes -->
       <div class="recipe-section slide-in-left">
         <div class="section-header">
-          <h2 class="pulse-text">Random Recipes</h2>
+          <h2 class="pulse-text">Explore These Recipes</h2>
         </div>
         
         <!-- Loading state for random recipes -->
@@ -33,16 +33,16 @@
             class="recipe-list"
             @recipe-action-changed="onRecipeActionChanged"
           />
-            <!-- Load More Button for Random Recipes -->
+            <!-- Get New Random Recipes Button -->
           <div class="text-center mt-3">
             <button 
-              @click="fetchRandomRecipes(false)"
+              @click="fetchRandomRecipes(true)"
               :disabled="loadingRandom"
               class="btn btn-primary load-more-btn hover-scale"
             >
               <i v-if="loadingRandom" class="fas fa-spinner fa-spin"></i>
-              <i v-else class="fas fa-plus"></i>
-              {{ loadingRandom ? 'Loading...' : 'Load 3 More Random Recipes' }}
+              <i v-else class="fas fa-sync-alt"></i>
+              {{ loadingRandom ? 'Loading...' : 'Get New Random Recipes' }}
             </button>
           </div>
         </div>
@@ -181,7 +181,8 @@ export default {
         
         const response = await this.axios.get('/recipes/random', {
           params: {
-            number: 3
+            number: 3,
+            fresh: reset ? 'true' : 'false' // Force fresh recipes when resetting
           }
         });
         
@@ -199,8 +200,8 @@ export default {
         }));
         
         if (reset) {
-          // Replace all recipes
-          this.randomRecipes = newRecipes;
+          // Replace all recipes with new ones
+          this.randomRecipes = [...newRecipes];
         } else {
           // Add new recipes to the end of the list
           this.randomRecipes = [...this.randomRecipes, ...newRecipes];
