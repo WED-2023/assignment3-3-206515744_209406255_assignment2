@@ -2,12 +2,9 @@
   <div class="container">
     <h1 class="title">My Family Recipes</h1>
     
-    <!-- Add New Family Recipe Button - only show when there are existing recipes -->
-    <div v-if="familyRecipes.length > 0" class="text-center mb-4">
-      <button 
-        class="btn btn-primary btn-lg"
-        @click="showCreateModal = true"
-      >
+    <!-- Create New Recipe button under title - only show when there are recipes -->
+    <div v-if="familyRecipes.length > 0 && !loading" class="text-center mt-3 mb-4">
+      <button class="btn btn-primary" @click="showCreateModal = true">
         <i class="fas fa-plus"></i> Add New Family Recipe
       </button>
     </div>
@@ -19,11 +16,14 @@
 
     <!-- Family recipes -->
     <div v-if="familyRecipes.length > 0 && !loading" class="family-recipes mt-4">
-      <p class="subtitle">You have {{ familyRecipes.length }} family recipe{{ familyRecipes.length === 1 ? '' : 's' }}</p>
+      <div class="recipes-header">
+        <p class="subtitle">You have {{ familyRecipes.length }} family recipe{{ familyRecipes.length === 1 ? '' : 's' }}</p>
+      </div>
       
       <FamilyRecipePreviewList 
         title=""
         :recipes="familyRecipes"
+        class="center"
         @recipe-deleted="handleRecipeDeleted"
       />
     </div>
@@ -34,10 +34,7 @@
         <h4>No family recipes yet</h4>
         <p>You haven't added any family recipes yet.</p>
         <p>Start building your family recipe collection by adding your first recipe!</p>
-        <button 
-          class="btn btn-primary mt-2"
-          @click="showCreateModal = true"
-        >
+        <button class="btn btn-primary mt-2" @click="showCreateModal = true">
           <i class="fas fa-plus"></i> Add Your First Family Recipe
         </button>
       </div>
@@ -151,19 +148,26 @@ export default {
 
 .title {
   text-align: center;
-  color: #333;
   margin-bottom: 2rem;
+  color: #2c3e50;
+  font-weight: 700;
 }
 
 .subtitle {
-  text-align: center;
-  color: #666;
   font-size: 1.1rem;
-  margin-bottom: 1.5rem;
+  color: #666;
+  margin-bottom: 2rem;
 }
 
 .family-recipes {
   margin-top: 2rem;
+}
+
+.recipes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
 }
 
 .alert {
@@ -184,6 +188,10 @@ export default {
   color: #0c5460;
   background-color: #d1ecf1;
   border-color: #bee5eb;
+}
+
+.center {
+  text-align: center;
 }
 
 .btn {
@@ -226,19 +234,31 @@ export default {
   font-size: 1.125rem;
 }
 
-.mb-4 {
-  margin-bottom: 1.5rem;
-}
-
 .mt-2 {
   margin-top: 0.5rem;
+}
+
+.mt-3 {
+  margin-top: 1rem;
 }
 
 .mt-4 {
   margin-top: 1.5rem;
 }
 
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
 .text-center {
   text-align: center;
+}
+
+@media (max-width: 768px) {
+  .recipes-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
 }
 </style>
