@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import ProgressBar from '../components/ProgressBar.vue';
+import ProgressBar from '../components/ui/ProgressBar.vue';
 export default {
   name: 'MealPlanPage',
   components: { ProgressBar },

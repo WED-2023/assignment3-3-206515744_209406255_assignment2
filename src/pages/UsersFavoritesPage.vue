@@ -49,7 +49,7 @@
 
 <script>
 import { getCurrentInstance } from 'vue';
-import RecipePreview from "../components/RecipePreview.vue";
+import RecipePreview from "../components/recipe/RecipePreview.vue";
 
 export default {
   name: "UsersFavoritesPage",

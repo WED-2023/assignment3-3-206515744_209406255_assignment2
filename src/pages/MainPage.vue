@@ -30,8 +30,8 @@
 
 <script>
 import { getCurrentInstance } from 'vue';
-import RandomRecipesSection from "../components/RandomRecipesSection.vue";
-import LastViewedRecipesSection from "../components/LastViewedRecipesSection.vue";
+import RandomRecipesSection from "../components/layout/RandomRecipesSection.vue";
+import LastViewedRecipesSection from "../components/layout/LastViewedRecipesSection.vue";
 
 export default {
   components: {

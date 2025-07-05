@@ -41,9 +41,9 @@
 
 <script>
 import { getCurrentInstance } from 'vue';
-import SearchFormSection from "../components/SearchFormSection.vue";
-import SearchStatusSection from "../components/SearchStatusSection.vue";
-import SearchResultsSection from "../components/SearchResultsSection.vue";
+import SearchFormSection from "../components/search/SearchFormSection.vue";
+import SearchStatusSection from "../components/search/SearchStatusSection.vue";
+import SearchResultsSection from "../components/search/SearchResultsSection.vue";
 
 export default {
   components: {

@@ -62,8 +62,8 @@
 
 <script>
 import { getCurrentInstance } from 'vue';
-import RecipePreviewList from "../components/RecipePreviewList.vue";
-import UsersNewRecipeModal from "../components/UsersNewRecipeModal.vue";
+import RecipePreviewList from "../components/recipe/RecipePreviewList.vue";
+import UsersNewRecipeModal from "../components/modal/UsersNewRecipeModal.vue";
 import { useToast } from "../composables/useToast.js";
 
 export default {

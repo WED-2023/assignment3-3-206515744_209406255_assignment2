@@ -58,8 +58,8 @@ import { reactive, ref, computed } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import { useRouter } from 'vue-router';
-import FormField from '@/components/FormField.vue';
-import SubmitButton from '@/components/SubmitButton.vue';
+import FormField from '@/components/form/FormField.vue';
+import SubmitButton from '@/components/form/SubmitButton.vue';
 
 export default {
   name: "LoginPage",

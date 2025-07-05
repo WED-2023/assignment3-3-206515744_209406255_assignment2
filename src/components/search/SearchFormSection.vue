@@ -56,8 +56,8 @@
 </template>
 
 <script>
-import FormField from "./FormField.vue";
-import SubmitButton from "./SubmitButton.vue";
+import FormField from "../form/FormField.vue";
+import SubmitButton from "../form/SubmitButton.vue";
 import AdvancedFiltersSection from "./AdvancedFiltersSection.vue";
 
 export default {

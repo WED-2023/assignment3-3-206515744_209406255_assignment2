@@ -2,14 +2,14 @@
   <!-- Use Teleport to render modal at body level, escaping parent containers -->
   <Teleport to="body">
     <!-- Modal -->
-    <div v-if="show" class="modal fade show d-block fade-in" tabindex="-1" role="dialog" aria-labelledby="newFamilyRecipeModalLabel" @click="closeModal">
+    <div v-if="show" class="modal fade show d-block fade-in" tabindex="-1" role="dialog" aria-labelledby="newRecipeModalLabel" @click="closeModal">
       <div class="modal-dialog modal-xl slide-in-up" role="document" @click.stop>
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header fade-in-down">
           <div class="modal-title-container">
-            <h2 id="newFamilyRecipeModalLabel">Create New Family Recipe</h2>
-            <p class="text-muted mb-0">Create and share your family recipe</p>
+            <h2 id="newRecipeModalLabel">Create New Recipe</h2>
+            <p class="text-muted mb-0">Create and share your own recipe</p>
           </div>
           <button type="button" class="btn-close hover-scale" @click="closeModal" aria-label="Close">
             <i class="fas fa-times"></i>
@@ -33,30 +33,6 @@
                 :has-error="errors.title.length > 0"
                 :errors="errors.title"
               />
-
-              <!-- Family Member Field -->
-              <FormField
-                v-model="newRecipe.familyMember"
-                label="Family Member"
-                name="familyMember"
-                type="text"
-                placeholder="e.g., Grandma Sarah, Uncle John"
-                :required="true"
-                :has-error="errors.familyMember.length > 0"
-                :errors="errors.familyMember"
-              />
-
-              <!-- Occasion Field -->
-              <FormField
-                v-model="newRecipe.occasion"
-                label="Occasion"
-                name="occasion"
-                type="text"
-                placeholder="e.g., birthday, holiday, Sunday dinner"
-                :required="true"
-                :has-error="errors.occasion.length > 0"
-                :errors="errors.occasion"
-              />
               
               <FormField
                 v-model="newRecipe.image"
@@ -68,6 +44,91 @@
                 :has-error="errors.image.length > 0"
                 :errors="errors.image"
               />
+              
+              <div class="row">
+                <div class="col-md-6">
+                  <FormField
+                    v-model="newRecipe.readyInMinutes"
+                    label="Ready in Minutes"
+                    name="readyInMinutes"
+                    type="number"
+                    placeholder="30"
+                    :required="true"
+                    :has-error="errors.readyInMinutes.length > 0"
+                    :errors="errors.readyInMinutes"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <FormField
+                    v-model="newRecipe.numberOfPortions"
+                    label="Number of Portions"
+                    name="numberOfPortions"
+                    type="number"
+                    placeholder="4"
+                    :required="true"
+                    :has-error="errors.numberOfPortions.length > 0"
+                    :errors="errors.numberOfPortions"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Dietary Information Section -->
+            <div class="form-section">
+              <h5><i class="fas fa-leaf"></i> Dietary Information</h5>
+              <div class="dietary-checkboxes">
+                <div class="form-check form-check-inline">
+                  <input
+                    id="vegan"
+                    v-model="newRecipe.vegan"
+                    class="form-check-input"
+                    type="checkbox"
+                    name="vegan"
+                  >
+                  <label class="form-check-label" for="vegan">
+                    Vegan
+                  </label>
+                </div>
+                
+                <div class="form-check form-check-inline">
+                  <input
+                    id="vegetarian"
+                    v-model="newRecipe.vegetarian"
+                    class="form-check-input"
+                    type="checkbox"
+                    name="vegetarian"
+                  >
+                  <label class="form-check-label" for="vegetarian">
+                    Vegetarian
+                  </label>
+                </div>
+                
+                <div class="form-check form-check-inline">
+                  <input
+                    id="glutenFree"
+                    v-model="newRecipe.glutenFree"
+                    class="form-check-input"
+                    type="checkbox"
+                    name="glutenFree"
+                  >
+                  <label class="form-check-label" for="glutenFree">
+                    Gluten Free
+                  </label>
+                </div>
+                
+                <div class="form-check form-check-inline">
+                  <input
+                    id="favorite"
+                    v-model="newRecipe.favorite"
+                    class="form-check-input"
+                    type="checkbox"
+                    name="favorite"
+                  >
+                  <label class="form-check-label" for="favorite">
+                    Mark as Favorite
+                  </label>
+                </div>
+              </div>
             </div>
 
             <!-- Recipe Steps Section -->
@@ -234,6 +295,19 @@
                 </div>
               </div>
             </div>
+
+            <!-- Summary Section -->
+            <div class="form-section">
+              <h5><i class="fas fa-align-left"></i> Recipe Summary</h5>              <FormField
+                v-model="newRecipe.summary"
+                label="Recipe Summary"
+                name="summary"
+                type="textarea"
+                :rows="4"
+                placeholder="Describe your recipe, its flavors, dietary benefits, etc."
+                :required="false"
+              />
+            </div>
           </form>
         </div>
 
@@ -249,8 +323,8 @@
           <SubmitButton
             :is-loading="isSubmitting"
             :is-form-valid="isFormValid"
-            default-text="Create Family Recipe"
-            loading-text="Creating Family Recipe..."
+            default-text="Create Recipe"
+            loading-text="Creating Recipe..."
             variant="btn-success"
             :tooltip-fields="getInvalidFields()"
             tooltip-title="Please complete the following"
@@ -267,11 +341,11 @@
 </template>
 
 <script>
-import FormField from "./FormField.vue";
-import SubmitButton from "./SubmitButton.vue";
+import FormField from "../form/FormField.vue";
+import SubmitButton from "../form/SubmitButton.vue";
 
 export default {
-  name: "UsersNewFamilyRecipeModal",
+  name: "UsersNewRecipeModal",
   components: {
     FormField,
     SubmitButton
@@ -285,12 +359,15 @@ export default {
   emits: ['close', 'recipe-created'],
   data() {
     return {
-      isSubmitting: false,
-      newRecipe: {
+      isSubmitting: false,      newRecipe: {
         title: "",
-        familyMember: "",
-        occasion: "",
         image: "",
+        readyInMinutes: "",
+        vegan: false,
+        vegetarian: false,
+        glutenFree: false,
+        viewed: true,
+        favorite: false,
         steps: [
           {
             ingredients: [
@@ -304,22 +381,23 @@ export default {
             equipment: [""],
             instruction: ""
           }
-        ]
+        ],
+        numberOfPortions: "",
+        summary: ""
       },
       errors: {
         title: [],
-        familyMember: [],
-        occasion: [],
         image: [],
+        readyInMinutes: [],
+        numberOfPortions: [],
         steps: []
       }
     };
   },
-  computed: {
-    isFormValid() {
+  computed: {    isFormValid() {
       return this.newRecipe.title.trim() !== '' &&
-             this.newRecipe.familyMember.trim() !== '' &&
-             this.newRecipe.occasion.trim() !== '' &&
+             this.newRecipe.readyInMinutes && Number(this.newRecipe.readyInMinutes) > 0 &&
+             this.newRecipe.numberOfPortions && Number(this.newRecipe.numberOfPortions) > 0 &&
              this.newRecipe.steps.some(step => 
                step.ingredients.some(ing => ing.name && ing.name.trim() !== '') &&
                step.instruction.trim() !== ''
@@ -340,13 +418,16 @@ export default {
       }
     }
   },
-  methods: {
-    resetForm() {
+  methods: {    resetForm() {
       this.newRecipe = {
         title: "",
-        familyMember: "",
-        occasion: "",
         image: "",
+        readyInMinutes: "",
+        vegan: false,
+        vegetarian: false,
+        glutenFree: false,
+        viewed: true,
+        favorite: false,
         steps: [
           {
             ingredients: [
@@ -360,7 +441,9 @@ export default {
             equipment: [""],
             instruction: ""
           }
-        ]
+        ],
+        numberOfPortions: "",
+        summary: ""
       };
       
       // Clear errors
@@ -383,13 +466,12 @@ export default {
       if (!this.newRecipe.title.trim()) {
         this.errors.title.push('Recipe title is required');
       }
-
-      if (!this.newRecipe.familyMember.trim()) {
-        this.errors.familyMember.push('Family member name is required');
+        if (!this.newRecipe.readyInMinutes || Number(this.newRecipe.readyInMinutes) <= 0) {
+        this.errors.readyInMinutes.push('Ready time must be a positive number');
       }
-
-      if (!this.newRecipe.occasion.trim()) {
-        this.errors.occasion.push('Occasion is required');
+      
+      if (!this.newRecipe.numberOfPortions || Number(this.newRecipe.numberOfPortions) <= 0) {
+        this.errors.numberOfPortions.push('Number of portions must be a positive number');
       }
       
       // Validate image URL format if provided
@@ -422,14 +504,12 @@ export default {
       } catch (_) {
         return false;
       }
-    },
-
-    getInvalidFields() {
+    },    getInvalidFields() {
       const invalidFields = [];
       
       if (!this.newRecipe.title.trim()) invalidFields.push('Recipe title');
-      if (!this.newRecipe.familyMember.trim()) invalidFields.push('Family member name');
-      if (!this.newRecipe.occasion.trim()) invalidFields.push('Occasion');
+      if (!this.newRecipe.readyInMinutes || Number(this.newRecipe.readyInMinutes) <= 0) invalidFields.push('Ready time');
+      if (!this.newRecipe.numberOfPortions || Number(this.newRecipe.numberOfPortions) <= 0) invalidFields.push('Number of portions');
       if (!this.newRecipe.steps.some(step => 
         step.ingredients.some(ing => ing.name && ing.name.trim() !== '') &&
         step.instruction.trim() !== ''
@@ -471,21 +551,28 @@ export default {
         });
 
         const recipeData = {
-          family_member: this.newRecipe.familyMember,
-          occasion: this.newRecipe.occasion,
+          title: this.newRecipe.title,
+          image: this.newRecipe.image || "",
+          readyInMinutes: parseInt(this.newRecipe.readyInMinutes),
+          vegan: this.newRecipe.vegan,
+          vegetarian: this.newRecipe.vegetarian,
+          glutenFree: this.newRecipe.glutenFree,
+          viewed: this.newRecipe.viewed,
+          favorite: this.newRecipe.favorite,
           ingredients: allIngredients,
           instructions: allInstructions,
+          numberOfPortions: parseInt(this.newRecipe.numberOfPortions),
           equipment: allEquipment,
-          image: this.newRecipe.image || ""
+          summary: this.newRecipe.summary || ""
         };
 
-        console.log('Submitting family recipe:', recipeData);
+        console.log('Submitting recipe:', recipeData);
 
-        const response = await window.axios.post('/users/family-recipes', recipeData);
+        const response = await window.axios.post('/users/my-recipes', recipeData);
         
         if (response.data.success) {
           if (window.toast) {
-            window.toast("Success", response.data.message || "Family recipe created successfully!", "success");
+            window.toast("Success", response.data.message || "Recipe created successfully!", "success");
           }
           
           // Emit event to parent to refresh the recipe list
@@ -494,12 +581,12 @@ export default {
           // Close modal
           this.closeModal();
         } else {
-          throw new Error(response.data.message || "Failed to create family recipe");
+          throw new Error(response.data.message || "Failed to create recipe");
         }
         
       } catch (error) {
-        console.error("Failed to create family recipe:", error);
-        const errorMessage = error.response?.data?.message || "Failed to create family recipe. Please try again.";
+        console.error("Failed to create recipe:", error);
+        const errorMessage = error.response?.data?.message || "Failed to create recipe. Please try again.";
         
         if (window.toast) {
           window.toast("Error", errorMessage, "error");
@@ -708,6 +795,24 @@ export default {
   }
 }
 
+.dietary-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+  border: 1px solid #e9ecef;
+}
+
+.ingredients-section, .instructions-section, .equipment-section {
+  border: 1px solid #e9ecef;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+}
+
 .steps-section {
   border: 1px solid #e9ecef;
   border-radius: 0.5rem;
@@ -776,6 +881,20 @@ export default {
   margin-bottom: 0;
 }
 
+.input-group-prepend .input-group-text {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+  font-weight: 600;
+  min-width: 40px;
+  justify-content: center;
+}
+
+.input-group-append .btn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
 .invalid-feedback {
   display: block;
   width: 100%;
@@ -784,27 +903,28 @@ export default {
   color: #dc3545;
 }
 
-/* Ensure form field hints are visible with new card styling */
-.modal-body .form-group {
-  position: relative;
-  z-index: 1;
-  margin-bottom: 2rem;
+/* Spacing for step number badge */
+.input-group-text.me-2 {
+  margin-right: 0.5rem;
 }
 
-.modal-body .input-wrapper {
-  position: relative;
-  z-index: 1;
+/* Ingredient and equipment numbering icons styling to match instructions */
+.ingredient-item .input-group-text,
+.equipment-item .input-group-text {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+  font-weight: 600;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.modal-body .validation-hint {
-  background-color: rgba(227, 242, 253, 0.98);
-  backdrop-filter: blur(5px);
-  border: 1px solid #90caf9;
-  z-index: 1000 !important;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-  position: relative !important;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+/* Remove horizontal gutter for ingredient and equipment rows to match instruction spacing */
+.ingredient-item .row,
+.equipment-item .row {
+  --bs-gutter-x: 0;
 }
 
 /* Animation classes */
@@ -837,6 +957,29 @@ export default {
 
 .hover-scale:hover {
   transform: scale(1.1);
+}
+
+/* Ensure form field hints are visible with new card styling */
+.modal-body .form-group {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 2rem;
+}
+
+.modal-body .input-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+.modal-body .validation-hint {
+  background-color: rgba(227, 242, 253, 0.98);
+  backdrop-filter: blur(5px);
+  border: 1px solid #90caf9;
+  z-index: 1000 !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  position: relative !important;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 @keyframes fadeIn {

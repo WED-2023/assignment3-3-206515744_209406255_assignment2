@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import RecipePreparationComponent from "../components/RecipePreparationComponent.vue";
+import RecipePreparationComponent from "../components/recipe/RecipePreparationComponent.vue";
 export default {
   components: { RecipePreparationComponent },
   data() {

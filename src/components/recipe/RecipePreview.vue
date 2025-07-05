@@ -119,7 +119,7 @@
 </template>
 
 <script>
-import ActionButton from './ActionButton.vue';
+import ActionButton from '../ui/ActionButton.vue';
 
 export default {
   name: "RecipePreview",

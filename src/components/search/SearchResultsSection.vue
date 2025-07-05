@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import RecipePreviewList from "./RecipePreviewList.vue";
+import RecipePreviewList from "../recipe/RecipePreviewList.vue";
 
 export default {
   name: "SearchResultsSection",

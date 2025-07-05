@@ -149,8 +149,8 @@ import { reactive, ref, onMounted, computed, watch } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required, minLength, sameAs, maxLength, email } from '@vuelidate/validators';
 import axios from 'axios';
-import FormField from '@/components/FormField.vue';
-import SubmitButton from '@/components/SubmitButton.vue';
+import FormField from '@/components/form/FormField.vue';
+import SubmitButton from '@/components/form/SubmitButton.vue';
 
 // Custom URL validator
 const isValidUrl = (value) => {

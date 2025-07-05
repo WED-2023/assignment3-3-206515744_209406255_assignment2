@@ -62,8 +62,8 @@
 </template>
 
 <script>
-import FamilyRecipePreviewList from '@/components/FamilyRecipePreviewList.vue';
-import UsersNewFamilyRecipeModal from '@/components/UsersNewFamilyRecipeModal.vue';
+import FamilyRecipePreviewList from '@/components/recipe/FamilyRecipePreviewList.vue';
+import UsersNewFamilyRecipeModal from '@/components/modal/UsersNewFamilyRecipeModal.vue';
 
 export default {
   name: 'UsersFamilyRecipesPage',
