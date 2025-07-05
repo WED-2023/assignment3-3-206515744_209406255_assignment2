@@ -122,8 +122,6 @@ export default {
   }
 }
 </script>
-}
-</script>
 
 <style scoped>
 .recipe-card {
