@@ -110,7 +110,6 @@ export default {
           title: recipe.title,
           image: recipe.image,
           readyInMinutes: recipe.readyInMinutes,
-          aggregateLikes: recipe.aggregateLikes || 0, // Default to 0 if not provided
           vegan: recipe.vegan,
           vegetarian: recipe.vegetarian,
           glutenFree: recipe.glutenFree,
@@ -178,6 +177,8 @@ export default {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  /* Ensure modals are not clipped by this container */
+  overflow: visible;
 }
 
 .title {

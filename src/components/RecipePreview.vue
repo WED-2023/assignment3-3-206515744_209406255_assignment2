@@ -57,7 +57,7 @@
           <p class="card-text time-info">
             <i class="fas fa-clock"></i> {{ recipe.readyInMinutes }} min
           </p>
-          <p v-if="recipe.spoonacularScore && !isUserRecipesRoute" class="card-text score-info">
+          <p v-if="recipe.spoonacularScore && !isUserRecipesRoute && !isFamilyRecipesRoute" class="card-text score-info">
             <i class="fas fa-star"></i> {{ Math.round(recipe.spoonacularScore) }}/100
           </p>
         </div>
@@ -144,6 +144,9 @@ export default {
   computed: {
     isUserRecipesRoute() {
       return this.customRoutePrefix === '/users/my-recipes';
+    },
+    isFamilyRecipesRoute() {
+      return this.customRoutePrefix === '/users/family-recipes' || this.$route.path.includes('/family-recipes');
     }
   },
   async mounted() {
@@ -353,7 +356,7 @@ export default {
 .no-image-placeholder {
   width: 100%;
   height: 200px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #42b983 0%, #2c3e50 100%);
   display: flex;
   align-items: center;
   justify-content: center;

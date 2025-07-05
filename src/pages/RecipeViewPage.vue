@@ -66,7 +66,7 @@
               <!-- Basic view information - always shown -->
               <div class="mb-3">
                 <div><strong>Ready in:</strong> {{ recipe.readyInMinutes }} minutes</div>
-                <div><strong>Spoonacular Score:</strong> {{ recipe.spoonacularScore }}</div>
+                <div v-if="recipe.spoonacularScore && !isUserOrFamilyRecipe"><strong>Spoonacular Score:</strong> {{ recipe.spoonacularScore }}</div>
               </div>
               
               <!-- Additional info for full view only -->
@@ -169,6 +169,13 @@
         
         // Default to the general recipes endpoint
         return `/recipes/${recipeId}`;
+      },
+      
+      // Check if this is a user-created or family recipe (no Spoonacular score)
+      isUserOrFamilyRecipe() {
+        return this.$route.path.includes('/users/my-recipes/') || 
+               this.$route.path.includes('/family-recipes/') ||
+               !this.recipe?.spoonacularScore;
       }
     },
     methods: {

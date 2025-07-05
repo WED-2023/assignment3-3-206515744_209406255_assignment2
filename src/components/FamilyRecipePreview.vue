@@ -198,7 +198,7 @@ export default {
 .no-image-placeholder {
   width: 100%;
   height: 200px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #42b983 0%, #2c3e50 100%);
   display: flex;
   align-items: center;
   justify-content: center;

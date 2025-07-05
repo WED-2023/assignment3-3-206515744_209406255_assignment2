@@ -1,7 +1,9 @@
 <template>
-  <!-- Modal -->
-  <div v-if="show" class="modal fade show d-block fade-in" tabindex="-1" role="dialog" aria-labelledby="newRecipeModalLabel">
-    <div class="modal-dialog modal-xl slide-in-up" role="document">
+  <!-- Use Teleport to render modal at body level, escaping parent containers -->
+  <Teleport to="body">
+    <!-- Modal -->
+    <div v-if="show" class="modal fade show d-block fade-in" tabindex="-1" role="dialog" aria-labelledby="newRecipeModalLabel" @click="closeModal">
+      <div class="modal-dialog modal-xl slide-in-up" role="document" @click.stop>
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header fade-in-down">
@@ -333,8 +335,9 @@
     </div>
   </div>
 
-  <!-- Modal Backdrop -->
-  <div v-if="show" class="modal-backdrop fade show"></div>
+    <!-- Modal Backdrop -->
+    <div v-if="show" class="modal-backdrop fade show"></div>
+  </Teleport>
 </template>
 
 <script>
@@ -360,7 +363,6 @@ export default {
         title: "",
         image: "",
         readyInMinutes: "",
-        aggregateLikes: 0,
         vegan: false,
         vegetarian: false,
         glutenFree: false,
@@ -421,7 +423,6 @@ export default {
         title: "",
         image: "",
         readyInMinutes: "",
-        aggregateLikes: 0,
         vegan: false,
         vegetarian: false,
         glutenFree: false,
@@ -553,7 +554,6 @@ export default {
           title: this.newRecipe.title,
           image: this.newRecipe.image || "",
           readyInMinutes: parseInt(this.newRecipe.readyInMinutes),
-          aggregateLikes: parseInt(this.newRecipe.aggregateLikes) || 0,
           vegan: this.newRecipe.vegan,
           vegetarian: this.newRecipe.vegetarian,
           glutenFree: this.newRecipe.glutenFree,
@@ -654,20 +654,75 @@ export default {
 </script>
 
 <style scoped>
+/* Modal styles - now rendered at body level via Teleport */
 .modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  outline: 0;
   z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 1040;
 }
 
+.modal-dialog {
+  position: relative;
+  margin: 1.75rem auto;
+  pointer-events: none;
+  width: auto;
+  max-width: none;
+}
+
+.modal-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  pointer-events: auto;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 0.3rem;
+  outline: 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 .modal-xl {
-  max-width: 90%;
+  max-width: 90vw;
+  width: 90vw;
+}
+
+@media (max-width: 768px) {
+  .modal-xl {
+    max-width: 95vw;
+    width: 95vw;
+    margin: 0.5rem;
+  }
+  
+  .modal-dialog {
+    margin: 0.5rem auto;
+  }
 }
 
 .modal-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #42b983 0%, #2c3e50 100%);
   color: white;
   border-radius: 0;
   padding: 1.5rem;
@@ -698,6 +753,7 @@ export default {
   max-height: 70vh;
   overflow-y: auto;
   padding: 2rem;
+  flex: 1 1 auto;
 }
 
 .modal-footer {
