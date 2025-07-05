@@ -25,9 +25,14 @@
       
       <!-- Recipe indicators overlay -->
       <div class="recipe-indicators">
-        <!-- Viewed indicator -->
-        <div v-if="isViewed" class="indicator viewed-indicator" title="You've viewed this recipe">
+        <!-- Viewed indicator (Spoonacular recipes only) -->
+        <div v-if="isViewed && !isUserRecipesRoute && !isFamilyRecipesRoute" class="indicator viewed-indicator" title="You've viewed this recipe">
           👁️
+        </div>
+        
+        <!-- Favorite indicator (Spoonacular recipes only) -->
+        <div v-if="isFavorited && !isUserRecipesRoute && !isFamilyRecipesRoute" class="indicator favorite-indicator" title="You've favorited this recipe">
+          ❤️
         </div>
         
         <!-- Vegan indicator -->
@@ -63,8 +68,9 @@
         </div>
         <!-- Action buttons in their own row -->
         <div class="action-buttons-row">
-          <!-- Like button -->
+          <!-- Like button (only for Spoonacular recipes) -->
           <ActionButton
+            v-if="!isUserRecipesRoute && !isFamilyRecipesRoute"
             :item-id="recipe.id"
             action-type="like"
             :initial-active-state="isLiked"
@@ -79,8 +85,9 @@
             @click.stop
           />
           
-          <!-- Favorite button -->
+          <!-- Favorite button (only for Spoonacular recipes) -->
           <ActionButton
+            v-if="!isUserRecipesRoute && !isFamilyRecipesRoute"
             :item-id="recipe.id"
             action-type="favorite"
             :initial-active-state="isFavorited"
@@ -499,50 +506,6 @@ export default {
 
 .score-info i {
   color: #ffc107;
-}
-
-/* Diet information badges */
-.diet-info {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.25rem;
-  margin-bottom: 1rem;
-  min-height: 25px;
-  position: relative;
-  z-index: 2;
-}
-
-.badge {
-  display: inline-block;
-  padding: 0.25em 0.5em;
-  font-size: 0.75em;
-  font-weight: 700;
-  line-height: 1;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: baseline;
-  border-radius: 0.375rem;
-}
-
-.badge-success {
-  color: #fff;
-  background-color: #28a745;
-}
-
-.badge-warning {
-  color: #212529;
-  background-color: #ffc107;
-}
-
-.badge-info {
-  color: #fff;
-  background-color: #17a2b8;
-}
-
-.badge-secondary {
-  color: #fff;
-  background-color: #6c757d;
 }
 
 .action-buttons-row {

@@ -1,45 +1,90 @@
 <template>
-  <div class="card h-100 recipe-card clickable-card">
+  <div 
+    class="card h-100 recipe-card clickable-card"
+    role="button"
+    tabindex="0"
+    :aria-label="`View family recipe: ${recipe.title || recipe.familyMember + ' Recipe'}`"
+    @click="goToRecipe"
+    @keydown.enter="goToRecipe"
+    @keydown.space.prevent="goToRecipe"
+  >
     <div class="recipe-image-container">
       <img
         v-if="recipe.image"
         :src="recipe.image"
         class="card-img-top recipe-image"
         alt="Family recipe image"
-        @click="goToRecipe"
       />
-      <div v-else class="no-image-placeholder" @click="goToRecipe">
+      <div v-else class="no-image-placeholder">
         <i class="fas fa-utensils"></i>
+      </div>
+      
+      <!-- Clickable indicator overlay -->
+      <div class="clickable-indicator">
+        <i class="fas fa-eye"></i>
+        <span>Click to view</span>
+      </div>
+      
+      <!-- Recipe indicators overlay -->
+      <div class="recipe-indicators">
+        <!-- Vegan indicator -->
+        <div v-if="recipe.vegan" class="indicator vegan-indicator" title="Vegan">
+          🌱
+        </div>
+        
+        <!-- Vegetarian indicator (only if not vegan) -->
+        <div v-else-if="recipe.vegetarian" class="indicator vegetarian-indicator" title="Vegetarian">
+          🥬
+        </div>
+        
+        <!-- Gluten-free indicator -->
+        <div v-if="recipe.glutenFree" class="indicator gluten-free-indicator" title="Gluten Free">
+          🌾
+        </div>
       </div>
     </div>
     
-    <div class="card-body text-center clickable-area" @click="goToRecipe">
-      <h5 class="card-title">{{ recipe.familyMember }}'s Recipe</h5>
-      <p class="card-text">
-        <span class="badge badge-primary">{{ recipe.occasion }}</span>
-      </p>
+    <div class="card-body text-center clickable-area">
+      <!-- Recipe title -->
+      <h5 class="card-title">{{ recipeTitle }}</h5>
       
-      <!-- Quick info -->
-      <div class="quick-info">
-        <small class="text-muted">
-          <i class="fas fa-list"></i> {{ recipe.ingredients?.length || 0 }} ingredients
-        </small>
-        <br>
-        <small class="text-muted">
-          <i class="fas fa-tasks"></i> {{ recipe.instructions?.length || 0 }} steps
-        </small>
+      <!-- Family member and occasion info -->
+      <div class="family-info">
+        <span class="badge badge-primary">{{ recipe.occasion }}</span>
+        <span v-if="recipe.familyMember" class="badge badge-secondary">{{ recipe.familyMember }}</span>
       </div>
       
-      <!-- Action buttons in their own row -->
-      <div class="action-buttons-row">
-        <button
-          type="button"
-          class="btn btn-danger btn-sm delete-recipe-btn"
-          @click.stop="deleteRecipe"
-          title="Delete family recipe"
-        >
-          🗑️
-        </button>
+      <!-- Bottom fixed container for time and actions -->
+      <div class="bottom-actions">
+        <!-- Recipe time info -->
+        <div class="recipe-info">
+          <p v-if="recipe.readyInMinutes" class="card-text time-info">
+            <i class="fas fa-clock"></i> {{ recipe.readyInMinutes }} min
+          </p>
+        </div>
+        
+        <!-- Quick info -->
+        <div class="quick-info">
+          <small class="text-muted">
+            <i class="fas fa-list"></i> {{ recipe.ingredients?.length || 0 }} ingredients
+          </small>
+          <br>
+          <small class="text-muted">
+            <i class="fas fa-tasks"></i> {{ recipe.instructions?.length || 0 }} steps
+          </small>
+        </div>
+        
+        <!-- Action buttons in their own row -->
+        <div class="action-buttons-row">
+          <button
+            type="button"
+            class="btn btn-danger btn-sm delete-recipe-btn"
+            @click.stop="deleteRecipe"
+            title="Delete family recipe"
+          >
+            🗑️
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -55,6 +100,11 @@ export default {
     }
   },
   emits: ['recipe-deleted'],
+  computed: {
+    recipeTitle() {
+      return this.recipe.title || `${this.recipe.familyMember}'s Recipe`;
+    }
+  },
   methods: {
     goToRecipe() {
       // Debug log to see the recipe structure
@@ -133,12 +183,74 @@ export default {
 </script>
 
 <style scoped>
+/* Container to push time/score and buttons to bottom */
+.bottom-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.recipe-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.time-info {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.time-info i {
+  color: #007bff;
+}
+
+/* Family member and occasion info */
+.family-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  min-height: 25px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25em 0.5em;
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.375rem;
+}
+
+.badge-primary {
+  color: #fff;
+  background-color: #007bff;
+}
+
+.badge-secondary {
+  color: #fff;
+  background-color: #6c757d;
+}
 
 /* Quick-info styling (retained from original override) */
 .quick-info {
   font-size: 0.875rem;
   line-height: 1.4;
   margin-bottom: 1rem;
+  position: relative;
+  z-index: 2;
 }
 
 /* Any additional overrides (e.g. delete button) */
@@ -281,6 +393,8 @@ export default {
 .card-body {
   cursor: pointer;
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-body.clickable-area {
@@ -315,7 +429,6 @@ export default {
 }
 
 .recipe-info,
-.diet-info,
 .action-buttons-row {
   position: relative;
   z-index: 2;
@@ -328,38 +441,14 @@ export default {
   margin-bottom: 1rem;
 }
 
-.diet-info {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.25rem;
-  margin-bottom: 1rem;
-  min-height: 25px;
-}
-
-.badge {
-  display: inline-block;
-  padding: 0.25em 0.5em;
-  font-size: 0.75em;
-  font-weight: 700;
-  line-height: 1;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: baseline;
-  border-radius: 0.375rem;
-}
-
-.badge-success { background-color: #28a745; color: #fff; }
-.badge-warning { background-color: #ffc107; color: #212529; }
-.badge-info    { background-color: #17a2b8; color: #fff; }
-.badge-secondary { background-color: #6c757d; color: #fff; }
-
 .action-buttons-row {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 0.5rem;
+  margin-top: auto;
+  position: relative;
+  z-index: 2;
 }
 
 @media (max-width: 576px) {
