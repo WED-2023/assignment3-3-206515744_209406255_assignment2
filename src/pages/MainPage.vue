@@ -99,14 +99,24 @@
           />
             <!-- Load More Button for Last Viewed Recipes -->
           <div class="text-center mt-3">
+            <!-- Show "no more recipes" message if applicable -->
+            <div v-if="noMoreViewedRecipes" class="alert alert-info mb-2">
+              <small>
+                <i class="fas fa-info-circle"></i>
+                You've reached the end of your viewed recipes history.
+              </small>
+            </div>
+            
             <button 
               @click="fetchLastViewedRecipes(false)"
-              :disabled="loadingViewed"
+              :disabled="loadingViewed || noMoreViewedRecipes"
               class="btn btn-primary load-more-btn"
+              :class="{ 'btn-secondary': noMoreViewedRecipes }"
             >
               <i v-if="loadingViewed" class="fas fa-spinner fa-spin"></i>
+              <i v-else-if="noMoreViewedRecipes" class="fas fa-check"></i>
               <i v-else class="fas fa-plus"></i>
-              {{ loadingViewed ? 'Loading...' : 'Load 3 More Viewed Recipes' }}
+              {{ loadingViewed ? 'Loading...' : noMoreViewedRecipes ? 'All Recipes Loaded' : 'Load 3 More Viewed Recipes' }}
             </button>
           </div>
         </div>
@@ -141,7 +151,8 @@ export default {
       lastViewedRecipes: [],
       lastViewedNumber: 3, // Start with 3, increment by 3 each time
       loadingViewed: false,
-      viewedError: ''
+      viewedError: '',
+      noMoreViewedRecipes: false
     };
   },
   async mounted() {
@@ -165,6 +176,7 @@ export default {
         this.lastViewedRecipes = [];
         this.lastViewedNumber = 3;
         this.viewedError = '';
+        this.noMoreViewedRecipes = false;
       }
     }
   },
@@ -229,19 +241,25 @@ export default {
     this.viewedError = '';
 
     try {
-      // remember how many we already had
-      const oldCount = reset ? 0 : this.lastViewedRecipes.length;
-
-      // bump counter
+      // Store the current count before fetching
+      const previousCount = this.lastViewedRecipes.length;
+      
+      // Determine how many recipes to fetch
+      let requestNumber;
       if (reset) {
         this.lastViewedNumber = 3;
+        requestNumber = 3;
+        this.noMoreViewedRecipes = false; // Reset the flag on initial load
       } else {
+        // When loading more, fetch 3 additional recipes
         this.lastViewedNumber += 3;
+        requestNumber = this.lastViewedNumber;
       }
-      console.log(`Fetching ${this.lastViewedNumber} last viewed recipes…`);
+      
+      console.log(`Fetching ${requestNumber} last viewed recipes (reset: ${reset})...`);
 
       const response = await this.axios.get('/users/last-view', {
-        params: { number: this.lastViewedNumber }
+        params: { number: requestNumber }
       });
       const fetched = response.data.recipes || response.data || [];
 
@@ -254,16 +272,22 @@ export default {
       }));
 
       if (reset) {
-        // first load → replace
+        // first load → replace all
         this.lastViewedRecipes = processed;
       } else {
-        // load more → append only the new ones
-        const newOnes = processed.slice(oldCount);
-        this.lastViewedRecipes = [
-          ...this.lastViewedRecipes,
-          ...newOnes
-        ];
+        // load more → check if we got new recipes
+        if (processed.length === previousCount) {
+          // No new recipes were added
+          this.noMoreViewedRecipes = true;
+          this.lastViewedNumber -= 3; // Revert the increment since we didn't get more
+          console.log('No more viewed recipes to load');
+        } else {
+          // We got more recipes, replace with all fetched recipes
+          this.lastViewedRecipes = processed;
+          this.noMoreViewedRecipes = false;
+        }
       }
+      
       console.log(`Now showing ${this.lastViewedRecipes.length} last viewed recipes`);
     } catch (error) {
       console.error('Error fetching last viewed recipes:', error);
@@ -424,6 +448,17 @@ export default {
   &:hover:not(:disabled) {
     background-color: #0056b3;
     border-color: #0056b3;
+  }
+}
+
+.btn-secondary {
+  color: #fff;
+  background-color: #6c757d;
+  border-color: #6c757d;
+  
+  &:hover:not(:disabled) {
+    background-color: #5a6268;
+    border-color: #545b62;
   }
 }
 
