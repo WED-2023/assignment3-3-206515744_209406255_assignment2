@@ -2,219 +2,54 @@
   <div class="container fade-in">
     <h1 class="title fade-in-down">Search Page</h1>
     
-    <div class="search-form slide-in-up">
-      <form @submit.prevent="onSearch">
-        <!-- Main search field -->
-        <div class="fade-in-up-delayed">
-          <FormField
-            label="Search Recipes:"
-            name="query"
-            type="text"
-            placeholder="Enter recipe name, ingredients, or keywords..."
-            v-model="form.query"
-            :required="true"
-            :requirements="['Required field']"
-            autocomplete="on"
-          />
-        </div>
+    <!-- Search Form -->
+    <SearchFormSection
+      :form="form"
+      :loading="loading"
+      :show-advanced="showAdvanced"
+      :all-cuisines="allCuisines"
+      :diet-options="dietOptions"
+      :all-intolerances="allIntolerances"
+      @search="onSearch"
+      @toggle-advanced="showAdvanced = !showAdvanced"
+      @update:query="form.query = $event"
+      @update:form="form = $event"
+      @clear-all-filters="clearAllFilters"
+    />
 
-        <!-- Advanced filters toggle -->
-        <div class="advanced-toggle slide-in-left">
-          <button 
-            type="button" 
-            @click="showAdvanced = !showAdvanced"
-            class="btn btn-link hover-scale"
-          >
-            <i class="fas fa-filter"></i>
-            {{ showAdvanced ? 'Hide' : 'Show' }} Advanced Filters
-            <i :class="showAdvanced ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
-          </button>
-        </div>
+    <!-- Search Status (Loading, Error, No Results) -->
+    <SearchStatusSection
+      :loading="loading"
+      :has-searched="hasSearched"
+      :search-results="searchResults"
+      :error-message="errorMessage"
+      :last-search-query="lastSearchQuery"
+      :search-criteria-text="getSearchCriteriaText()"
+    />
 
-        <!-- Advanced filters (collapsible) -->
-        <div v-if="showAdvanced" class="advanced-filters slide-in-down">
-          <div class="row">
-            <div class="col-md-6">
-              <!-- Number of results as radio buttons -->
-              <div class="form-group">
-                <label>Number of Results:</label>
-                <div class="radio-group">
-                  <div class="form-check form-check-inline">
-                    <input 
-                      class="form-check-input" 
-                      type="radio" 
-                      name="numberOfResults" 
-                      id="results5" 
-                      value="5"
-                      v-model="form.number"
-                    >
-                    <label class="form-check-label" for="results5">5</label>
-                  </div>
-                  <div class="form-check form-check-inline">
-                    <input 
-                      class="form-check-input" 
-                      type="radio" 
-                      name="numberOfResults" 
-                      id="results10" 
-                      value="10"
-                      v-model="form.number"
-                    >
-                    <label class="form-check-label" for="results10">10</label>
-                  </div>
-                  <div class="form-check form-check-inline">
-                    <input 
-                      class="form-check-input" 
-                      type="radio" 
-                      name="numberOfResults" 
-                      id="results15" 
-                      value="15"
-                      v-model="form.number"
-                    >
-                    <label class="form-check-label" for="results15">15</label>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <!-- Cuisine dropdown -->
-              <div class="form-group">
-                <label>Cuisine:</label>
-                <select v-model="form.cuisine" class="form-control">
-                  <option value="">No filter</option>
-                  <option v-for="cuisine in allCuisines" :key="cuisine" :value="cuisine">
-                    {{ cuisine }}
-                  </option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6">
-              <!-- Diet dropdown -->
-              <div class="form-group">
-                <label>Diet:</label>
-                <select v-model="form.diet" class="form-control">
-                  <option value="">No filter</option>
-                  <option v-for="diet in dietOptions" :key="diet.value" :value="diet.value">
-                    {{ diet.label }}
-                  </option>
-                </select>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <!-- Intolerances dropdown -->
-              <div class="form-group">
-                <label>Intolerance:</label>
-                <select v-model="form.intolerance" class="form-control">
-                  <option value="">No filter</option>
-                  <option v-for="intolerance in allIntolerances" :key="intolerance" :value="intolerance">
-                    {{ intolerance }}
-                  </option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- Active filters display -->
-          <div v-if="hasActiveFilters" class="active-filters">
-            <small class="text-muted">Active filters:</small>
-            <div class="active-chips">
-              <span v-if="form.number !== '5'" class="active-chip">
-                {{ form.number }} results <i @click="form.number = '5'" class="fas fa-times"></i>
-              </span>
-              <span v-if="form.cuisine" class="active-chip">
-                {{ form.cuisine }} <i @click="form.cuisine = ''" class="fas fa-times"></i>
-              </span>
-              <span v-if="form.diet" class="active-chip">
-                {{ getDietLabel(form.diet) }} <i @click="form.diet = ''" class="fas fa-times"></i>
-              </span>
-              <span v-if="form.intolerance" class="active-chip">
-                {{ form.intolerance }} <i @click="form.intolerance = ''" class="fas fa-times"></i>
-              </span>
-              <button type="button" @click="clearAllFilters" class="btn btn-sm btn-outline-danger">
-                Clear All
-              </button>
-            </div>
-          </div>
-        </div>
-        
-        <div class="slide-in-right">
-          <SubmitButton
-            :is-loading="loading"
-            :is-form-valid="!!form.query.trim()"
-            default-text="Search"
-            loading-text="Searching..."
-            variant="btn-primary"
-            :tooltip-fields="form.query.trim() ? [] : ['Search query is required']"
-            tooltip-title="Form incomplete"
-          />
-        </div>
-      </form>
-    </div>
-
-    <!-- Loading state -->
-    <div v-if="loading" class="text-center mt-4 pulse">
-      <div class="loading-animation">
-        <div class="spinner"></div>
-        <p class="pulse-text">Searching...</p>
-      </div>
-    </div>
-
-    <!-- Search results -->
-    <div v-if="searchResults.length > 0 && !loading" class="search-results mt-4 fade-in-up-delayed">
-      <div class="results-header">
-        <h3 class="slide-in-left">
-          Search Results ({{ searchResults.length }} found)
-          <small v-if="isRestoredSearch" class="text-muted restored-indicator">
-            <i class="fas fa-history"></i> Last search restored
-          </small>
-        </h3>
-        <div class="sort-controls">
-          <label for="sortBy">Sort by:</label>
-          <select id="sortBy" v-model="sortBy" @change="sortResults" class="form-control form-control-sm">
-            <option value="">Default</option>
-            <option value="time">Time to make</option>
-            <option value="score">Spoonacular score</option>
-          </select>
-        </div>
-      </div>
-      <RecipePreviewList 
-        :recipes="sortedResults" 
-        title="" 
-        class="center"
-        @recipe-action-changed="onRecipeActionChanged"
-      />
-    </div>
-
-    <!-- No results message -->
-    <div v-if="hasSearched && searchResults.length === 0 && !loading && !errorMessage" class="text-center mt-4 slide-in-up">
-      <div class="alert alert-info">
-        <h4>No recipes found</h4>
-        <p>No recipes found for "{{ lastSearchQuery }}"{{ getSearchCriteriaText() }}.</p>
-        <p>Try different keywords or adjust your search criteria.</p>
-      </div>
-    </div>
-
-    <!-- Error message -->
-    <div v-if="errorMessage" class="alert alert-danger mt-4">
-      <h4>Search Error</h4>
-      <p>{{ errorMessage }}</p>
-    </div>
+    <!-- Search Results -->
+    <SearchResultsSection
+      :search-results="searchResults"
+      :loading="loading"
+      :sort-by="sortBy"
+      :is-restored-search="isRestoredSearch"
+      @update:sort-by="sortBy = $event"
+      @recipe-action-changed="onRecipeActionChanged"
+    />
   </div>
 </template>
 
 <script>
 import { getCurrentInstance } from 'vue';
-import RecipePreviewList from "../components/RecipePreviewList.vue";
-import FormField from "../components/FormField.vue";
-import SubmitButton from "../components/SubmitButton.vue";
+import SearchFormSection from "../components/SearchFormSection.vue";
+import SearchStatusSection from "../components/SearchStatusSection.vue";
+import SearchResultsSection from "../components/SearchResultsSection.vue";
 
 export default {
   components: {
-    RecipePreviewList,
-    FormField,
-    SubmitButton
+    SearchFormSection,
+    SearchStatusSection,
+    SearchResultsSection
   },
   data() {
     return {
@@ -285,34 +120,8 @@ export default {
     this.restoreLastSearchResults();
   },
   computed: {
-    hasActiveFilters() {
-      return this.form.number !== "5" || this.form.cuisine || this.form.diet || this.form.intolerance;
-    },
     isRestoredSearch() {
       return this.isFromRestoredSearch && this.searchResults.length > 0;
-    },
-    sortedResults() {
-      if (!this.sortBy || this.searchResults.length === 0) {
-        return this.searchResults;
-      }
-      
-      const sorted = [...this.searchResults];
-      
-      if (this.sortBy === 'time') {
-        return sorted.sort((a, b) => {
-          const timeA = a.readyInMinutes || a.cookingMinutes || 0;
-          const timeB = b.readyInMinutes || b.cookingMinutes || 0;
-          return timeA - timeB; // Ascending order (shortest time first)
-        });
-      } else if (this.sortBy === 'score') {
-        return sorted.sort((a, b) => {
-          const scoreA = a.spoonacularScore || a.score || 0;
-          const scoreB = b.spoonacularScore || b.score || 0;
-          return scoreB - scoreA; // Descending order (highest score first)
-        });
-      }
-      
-      return sorted;
     }
   },
   methods: {
@@ -321,16 +130,6 @@ export default {
       this.form.diet = "";
       this.form.intolerance = "";
       this.form.number = "5";
-    },
-
-    getDietLabel(dietValue) {
-      const diet = this.dietOptions.find(d => d.value === dietValue);
-      return diet ? diet.label : dietValue;
-    },
-
-    sortResults() {
-      // This method is called when sort selection changes
-      // The actual sorting is handled by the computed property
     },
 
     saveSearchResults() {
@@ -581,254 +380,17 @@ export default {
       }
 
       return criteria.length > 0 ? ` with ${criteria.join(', ')}` : '';
+    },
+
+    getDietLabel(dietValue) {
+      const diet = this.dietOptions.find(d => d.value === dietValue);
+      return diet ? diet.label : dietValue;
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-@import "@/scss/form-style.scss";
-
-.search-form {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 2rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-}
-
-.advanced-toggle {
-  text-align: center;
-  margin: 1rem 0;
-  
-  .btn-link {
-    color: #007bff;
-    text-decoration: none;
-    border: none;
-    background: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-    
-    &:hover {
-      background-color: #e7f3ff;
-      text-decoration: none;
-    }
-    
-    i {
-      margin: 0 0.5rem;
-    }
-  }
-}
-
-.advanced-filters {
-  background-color: #fff;
-  padding: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-  margin: 1rem 0;
-}
-
-.radio-group {
-  display: flex;
-  gap: 1rem;
-  margin-top: 0.5rem;
-}
-
-.form-check-inline {
-  margin-right: 1rem;
-}
-
-.form-check-input {
-  margin-right: 0.5rem;
-}
-
-.chip-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-.chip {
-  background-color: #e9ecef;
-  border: 1px solid #ced4da;
-  border-radius: 20px;
-  padding: 0.4rem 0.8rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.875rem;
-  
-  &:hover {
-    background-color: #dee2e6;
-    transform: translateY(-1px);
-  }
-  
-  &.chip-selected {
-    background-color: #007bff;
-    color: white;
-    border-color: #007bff;
-  }
-}
-
-.more-options {
-  margin-top: 0.5rem;
-}
-
-.active-filters {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e0e0e0;
-}
-
-.active-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  align-items: center;
-}
-
-.active-chip {
-  background-color: #28a745;
-  color: white;
-  border-radius: 15px;
-  padding: 0.3rem 0.6rem;
-  font-size: 0.75rem;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  
-  i {
-    cursor: pointer;
-    font-size: 0.7rem;
-    
-    &:hover {
-      color: #ffcccc;
-    }
-  }
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-  color: #333;
-}
-
-.row {
-  display: flex;
-  margin: 0 -0.5rem;
-}
-
-.col-md-6 {
-  flex: 0 0 50%;
-  padding: 0 0.5rem;
-}
-
-.search-results h3 {
-  color: #333;
-  margin-bottom: 1rem;
-}
-
-.results-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.sort-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.sort-controls label {
-  font-weight: 500;
-  margin: 0;
-  white-space: nowrap;
-}
-
-.sort-controls .form-control-sm {
-  min-width: 150px;
-}
-
-.form-control {
-  display: block;
-  width: 100%;
-  padding: 0.375rem 0.75rem;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #495057;
-  background-color: #fff;
-  background-clip: padding-box;
-  border: 1px solid #ced4da;
-  border-radius: 0.25rem;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.form-control:focus {
-  color: #495057;
-  background-color: #fff;
-  border-color: #80bdff;
-  outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-.form-control-sm {
-  height: calc(1.5em + 0.5rem + 2px);
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
-  border-radius: 0.2rem;
-}
-
-.restored-indicator {
-  font-size: 0.8em;
-  color: #6c757d !important;
-  font-weight: normal;
-  margin-left: 1rem;
-}
-
-.restored-indicator i {
-  margin-right: 0.3rem;
-}
-
-.alert {
-  padding: 1rem 1.25rem;
-  margin-bottom: 1rem;
-  border: 1px solid transparent;
-  border-radius: 0.25rem;
-}
-
-.alert-danger {
-  color: #721c24;
-  background-color: #f8d7da;
-  border-color: #f5c6cb;
-}
-
-.alert-info {
-  color: #0c5460;
-  background-color: #d1ecf1;
-  border-color: #bee5eb;
-}
-
-.center {
-  text-align: center;
-}
-
-.text-muted {
-  color: #6c757d;
-}
-
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -840,46 +402,7 @@ export default {
   margin-bottom: 2rem;
   color: #2c3e50;
   font-weight: 600;
-}
-
-.search-form {
-  background: rgba(255, 255, 255, 0.7);
-  padding: 2rem;
-  border-radius: 15px;
-  margin-bottom: 2rem;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.search-results {
-  background: rgba(255, 255, 255, 0.7);
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-/* Ensure form field hints are visible with new card styling */
-.search-form .form-group {
-  position: relative;
-  z-index: 1;
-  margin-bottom: 2rem;
-}
-
-.search-form .input-wrapper {
-  position: relative;
-  z-index: 1;
-}
-
-.search-form .validation-hint {
-  background-color: rgba(227, 242, 253, 0.98);
-  backdrop-filter: blur(5px);
-  border: 1px solid #90caf9;
-  z-index: 1000 !important;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-  position: relative !important;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+  font-size: 2.5rem;
 }
 
 /* Animation classes */
@@ -892,68 +415,6 @@ export default {
   opacity: 0;
   transform: translateY(-20px);
   animation: fadeInDown 1s ease-out forwards;
-}
-
-.fade-in-up-delayed {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeInUp 0.8s ease-out 0.4s forwards;
-}
-
-.slide-in-up {
-  opacity: 0;
-  transform: translateY(30px);
-  animation: slideInUp 0.8s ease-out forwards;
-}
-
-.slide-in-left {
-  opacity: 0;
-  transform: translateX(-30px);
-  animation: slideInLeft 0.8s ease-out 0.2s forwards;
-}
-
-.slide-in-right {
-  opacity: 0;
-  transform: translateX(30px);
-  animation: slideInRight 0.8s ease-out 0.6s forwards;
-}
-
-.slide-in-down {
-  opacity: 0;
-  transform: translateY(-20px);
-  animation: slideInDown 0.8s ease-out 0.3s forwards;
-}
-
-.pulse {
-  animation: pulse 2s infinite;
-}
-
-.pulse-text {
-  animation: pulseText 2s ease-in-out infinite;
-}
-
-.hover-scale {
-  transition: transform 0.3s ease;
-}
-
-.hover-scale:hover {
-  transform: scale(1.05);
-}
-
-.loading-animation {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #42b983;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
 }
 
 @keyframes fadeIn {
@@ -972,96 +433,15 @@ export default {
   }
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-@keyframes pulseText {
-  0%, 100% { 
-    color: inherit;
-    transform: scale(1);
-  }
-  50% { 
-    color: #42b983;
-    transform: scale(1.02);
-  }
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 /* Responsive design */
 @media (max-width: 768px) {
-  .results-header {
-    flex-direction: column;
-    align-items: flex-start;
+  .container {
+    padding: 1rem;
   }
   
-  .sort-controls {
-    width: 100%;
-    justify-content: space-between;
-  }
-  
-  .sort-controls .form-control-sm {
-    min-width: 120px;
+  .title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
   }
 }
 </style>
