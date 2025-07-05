@@ -59,9 +59,20 @@
           <div class="alert alert-info">
             <h4>Login Required</h4>
             <p>You need to be logged in to view your last viewed recipes.</p>
-            <router-link :to="{ name: 'login' }">
-              <button class="btn btn-primary">Login</button>
-            </router-link>
+            <div class="auth-buttons">
+              <router-link :to="{ name: 'login' }">
+                <button class="btn btn-primary auth-btn">
+                  <i class="fas fa-sign-in-alt"></i>
+                  Login
+                </button>
+              </router-link>
+              <router-link :to="{ name: 'register' }">
+                <button class="btn btn-outline-primary auth-btn">
+                  <i class="fas fa-user-plus"></i>
+                  Register
+                </button>
+              </router-link>
+            </div>
           </div>
         </div>
 
@@ -483,6 +494,30 @@ export default {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
   border-radius: 0.25rem;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.auth-btn {
+  min-width: 120px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+}
+
+.auth-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.auth-btn i {
+  margin-right: 0.5rem;
 }
 
 .mt-2 {
