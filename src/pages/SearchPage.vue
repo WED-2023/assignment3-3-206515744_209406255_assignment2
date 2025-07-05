@@ -183,6 +183,7 @@
         :recipes="sortedResults" 
         title="" 
         class="center"
+        @recipe-action-changed="onRecipeActionChanged"
       />
     </div>
 
@@ -427,7 +428,7 @@ export default {
       }
 
       if (this.form.cuisine && this.form.cuisine.trim()) {
-        params.cuisine = this.form.cuisine;
+        params.cuisines = this.form.cuisine; // Backend expects 'cuisines' parameter
       }
 
       if (this.form.diet && this.form.diet.trim()) {
@@ -435,7 +436,7 @@ export default {
       }
 
       if (this.form.intolerance && this.form.intolerance.trim()) {
-        params.intolerances = this.form.intolerance;
+        params.intolerances = this.form.intolerance; // Backend expects 'intolerances' parameter
       }
 
       // Store criteria for display purposes
@@ -446,17 +447,17 @@ export default {
         
         // Execute search and fetch both liked and favorite recipes in parallel
         const [searchResponse] = await Promise.all([
-          window.axios.get('/recipes/search', { params }),
+          this.axios.get('/recipes/search', { params }), // Use this.axios instead of window.axios
           this.fetchUserLikedRecipes(),
-          this.fetchUserFavoriteRecipes() // Add this
+          this.fetchUserFavoriteRecipes()
         ]);
         
         console.log("Search response:", searchResponse);
         console.log("Liked recipes:", this.userLikedRecipes);
         console.log("Favorite recipes:", this.userFavoriteRecipes);
         
-        // Get search results
-        const recipes = searchResponse.data.recipes || searchResponse.data || [];
+        // Get search results - backend returns recipes directly for search endpoint
+        const recipes = searchResponse.data || [];
         
         // Mark recipes as liked/favorited
         this.searchResults = this.markRecipeStates(recipes);
@@ -483,13 +484,13 @@ export default {
 
     async fetchUserLikedRecipes() {
       // Only fetch if user is logged in
-      if (!window.store.username) {
+      if (!this.store.username) {
         this.userLikedRecipes = [];
         return [];
       }
 
       try {
-        const response = await window.axios.get('/users/liked');
+        const response = await this.axios.get('/users/liked');
         this.userLikedRecipes = response.data.recipes || response.data || [];
         return this.userLikedRecipes;
       } catch (error) {
@@ -500,13 +501,13 @@ export default {
     },
 
     async fetchUserFavoriteRecipes() {
-      if (!this.$root.store.username) {
+      if (!this.store.username) {
         this.userFavoriteRecipes = [];
         return [];
       }
 
       try {
-        const response = await window.axios.get('/users/favorites');
+        const response = await this.axios.get('/users/favorites');
         this.userFavoriteRecipes = response.data.recipes || response.data || [];
         return this.userFavoriteRecipes;
       } catch (error) {
