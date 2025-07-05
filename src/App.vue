@@ -4,6 +4,7 @@
       <div class="nav-left">
         <router-link :to="{ name: 'main' }">Main Page</router-link> |
         <router-link :to="{ name: 'search' }">Search</router-link> |
+        <router-link :to="{ name: 'about' }">About</router-link> |
         <span v-if="!store.username" class="guest-links">
           Guest:
           <router-link :to="{ name: 'register' }">Register</router-link> |
@@ -38,6 +39,10 @@
               </router-link>
               <router-link class="dropdown-item" :to="{ name: 'usersFamilyRecipes' }" @click="closeDropdown">
                 Family Recipes
+              </router-link>
+              <div class="dropdown-divider"></div>
+              <router-link class="dropdown-item" :to="{ name: 'about' }" @click="closeDropdown">
+                About
               </router-link>
               <div class="dropdown-divider"></div>
               <a href="#" class="dropdown-item" @click.prevent="logout">Logout</a>

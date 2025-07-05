@@ -2,6 +2,7 @@ import Main from "../pages/MainPage.vue";
 import Register from "../pages/RegisterPage.vue";
 import Login from "../pages/LoginPage.vue";
 import SearchPage from "../pages/SearchPage.vue";
+import AboutPage from "../pages/AboutPage.vue";
 // import RecipesRandom from "../pages/RecipesRandomPage.vue";
 import RecipeView from "../pages/RecipeViewPage.vue";
 import FamilyRecipeView from "../pages/FamilyRecipeViewPage.vue";
@@ -42,6 +43,11 @@ const routes = [
     path: "/recipes/search",
     name: "search",
     component: SearchPage,
+  },
+  {
+    path: "/about",
+    name: "about",
+    component: AboutPage,
   },
   {
     path: "/recipes/:recipeId",
