@@ -385,12 +385,13 @@ export default {
   transform: translate(-50%, -50%);
   background: rgba(0, 123, 255, 0.9);
   color: white;
-  padding: 0.75rem 1rem;
-  border-radius: 25px;
+  padding: 1rem 2rem;
+  border-radius: 30px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 1rem;
   font-weight: 600;
   opacity: 0;
   visibility: hidden;
@@ -398,6 +399,9 @@ export default {
   z-index: 3;
   backdrop-filter: blur(4px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  min-width: 160px;
+  text-align: center;
+  white-space: nowrap;
 }
 
 /* Recipe indicators overlay */
@@ -574,8 +578,9 @@ export default {
   }
 
   .clickable-indicator {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    min-width: 140px;
   }
 }
 
