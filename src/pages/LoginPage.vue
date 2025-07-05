@@ -132,7 +132,7 @@ export default {
           password: state.password
         };
 
-        await window.axios.post('/login', payload);
+        await window.axios.post('/Login', payload);
         
         // Store user data
         window.store.login(state.username);

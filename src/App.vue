@@ -95,6 +95,10 @@ export default {
 
     onMounted(() => {
       document.addEventListener('click', handleClickOutside);
+      // Validate session on app start
+      if (store.username) {
+        store.validateSession();
+      }
       // Fetch user info for profile picture
       if (store.username) {
         axios.get('/user_information')
@@ -102,7 +106,13 @@ export default {
             const pic = response.data.data.profilePic;
             store.setProfilePic(pic);
           })
-          .catch(err => console.error('Failed to fetch user information:', err));
+          .catch(err => {
+            console.error('Failed to fetch user information:', err);
+            // If user info fetch fails, session might be invalid
+            if (err.response?.status === 401) {
+              store.logout();
+            }
+          });
       }
     });
 
@@ -114,7 +124,7 @@ export default {
       closeDropdown();
       try {
         // Send logout request to backend
-        await axios.post('/logout');
+        await axios.post('/Logout');
         
         // Clear local state
         store.logout();

@@ -4,10 +4,41 @@ const store = reactive({
   username: localStorage.getItem("username"),
   profilePic: localStorage.getItem("profilePic") || null,
   server_domain: "http://localhost:3000",
+  isAuthenticated: false,
+
+  async validateSession() {
+    if (!this.username) {
+      this.isAuthenticated = false;
+      return false;
+    }
+
+    try {
+      // Try to fetch user information to validate session
+      const response = await fetch(`${this.server_domain}/user_information`, {
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        this.isAuthenticated = true;
+        const data = await response.json();
+        this.setProfilePic(data.data.profilePic);
+        return true;
+      } else {
+        // Session is invalid, clear local data
+        this.logout();
+        return false;
+      }
+    } catch (error) {
+      console.error("Session validation failed:", error);
+      this.isAuthenticated = false;
+      return false;
+    }
+  },
 
   login(username) {
     localStorage.setItem("username", username);
     this.username = username;
+    this.isAuthenticated = true;
     console.log("login", this.username);
   },
 
@@ -22,6 +53,7 @@ const store = reactive({
     localStorage.removeItem("profilePic");
     this.username = undefined;
     this.profilePic = null;
+    this.isAuthenticated = false;
     // Clear meal plan on logout
     this.clearMealPlan();
   },
