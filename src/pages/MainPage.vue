@@ -9,32 +9,37 @@
           <h2 class="pulse-text">Explore These Recipes</h2>
         </div>
         
-        <!-- Loading state for random recipes -->
-        <div v-if="loadingRandom && randomRecipes.length === 0" class="text-center py-4 pulse">
-          <div class="loading-animation">
-            <div class="spinner"></div>
-            <p class="pulse-text">Loading random recipes...</p>
+        <div class="section-content">
+          <div class="content-area">
+            <!-- Loading state for random recipes -->
+            <div v-if="loadingRandom && randomRecipes.length === 0" class="text-center py-4 pulse">
+              <div class="loading-animation">
+                <div class="spinner"></div>
+                <p class="pulse-text">Loading random recipes...</p>
+              </div>
+            </div>
+              <!-- Random recipes error -->
+            <div v-else-if="randomError" class="alert alert-danger slide-in-right">
+              <h4>Error Loading Random Recipes</h4>
+              <p>{{ randomError }}</p>
+              <button @click="fetchRandomRecipes(true)" class="btn btn-outline-primary hover-lift">
+                <i class="fas fa-redo"></i> Try Again
+              </button>
+            </div>
+            
+            <!-- Random recipes list -->
+            <div v-else class="fade-in-up-delayed">
+              <RecipePreviewList
+                title=""
+                :recipes="randomRecipes"
+                class="recipe-list"
+                @recipe-action-changed="onRecipeActionChanged"
+              />
+            </div>
           </div>
-        </div>
-          <!-- Random recipes error -->
-        <div v-else-if="randomError" class="alert alert-danger slide-in-right">
-          <h4>Error Loading Random Recipes</h4>
-          <p>{{ randomError }}</p>
-          <button @click="fetchRandomRecipes(true)" class="btn btn-outline-primary hover-lift">
-            <i class="fas fa-redo"></i> Try Again
-          </button>
-        </div>
-        
-        <!-- Random recipes list -->
-        <div v-else class="fade-in-up-delayed">
-          <RecipePreviewList
-            title=""
-            :recipes="randomRecipes"
-            class="recipe-list"
-            @recipe-action-changed="onRecipeActionChanged"
-          />
-            <!-- Get New Random Recipes Button -->
-          <div class="text-center mt-3">
+          
+          <!-- Get New Random Recipes Button - always at bottom -->
+          <div v-if="!randomError && (!loadingRandom || randomRecipes.length > 0)" class="button-area text-center">
             <button 
               @click="fetchRandomRecipes(true)"
               :disabled="loadingRandom"
@@ -54,62 +59,67 @@
           <h2 class="pulse-text">Last Viewed Recipes</h2>
         </div>
 
-        <!-- Not logged in message -->
-        <div v-if="!store.username" class="text-center mt-4">
-          <div class="alert alert-info">
-            <h4>Login Required</h4>
-            <p>You need to be logged in to view your last viewed recipes.</p>
-            <div class="auth-buttons">
-              <router-link :to="{ name: 'login' }">
-                <button class="btn btn-primary auth-btn">
-                  <i class="fas fa-sign-in-alt"></i>
-                  Login
-                </button>
-              </router-link>
-              <router-link :to="{ name: 'register' }">
-                <button class="btn btn-outline-primary auth-btn">
-                  <i class="fas fa-user-plus"></i>
-                  Register
-                </button>
-              </router-link>
+        <div class="section-content">
+          <div class="content-area">
+            <!-- Not logged in message -->
+            <div v-if="!store.username" class="text-center mt-4">
+              <div class="alert alert-info">
+                <h4>Login Required</h4>
+                <p>You need to be logged in to view your last viewed recipes.</p>
+                <div class="auth-buttons">
+                  <router-link :to="{ name: 'login' }">
+                    <button class="btn btn-primary auth-btn">
+                      <i class="fas fa-sign-in-alt"></i>
+                      Login
+                    </button>
+                  </router-link>
+                  <router-link :to="{ name: 'register' }">
+                    <button class="btn btn-outline-primary auth-btn">
+                      <i class="fas fa-user-plus"></i>
+                      Register
+                    </button>
+                  </router-link>
+                </div>
+              </div>
+            </div>
+
+            <!-- Loading state for last viewed -->
+            <div v-else-if="loadingViewed && lastViewedRecipes.length === 0" class="text-center py-4">
+              <p>Loading last viewed recipes...</p>
+            </div>
+              <!-- Last viewed recipes error -->
+            <div v-else-if="viewedError" class="alert alert-danger">
+              <h4>Error Loading Viewed Recipes</h4>
+              <p>{{ viewedError }}</p>
+              <button @click="fetchLastViewedRecipes(true)" class="btn btn-outline-primary">
+                <i class="fas fa-redo"></i> Try Again
+              </button>
+            </div>
+            
+            <!-- No viewed recipes -->
+            <div v-else-if="lastViewedRecipes.length === 0" class="text-center mt-4">
+              <div class="alert alert-info">
+                <h4>No Viewed Recipes</h4>
+                <p>You haven't viewed any recipes yet.</p>
+                <router-link :to="{ name: 'search' }">
+                  <button class="btn btn-primary">Search Recipes</button>
+                </router-link>
+              </div>
+            </div>
+            
+            <!-- Last viewed recipes list -->
+            <div v-else>
+              <RecipePreviewList
+                title=""
+                :recipes="lastViewedRecipes"
+                class="recipe-list"
+                @recipe-action-changed="onRecipeActionChanged"
+              />
             </div>
           </div>
-        </div>
-
-        <!-- Loading state for last viewed -->
-        <div v-else-if="loadingViewed && lastViewedRecipes.length === 0" class="text-center py-4">
-          <p>Loading last viewed recipes...</p>
-        </div>
-          <!-- Last viewed recipes error -->
-        <div v-else-if="viewedError" class="alert alert-danger">
-          <h4>Error Loading Viewed Recipes</h4>
-          <p>{{ viewedError }}</p>
-          <button @click="fetchLastViewedRecipes(true)" class="btn btn-outline-primary">
-            <i class="fas fa-redo"></i> Try Again
-          </button>
-        </div>
-        
-        <!-- No viewed recipes -->
-        <div v-else-if="lastViewedRecipes.length === 0" class="text-center mt-4">
-          <div class="alert alert-info">
-            <h4>No Viewed Recipes</h4>
-            <p>You haven't viewed any recipes yet.</p>
-            <router-link :to="{ name: 'search' }">
-              <button class="btn btn-primary">Search Recipes</button>
-            </router-link>
-          </div>
-        </div>
-        
-        <!-- Last viewed recipes list -->
-        <div v-else>
-          <RecipePreviewList
-            title=""
-            :recipes="lastViewedRecipes"
-            class="recipe-list"
-            @recipe-action-changed="onRecipeActionChanged"
-          />
-            <!-- Load More Button for Last Viewed Recipes -->
-          <div class="text-center mt-3">
+          
+          <!-- Load More Button for Last Viewed Recipes - always at bottom when logged in and has recipes -->
+          <div v-if="store.username && (lastViewedRecipes.length > 0 || (!loadingViewed && !viewedError))" class="button-area text-center">
             <!-- Show "no more recipes" message if applicable -->
             <div v-if="noMoreViewedRecipes" class="alert alert-info mb-2">
               <small>
@@ -335,7 +345,7 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-  max-width: 1600px;
+  max-width: 1900px; /* Increased from 1600px to give more space for recipe titles */
   margin: 0 auto;
   padding: 2rem;
 }
@@ -351,8 +361,8 @@ export default {
 .main-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: start;
+  gap: 4rem; /* Increased from 3rem to make better use of the wider space */
+  align-items: stretch; /* Changed from 'start' to 'stretch' to make sections equal height */
 }
 
 .recipe-section {
@@ -363,6 +373,9 @@ export default {
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%; /* Ensure sections fill the available height */
 }
 
 .recipe-section:hover {
@@ -375,6 +388,7 @@ export default {
   justify-content: center;
   align-items: center;
   margin-bottom: 1.5rem;
+  flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 .section-header h2 {
@@ -384,8 +398,25 @@ export default {
   font-weight: 600;
 }
 
+.section-content {
+  flex: 1; /* Take up remaining space */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Distribute space between content and button */
+}
+
+.content-area {
+  flex: 1; /* Allow content to grow */
+}
+
+.button-area {
+  margin-top: auto; /* Push button to bottom */
+  padding-top: 1rem; /* Add some space above the button */
+}
+
 .recipe-list {
   margin-top: 0;
+  flex: 1; /* Allow recipe list to grow */
   
   .grid-container {
     grid-template-columns: repeat(2, 1fr);
