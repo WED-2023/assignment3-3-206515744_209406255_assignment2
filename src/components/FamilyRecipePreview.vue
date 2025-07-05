@@ -63,17 +63,6 @@
           </p>
         </div>
         
-        <!-- Quick info -->
-        <div class="quick-info">
-          <small class="text-muted">
-            <i class="fas fa-list"></i> {{ recipe.ingredients?.length || 0 }} ingredients
-          </small>
-          <br>
-          <small class="text-muted">
-            <i class="fas fa-tasks"></i> {{ recipe.instructions?.length || 0 }} steps
-          </small>
-        </div>
-        
         <!-- Action buttons in their own row -->
         <div class="action-buttons-row">
           <button
