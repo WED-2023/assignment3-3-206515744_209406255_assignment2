@@ -76,92 +76,42 @@
               </div>
             </div>
             <div class="col-md-6">
-              <!-- Cuisine chips -->
+              <!-- Cuisine dropdown -->
               <div class="form-group">
-                <label>Cuisines:</label>
-                <div class="chip-container">
-                  <div 
-                    v-for="cuisine in popularCuisines" 
-                    :key="cuisine"
-                    @click="toggleCuisine(cuisine)"
-                    :class="['chip', { 'chip-selected': form.cuisines.includes(cuisine) }]"
-                  >
+                <label>Cuisine:</label>
+                <select v-model="form.cuisine" class="form-control">
+                  <option value="">No filter</option>
+                  <option v-for="cuisine in allCuisines" :key="cuisine" :value="cuisine">
                     {{ cuisine }}
-                  </div>
-                </div>
-                <div class="more-options">
-                  <button 
-                    type="button" 
-                    @click="showAllCuisines = !showAllCuisines"
-                    class="btn btn-sm btn-outline-secondary"
-                  >
-                    {{ showAllCuisines ? 'Show Less' : 'More Cuisines...' }}
-                  </button>
-                </div>
-                <div v-if="showAllCuisines" class="chip-container mt-2">
-                  <div 
-                    v-for="cuisine in otherCuisines" 
-                    :key="cuisine"
-                    @click="toggleCuisine(cuisine)"
-                    :class="['chip', { 'chip-selected': form.cuisines.includes(cuisine) }]"
-                  >
-                    {{ cuisine }}
-                  </div>
-                </div>
+                  </option>
+                </select>
               </div>
             </div>
           </div>
 
           <div class="row">
             <div class="col-md-6">
-              <!-- Diet chips -->
+              <!-- Diet dropdown -->
               <div class="form-group">
                 <label>Diet:</label>
-                <div class="chip-container">
-                  <div 
-                    v-for="diet in dietOptions" 
-                    :key="diet.value"
-                    @click="toggleDiet(diet.value)"
-                    :class="['chip', { 'chip-selected': form.diet.includes(diet.value) }]"
-                  >
+                <select v-model="form.diet" class="form-control">
+                  <option value="">No filter</option>
+                  <option v-for="diet in dietOptions" :key="diet.value" :value="diet.value">
                     {{ diet.label }}
-                  </div>
-                </div>
+                  </option>
+                </select>
               </div>
             </div>
             <div class="col-md-6">
-              <!-- Intolerances chips -->
+              <!-- Intolerances dropdown -->
               <div class="form-group">
-                <label>Intolerances:</label>
-                <div class="chip-container">
-                  <div 
-                    v-for="intolerance in commonIntolerances" 
-                    :key="intolerance"
-                    @click="toggleIntolerance(intolerance)"
-                    :class="['chip', { 'chip-selected': form.intolerances.includes(intolerance) }]"
-                  >
+                <label>Intolerance:</label>
+                <select v-model="form.intolerance" class="form-control">
+                  <option value="">No filter</option>
+                  <option v-for="intolerance in allIntolerances" :key="intolerance" :value="intolerance">
                     {{ intolerance }}
-                  </div>
-                </div>
-                <div class="more-options">
-                  <button 
-                    type="button" 
-                    @click="showAllIntolerances = !showAllIntolerances"
-                    class="btn btn-sm btn-outline-secondary"
-                  >
-                    {{ showAllIntolerances ? 'Show Less' : 'More...' }}
-                  </button>
-                </div>
-                <div v-if="showAllIntolerances" class="chip-container mt-2">
-                  <div 
-                    v-for="intolerance in otherIntolerances" 
-                    :key="intolerance"
-                    @click="toggleIntolerance(intolerance)"
-                    :class="['chip', { 'chip-selected': form.intolerances.includes(intolerance) }]"
-                  >
-                    {{ intolerance }}
-                  </div>
-                </div>
+                  </option>
+                </select>
               </div>
             </div>
           </div>
@@ -173,14 +123,14 @@
               <span v-if="form.number !== '5'" class="active-chip">
                 {{ form.number }} results <i @click="form.number = '5'" class="fas fa-times"></i>
               </span>
-              <span v-for="cuisine in form.cuisines" :key="'c-'+cuisine" class="active-chip">
-                {{ cuisine }} <i @click="removeCuisine(cuisine)" class="fas fa-times"></i>
+              <span v-if="form.cuisine" class="active-chip">
+                {{ form.cuisine }} <i @click="form.cuisine = ''" class="fas fa-times"></i>
               </span>
-              <span v-for="diet in form.diet" :key="'d-'+diet" class="active-chip">
-                {{ diet }} <i @click="removeDiet(diet)" class="fas fa-times"></i>
+              <span v-if="form.diet" class="active-chip">
+                {{ getDietLabel(form.diet) }} <i @click="form.diet = ''" class="fas fa-times"></i>
               </span>
-              <span v-for="intolerance in form.intolerances" :key="'i-'+intolerance" class="active-chip">
-                {{ intolerance }} <i @click="removeIntolerance(intolerance)" class="fas fa-times"></i>
+              <span v-if="form.intolerance" class="active-chip">
+                {{ form.intolerance }} <i @click="form.intolerance = ''" class="fas fa-times"></i>
               </span>
               <button type="button" @click="clearAllFilters" class="btn btn-sm btn-outline-danger">
                 Clear All
@@ -213,9 +163,24 @@
 
     <!-- Search results -->
     <div v-if="searchResults.length > 0 && !loading" class="search-results mt-4 fade-in-up-delayed">
-      <h3 class="slide-in-left">Search Results ({{ searchResults.length }} found)</h3>
+      <div class="results-header">
+        <h3 class="slide-in-left">
+          Search Results ({{ searchResults.length }} found)
+          <small v-if="isRestoredSearch" class="text-muted restored-indicator">
+            <i class="fas fa-history"></i> Last search restored
+          </small>
+        </h3>
+        <div class="sort-controls">
+          <label for="sortBy">Sort by:</label>
+          <select id="sortBy" v-model="sortBy" @change="sortResults" class="form-control form-control-sm">
+            <option value="">Default</option>
+            <option value="time">Time to make</option>
+            <option value="score">Spoonacular score</option>
+          </select>
+        </div>
+      </div>
       <RecipePreviewList 
-        :recipes="searchResults" 
+        :recipes="sortedResults" 
         title="" 
         class="center"
       />
@@ -254,24 +219,22 @@ export default {
     return {
       form: {
         query: "",
-        number: "5", // Changed to string to work with radio buttons
-        cuisines: [],
-        diet: [],
-        intolerances: []
+        number: "5", // Default to 5 results
+        cuisine: "", // Single cuisine selection
+        diet: "", // Single diet selection
+        intolerance: "" // Single intolerance selection
       },
       searchResults: [],
+      sortBy: "", // For sorting results
       loading: false,
       hasSearched: false,
       lastSearchQuery: "",
       lastSearchCriteria: {},
       errorMessage: "",
       showAdvanced: false,
-      showAllCuisines: false,
-      showAllIntolerances: false,
       
-      // Popular options shown first
-      popularCuisines: ['Italian', 'American', 'Chinese', 'Mexican', 'French', 'Indian'],
-      otherCuisines: ['African', 'British', 'Cajun', 'Caribbean', 'Eastern European', 'European', 'German', 'Greek', 'Irish', 'Japanese', 'Jewish', 'Korean', 'Latin American', 'Mediterranean', 'Middle Eastern', 'Nordic', 'Southern', 'Spanish', 'Thai', 'Vietnamese'],
+      // All cuisine options
+      allCuisines: ['Italian', 'American', 'Chinese', 'Mexican', 'French', 'Indian', 'African', 'British', 'Cajun', 'Caribbean', 'Eastern European', 'European', 'German', 'Greek', 'Irish', 'Japanese', 'Jewish', 'Korean', 'Latin American', 'Mediterranean', 'Middle Eastern', 'Nordic', 'Southern', 'Spanish', 'Thai', 'Vietnamese'],
       
       dietOptions: [
         { value: 'vegetarian', label: 'Vegetarian' },
@@ -286,11 +249,12 @@ export default {
         { value: 'whole30', label: 'Whole30' }
       ],
       
-      commonIntolerances: ['gluten', 'dairy', 'peanut', 'soy'],
-      otherIntolerances: ['egg', 'grain', 'seafood', 'sesame', 'shellfish', 'sulfite', 'tree nut', 'wheat'],
+      // All intolerance options
+      allIntolerances: ['gluten', 'dairy', 'peanut', 'soy', 'egg', 'grain', 'seafood', 'sesame', 'shellfish', 'sulfite', 'tree nut', 'wheat'],
 
       userLikedRecipes: [],
-      userFavoriteRecipes: [] // Add this
+      userFavoriteRecipes: [],
+      isFromRestoredSearch: false // Track if current results are from restoration
     };
   },
   setup() {
@@ -300,56 +264,147 @@ export default {
 
     return { store, axios };
   },
+  watch: {
+    // Clear saved search results when user logs out
+    'store.username'(newValue, oldValue) {
+      // If user logged out (had a username, now doesn't)
+      if (oldValue && !newValue) {
+        console.log('User logged out, clearing saved search results');
+        this.clearSavedSearchResults();
+        // Optionally clear current search results too
+        this.searchResults = [];
+        this.hasSearched = false;
+        this.lastSearchQuery = '';
+        this.lastSearchCriteria = {};
+      }
+    }
+  },
+  mounted() {
+    // Restore last search results when component mounts
+    this.restoreLastSearchResults();
+  },
   computed: {
     hasActiveFilters() {
-      return this.form.number !== "5" || this.form.cuisines.length > 0 || this.form.diet.length > 0 || this.form.intolerances.length > 0;
+      return this.form.number !== "5" || this.form.cuisine || this.form.diet || this.form.intolerance;
+    },
+    isRestoredSearch() {
+      return this.isFromRestoredSearch && this.searchResults.length > 0;
+    },
+    sortedResults() {
+      if (!this.sortBy || this.searchResults.length === 0) {
+        return this.searchResults;
+      }
+      
+      const sorted = [...this.searchResults];
+      
+      if (this.sortBy === 'time') {
+        return sorted.sort((a, b) => {
+          const timeA = a.readyInMinutes || a.cookingMinutes || 0;
+          const timeB = b.readyInMinutes || b.cookingMinutes || 0;
+          return timeA - timeB; // Ascending order (shortest time first)
+        });
+      } else if (this.sortBy === 'score') {
+        return sorted.sort((a, b) => {
+          const scoreA = a.spoonacularScore || a.score || 0;
+          const scoreB = b.spoonacularScore || b.score || 0;
+          return scoreB - scoreA; // Descending order (highest score first)
+        });
+      }
+      
+      return sorted;
     }
   },
   methods: {
-    toggleCuisine(cuisine) {
-      const index = this.form.cuisines.indexOf(cuisine);
-      if (index > -1) {
-        this.form.cuisines.splice(index, 1);
-      } else {
-        this.form.cuisines.push(cuisine);
-      }
-    },
-    
-    toggleDiet(diet) {
-      const index = this.form.diet.indexOf(diet);
-      if (index > -1) {
-        this.form.diet.splice(index, 1);
-      } else {
-        this.form.diet.push(diet);
-      }
-    },
-    
-    toggleIntolerance(intolerance) {
-      const index = this.form.intolerances.indexOf(intolerance);
-      if (index > -1) {
-        this.form.intolerances.splice(index, 1);
-      } else {
-        this.form.intolerances.push(intolerance);
-      }
-    },
-    
-    removeCuisine(cuisine) {
-      this.form.cuisines = this.form.cuisines.filter(c => c !== cuisine);
-    },
-    
-    removeDiet(diet) {
-      this.form.diet = this.form.diet.filter(d => d !== diet);
-    },
-    
-    removeIntolerance(intolerance) {
-      this.form.intolerances = this.form.intolerances.filter(i => i !== intolerance);
-    },
-    
     clearAllFilters() {
-      this.form.cuisines = [];
-      this.form.diet = [];
-      this.form.intolerances = [];
+      this.form.cuisine = "";
+      this.form.diet = "";
+      this.form.intolerance = "";
       this.form.number = "5";
+    },
+
+    getDietLabel(dietValue) {
+      const diet = this.dietOptions.find(d => d.value === dietValue);
+      return diet ? diet.label : dietValue;
+    },
+
+    sortResults() {
+      // This method is called when sort selection changes
+      // The actual sorting is handled by the computed property
+    },
+
+    saveSearchResults() {
+      // Only save if there are search results
+      if (this.searchResults.length > 0) {
+        const searchData = {
+          results: this.searchResults,
+          query: this.lastSearchQuery,
+          criteria: this.lastSearchCriteria,
+          form: { ...this.form },
+          timestamp: Date.now(),
+          hasSearched: this.hasSearched
+        };
+        
+        try {
+          localStorage.setItem('lastSearchResults', JSON.stringify(searchData));
+          console.log('Search results saved to localStorage');
+        } catch (error) {
+          console.error('Failed to save search results to localStorage:', error);
+        }
+      }
+    },
+
+    restoreLastSearchResults() {
+      try {
+        const savedData = localStorage.getItem('lastSearchResults');
+        if (!savedData) {
+          console.log('No saved search results found');
+          return;
+        }
+
+        const searchData = JSON.parse(savedData);
+        
+        // Check if the data is recent (within 24 hours to avoid stale data)
+        const twentyFourHours = 24 * 60 * 60 * 1000;
+        if (Date.now() - searchData.timestamp > twentyFourHours) {
+          console.log('Saved search results are too old, clearing them');
+          localStorage.removeItem('lastSearchResults');
+          return;
+        }
+
+        // Restore the search state
+        this.searchResults = searchData.results || [];
+        this.lastSearchQuery = searchData.query || '';
+        this.lastSearchCriteria = searchData.criteria || {};
+        this.hasSearched = searchData.hasSearched || false;
+        this.isFromRestoredSearch = true; // Mark as restored
+        
+        // Restore form state
+        if (searchData.form) {
+          this.form = { ...this.form, ...searchData.form };
+        }
+
+        console.log('Last search results restored:', this.searchResults.length, 'recipes');
+        
+        // Fetch current user liked/favorite status to update the restored results
+        if (this.store.username) {
+          this.fetchUserLikedRecipes();
+          this.fetchUserFavoriteRecipes();
+        }
+        
+      } catch (error) {
+        console.error('Failed to restore search results from localStorage:', error);
+        // Clear corrupted data
+        localStorage.removeItem('lastSearchResults');
+      }
+    },
+
+    clearSavedSearchResults() {
+      try {
+        localStorage.removeItem('lastSearchResults');
+        console.log('Saved search results cleared');
+      } catch (error) {
+        console.error('Failed to clear saved search results:', error);
+      }
     },
 
     async onSearch() {
@@ -359,6 +414,7 @@ export default {
       this.errorMessage = "";
       this.lastSearchQuery = this.form.query;
       this.hasSearched = true;
+      this.isFromRestoredSearch = false; // Clear restoration flag on new search
 
       // Build search parameters
       const params = {
@@ -370,16 +426,16 @@ export default {
         params.number = parseInt(this.form.number);
       }
 
-      if (this.form.cuisines && this.form.cuisines.length > 0) {
-        params.cuisines = this.form.cuisines.join(',');
+      if (this.form.cuisine && this.form.cuisine.trim()) {
+        params.cuisine = this.form.cuisine;
       }
 
-      if (this.form.diet && this.form.diet.length > 0) {
-        params.diet = this.form.diet.join(',');
+      if (this.form.diet && this.form.diet.trim()) {
+        params.diet = this.form.diet;
       }
 
-      if (this.form.intolerances && this.form.intolerances.length > 0) {
-        params.intolerances = this.form.intolerances.join(',');
+      if (this.form.intolerance && this.form.intolerance.trim()) {
+        params.intolerances = this.form.intolerance;
       }
 
       // Store criteria for display purposes
@@ -404,6 +460,9 @@ export default {
         
         // Mark recipes as liked/favorited
         this.searchResults = this.markRecipeStates(recipes);
+        
+        // Save search results to localStorage for browser persistence
+        this.saveSearchResults();
         
       } catch (error) {
         console.error("Search failed:", error);
@@ -508,16 +567,16 @@ export default {
         criteria.push(`${this.form.number} results`);
       }
       
-      if (this.form.cuisines.length > 0) {
-        criteria.push(`cuisines: ${this.form.cuisines.join(', ')}`);
+      if (this.form.cuisine) {
+        criteria.push(`cuisine: ${this.form.cuisine}`);
       }
       
-      if (this.form.diet.length > 0) {
-        criteria.push(`diet: ${this.form.diet.join(', ')}`);
+      if (this.form.diet) {
+        criteria.push(`diet: ${this.getDietLabel(this.form.diet)}`);
       }
       
-      if (this.form.intolerances.length > 0) {
-        criteria.push(`intolerances: ${this.form.intolerances.join(', ')}`);
+      if (this.form.intolerance) {
+        criteria.push(`intolerance: ${this.form.intolerance}`);
       }
 
       return criteria.length > 0 ? ` with ${criteria.join(', ')}` : '';
@@ -674,6 +733,72 @@ export default {
 .search-results h3 {
   color: #333;
   margin-bottom: 1rem;
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sort-controls label {
+  font-weight: 500;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.sort-controls .form-control-sm {
+  min-width: 150px;
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+  color: #495057;
+  background-color: #fff;
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-control-sm {
+  height: calc(1.5em + 0.5rem + 2px);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.2rem;
+}
+
+.restored-indicator {
+  font-size: 0.8em;
+  color: #6c757d !important;
+  font-weight: normal;
+  margin-left: 1rem;
+}
+
+.restored-indicator i {
+  margin-right: 0.3rem;
 }
 
 .alert {
@@ -920,5 +1045,22 @@ export default {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .results-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .sort-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .sort-controls .form-control-sm {
+    min-width: 120px;
+  }
 }
 </style>
