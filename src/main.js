@@ -11,8 +11,7 @@ import store from "./store.js";
 
 // Configure axios to include credentials (cookies) with all requests
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL =
-  process.env.VUE_APP_API_BASE_URL || "http://localhost:3000";
+axios.defaults.baseURL = "http://localhost:3000";
 const router = createRouter({
   history: createWebHistory(),
   routes,
