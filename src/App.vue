@@ -59,7 +59,14 @@
           </router-link>
         </span>
       </div>
-      <div class="nav-title">Grandma's Recipes</div>
+      <router-link :to="{ name: 'main' }" class="nav-title">
+        <img 
+          src="@/assets/grandma-high-quality-logo-illustration-ideal-for-t-shirt-graphic-vector.jpg" 
+          alt="Grandma's Recipes Logo" 
+          class="nav-logo"
+        />
+        <span class="nav-title-text">Grandma's Recipes</span>
+      </router-link>
       <div class="nav-right">
         <!-- This section is now empty -->
       </div>
@@ -236,10 +243,49 @@ body {
 /* Centered site title in navbar */
 .nav-title {
   justify-self: center;
-  font-size: 1.5rem;
-  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   color: #fff;
   flex-shrink: 0;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.nav-title:hover {
+  color: #fff;
+  text-decoration: none;
+  opacity: 0.9;
+}
+
+.nav-title:focus {
+  color: #fff;
+  text-decoration: none;
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.nav-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.nav-logo:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.nav-title-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 #nav a,
