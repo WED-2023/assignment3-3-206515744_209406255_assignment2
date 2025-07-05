@@ -4,155 +4,39 @@
 
     <div class="main-content slide-in-up">
       <!-- Left side - Random Recipes -->
-      <div class="recipe-section slide-in-left">
-        <div class="section-header">
-          <h2 class="pulse-text">Explore These Recipes</h2>
-        </div>
-        
-        <div class="section-content">
-          <div class="content-area">
-            <!-- Loading state for random recipes -->
-            <div v-if="loadingRandom && randomRecipes.length === 0" class="text-center py-4 pulse">
-              <div class="loading-animation">
-                <div class="spinner"></div>
-                <p class="pulse-text">Loading random recipes...</p>
-              </div>
-            </div>
-              <!-- Random recipes error -->
-            <div v-else-if="randomError" class="alert alert-danger slide-in-right">
-              <h4>Error Loading Random Recipes</h4>
-              <p>{{ randomError }}</p>
-              <button @click="fetchRandomRecipes(true)" class="btn btn-outline-primary hover-lift">
-                <i class="fas fa-redo"></i> Try Again
-              </button>
-            </div>
-            
-            <!-- Random recipes list -->
-            <div v-else class="fade-in-up-delayed">
-              <RecipePreviewList
-                title=""
-                :recipes="randomRecipes"
-                class="recipe-list"
-                @recipe-action-changed="onRecipeActionChanged"
-              />
-            </div>
-          </div>
-          
-          <!-- Get New Random Recipes Button - always at bottom -->
-          <div v-if="!randomError && (!loadingRandom || randomRecipes.length > 0)" class="button-area text-center">
-            <button 
-              @click="fetchRandomRecipes(true)"
-              :disabled="loadingRandom"
-              class="btn btn-primary load-more-btn hover-scale"
-            >
-              <i v-if="loadingRandom" class="fas fa-spinner fa-spin"></i>
-              <i v-else class="fas fa-sync-alt"></i>
-              {{ loadingRandom ? 'Loading...' : 'Get New Random Recipes' }}
-            </button>
-          </div>
-        </div>
-      </div>
+      <RandomRecipesSection
+        :recipes="randomRecipes"
+        :loading="loadingRandom"
+        :error="randomError"
+        @get-new-recipes="fetchRandomRecipes(true)"
+        @retry="fetchRandomRecipes(true)"
+        @recipe-action-changed="onRecipeActionChanged"
+      />
 
       <!-- Right side - Last Viewed Recipes -->
-      <div class="recipe-section slide-in-right">
-        <div class="section-header">
-          <h2 class="pulse-text">Last Viewed Recipes</h2>
-        </div>
-
-        <div class="section-content">
-          <div class="content-area">
-            <!-- Not logged in message -->
-            <div v-if="!store.username" class="text-center mt-4">
-              <div class="alert alert-info">
-                <h4>Login Required</h4>
-                <p>You need to be logged in to view your last viewed recipes.</p>
-                <div class="auth-buttons">
-                  <router-link :to="{ name: 'login' }">
-                    <button class="btn btn-primary auth-btn">
-                      <i class="fas fa-sign-in-alt"></i>
-                      Login
-                    </button>
-                  </router-link>
-                  <router-link :to="{ name: 'register' }">
-                    <button class="btn btn-outline-primary auth-btn">
-                      <i class="fas fa-user-plus"></i>
-                      Register
-                    </button>
-                  </router-link>
-                </div>
-              </div>
-            </div>
-
-            <!-- Loading state for last viewed -->
-            <div v-else-if="loadingViewed && lastViewedRecipes.length === 0" class="text-center py-4">
-              <p>Loading last viewed recipes...</p>
-            </div>
-              <!-- Last viewed recipes error -->
-            <div v-else-if="viewedError" class="alert alert-danger">
-              <h4>Error Loading Viewed Recipes</h4>
-              <p>{{ viewedError }}</p>
-              <button @click="fetchLastViewedRecipes(true)" class="btn btn-outline-primary">
-                <i class="fas fa-redo"></i> Try Again
-              </button>
-            </div>
-            
-            <!-- No viewed recipes -->
-            <div v-else-if="lastViewedRecipes.length === 0" class="text-center mt-4">
-              <div class="alert alert-info">
-                <h4>No Viewed Recipes</h4>
-                <p>You haven't viewed any recipes yet.</p>
-                <router-link :to="{ name: 'search' }">
-                  <button class="btn btn-primary">Search Recipes</button>
-                </router-link>
-              </div>
-            </div>
-            
-            <!-- Last viewed recipes list -->
-            <div v-else>
-              <RecipePreviewList
-                title=""
-                :recipes="lastViewedRecipes"
-                class="recipe-list"
-                @recipe-action-changed="onRecipeActionChanged"
-              />
-            </div>
-          </div>
-          
-          <!-- Load More Button for Last Viewed Recipes - always at bottom when logged in and has recipes -->
-          <div v-if="store.username && (lastViewedRecipes.length > 0 || (!loadingViewed && !viewedError))" class="button-area text-center">
-            <!-- Show "no more recipes" message if applicable -->
-            <div v-if="noMoreViewedRecipes" class="alert alert-info mb-2">
-              <small>
-                <i class="fas fa-info-circle"></i>
-                You've reached the end of your viewed recipes history.
-              </small>
-            </div>
-            
-            <button 
-              @click="fetchLastViewedRecipes(false)"
-              :disabled="loadingViewed || noMoreViewedRecipes"
-              class="btn btn-primary load-more-btn"
-              :class="{ 'btn-secondary': noMoreViewedRecipes }"
-            >
-              <i v-if="loadingViewed" class="fas fa-spinner fa-spin"></i>
-              <i v-else-if="noMoreViewedRecipes" class="fas fa-check"></i>
-              <i v-else class="fas fa-plus"></i>
-              {{ loadingViewed ? 'Loading...' : noMoreViewedRecipes ? 'All Recipes Loaded' : 'Load 3 More Viewed Recipes' }}
-            </button>
-          </div>
-        </div>
-      </div>
+      <LastViewedRecipesSection
+        :recipes="lastViewedRecipes"
+        :loading="loadingViewed"
+        :error="viewedError"
+        :is-logged-in="!!store.username"
+        :no-more-recipes="noMoreViewedRecipes"
+        @load-more="fetchLastViewedRecipes(false)"
+        @retry="fetchLastViewedRecipes(true)"
+        @recipe-action-changed="onRecipeActionChanged"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import { getCurrentInstance } from 'vue';
-import RecipePreviewList from "../components/RecipePreviewList.vue";
+import RandomRecipesSection from "../components/RandomRecipesSection.vue";
+import LastViewedRecipesSection from "../components/LastViewedRecipesSection.vue";
 
 export default {
   components: {
-    RecipePreviewList
+    RandomRecipesSection,
+    LastViewedRecipesSection
   },
   setup() {
     const internalInstance = getCurrentInstance();
