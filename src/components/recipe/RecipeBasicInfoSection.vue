@@ -2,7 +2,7 @@
   <div class="recipe-basic-info mb-3">
     <div><strong>Ready in:</strong> {{ recipe.readyInMinutes }} minutes</div>
     <div v-if="recipe.spoonacularScore && !isUserOrFamilyRecipe">
-      <strong>Spoonacular Score:</strong> {{ recipe.spoonacularScore }}
+      <strong>Spoonacular Score:</strong> {{ Math.round(recipe.spoonacularScore) }}/100
     </div>
     <div v-if="viewType === 'full' && recipe.numberOfPortions">
       <strong>Serves:</strong> {{ recipe.numberOfPortions }} portions

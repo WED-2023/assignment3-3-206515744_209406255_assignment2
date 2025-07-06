@@ -1,15 +1,16 @@
 <template>
   <div class="recipe-info-section">
-    <!-- Recipe title -->
-    <h5 class="card-title">{{ recipe.title }}</h5>
-    
     <!-- Recipe time and score info -->
     <div class="recipe-info">
       <p class="card-text time-info">
-        <i class="fas fa-clock"></i> {{ recipe.readyInMinutes }} min
+        <i class="fas fa-clock"></i> 
+        <span class="info-label">Time to prepare:</span>
+        <span class="info-value">{{ recipe.readyInMinutes }} min</span>
       </p>
       <p v-if="recipe.spoonacularScore && !isUserRecipesRoute && !isFamilyRecipesRoute" class="card-text score-info">
-        <i class="fas fa-star"></i> {{ Math.round(recipe.spoonacularScore) }}/100
+        <i class="fas fa-star"></i> 
+        <span class="info-label">Score:</span>
+        <span class="info-value">{{ Math.round(recipe.spoonacularScore) }}/100</span>
       </p>
     </div>
   </div>
@@ -39,63 +40,65 @@ export default {
 .recipe-info-section {
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-}
-
-.card-title {
-  margin-bottom: 1rem;
 }
 
 .recipe-info {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(248, 249, 250, 0.8);
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
   position: relative;
   z-index: 2;
 }
 
-.recipe-info:has(.time-info:only-child) {
-  justify-content: center;
-}
-
-/* Fallback for browsers that don't support :has() */
-.recipe-info .time-info:only-child {
-  margin: 0 auto;
-}
-
-.time-info {
-  color: #666;
-  font-size: 0.9rem;
+.time-info,
+.score-info {
+  color: #495057;
+  font-size: 0.875rem;
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.5rem;
+  line-height: 1.4;
 }
 
 .time-info i {
   color: #007bff;
-}
-
-.score-info {
-  color: #666;
-  font-size: 0.9rem;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-weight: 600;
+  min-width: 16px;
 }
 
 .score-info i {
   color: #ffc107;
+  min-width: 16px;
+}
+
+.info-label {
+  font-weight: 500;
+  color: #6c757d;
+}
+
+.info-value {
+  font-weight: 600;
+  color: #212529;
 }
 
 /* Responsive adjustments */
 @media (max-width: 576px) {
   .recipe-info {
-    flex-direction: column;
-    gap: 0.5rem;
+    padding: 0.5rem;
+    gap: 0.375rem;
+  }
+
+  .time-info,
+  .score-info {
+    font-size: 0.8rem;
+  }
+
+  .info-label {
+    font-size: 0.75rem;
   }
 }
 </style>

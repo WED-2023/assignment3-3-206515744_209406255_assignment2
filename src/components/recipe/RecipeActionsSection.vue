@@ -98,10 +98,13 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem;
-  margin-top: auto;
+  gap: 0.75rem;
   position: relative;
   z-index: 2;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
 }
 
 .btn-sm {
@@ -128,7 +131,8 @@ export default {
 @media (max-width: 576px) {
   .action-buttons-row {
     flex-wrap: wrap;
-    gap: 0.25rem;
+    gap: 0.5rem;
+    padding: 0.375rem;
   }
 }
 </style>

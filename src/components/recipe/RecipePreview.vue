@@ -17,14 +17,17 @@
     />
     
     <div class="card-body text-center clickable-area">
-      <RecipeInfoSection
-        :recipe="recipe"
-        :is-user-recipes-route="isUserRecipesRoute"
-        :is-family-recipes-route="isFamilyRecipesRoute"
-      />
+      <!-- Recipe title (grows to take available space) -->
+      <h5 class="card-title">{{ recipe.title }}</h5>
       
-      <!-- Bottom fixed container for actions -->
+      <!-- Bottom fixed container for info and actions -->
       <div class="bottom-actions">
+        <RecipeInfoSection
+          :recipe="recipe"
+          :is-user-recipes-route="isUserRecipesRoute"
+          :is-family-recipes-route="isFamilyRecipesRoute"
+        />
+        
         <RecipeActionsSection
           :recipe-id="recipe.id"
           :is-liked="isLiked"
@@ -230,15 +233,22 @@ export default {
   padding: 1rem;
   display: flex;
   flex-direction: column;
+  min-height: 180px; /* Ensure consistent minimum height */
 }
 
-/* Container to push actions to bottom */
+.card-title {
+  flex-grow: 1; /* Allow title to take up available space */
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* Container to push info and actions to bottom */
 .bottom-actions {
-  margin-top: auto;
+  margin-top: auto; /* This pushes the content to the bottom */
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+  gap: 1rem; /* Add spacing between info section and actions */
 }
 
 /* Add a subtle pulse animation to indicate interactivity */
