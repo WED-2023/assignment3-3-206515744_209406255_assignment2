@@ -147,7 +147,7 @@
 <script>
 import { reactive, ref, onMounted, computed, watch } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
-import { required, minLength, sameAs, maxLength, email } from '@vuelidate/validators';
+import { required, minLength, maxLength, email } from '@vuelidate/validators';
 import axios from 'axios';
 import FormField from '@/components/form/FormField.vue';
 import SubmitButton from '@/components/form/SubmitButton.vue';
@@ -181,7 +181,7 @@ export default {
       profilePic: ''  // optional
     });
 
-    // Validation rules
+    // Validation rules - removed sameAs for confirmPassword to handle manually
     const rules = computed(() => ({
       username: {
         required,
@@ -196,8 +196,7 @@ export default {
         hasAtLeastOneNumber
       },
       confirmPassword: {
-        required,
-        sameAsPassword: sameAs(() => state.password)
+        required
       },
       firstName: { required },
       lastName: { required },
@@ -213,67 +212,62 @@ export default {
     const countries = ref([]);
     const isLoadingCountries = ref(false);
 
-    // Watch for user interaction
-    watch([state], () => {
+    // Watch for user interaction - simplified
+    watch(state, () => {
       // Only validate if the form has been touched before
       if (v$.value.$anyDirty) {
         v$.value.$validate();
       }
     }, { deep: true });
 
-    // Watch specifically for password changes to revalidate confirm password
-    watch(() => state.password, () => {
-      if (v$.value.confirmPassword.$dirty) {
-        v$.value.confirmPassword.$touch();
-      }
-    });
+    // Debug function to check form state
+    const debugFormState = () => {
+      console.log('=== FORM DEBUG ===');
+      console.log('State:', {
+        username: state.username,
+        password: state.password ? '***' : '',
+        confirmPassword: state.confirmPassword ? '***' : '',
+        firstName: state.firstName,
+        lastName: state.lastName,
+        email: state.email,
+        country: state.country,
+        profilePic: state.profilePic
+      });
+      console.log('Validation:', {
+        invalid: v$.value.$invalid,
+        dirty: v$.value.$dirty,
+        anyDirty: v$.value.$anyDirty
+      });
+      console.log('Password match:', state.password === state.confirmPassword);
+      console.log('Form valid:', isFormValid.value);
+      console.log('================');
+    };
+    
+    // Expose debug function globally for testing
+    window.debugForm = debugFormState;
 
     // Computed properties
     const isFormValid = computed(() => {
-      // Check if all required fields have values
-      const hasAllRequiredValues = state.username.trim() && 
-                                   state.password && 
-                                   state.confirmPassword && 
-                                   state.firstName.trim() && 
-                                   state.lastName.trim() && 
-                                   state.email.trim() && 
-                                   state.country;
+      // Check if all required fields have values - be more explicit about checking
+      const hasAllRequiredValues = !!(
+        state.username && state.username.trim() && 
+        state.password && 
+        state.confirmPassword && 
+        state.firstName && state.firstName.trim() && 
+        state.lastName && state.lastName.trim() && 
+        state.email && state.email.trim() && 
+        state.country
+      );
       
-      // Check if validation has passed
-      const isValidationPassed = !v$.value.$invalid;
+      // Check if basic validation has passed (excluding password match)
+      const isBasicValidationPassed = !v$.value.$invalid;
       
-      // Additional check for password matching (since sameAs might have issues)
-      const passwordsMatch = state.password === state.confirmPassword;
+      // Manual password matching check
+      const passwordsMatch = state.password === state.confirmPassword && state.password.length > 0;
       
-      // Log for debugging
-      console.log('Form validation check:', {
-        hasAllRequiredValues,
-        isValidationPassed,
-        passwordsMatch,
-        password: state.password,
-        confirmPassword: state.confirmPassword,
-        formState: {
-          username: !!state.username.trim(),
-          password: !!state.password,
-          confirmPassword: !!state.confirmPassword,
-          firstName: !!state.firstName.trim(),
-          lastName: !!state.lastName.trim(),
-          email: !!state.email.trim(),
-          country: !!state.country
-        },
-        validationState: {
-          invalid: v$.value.$invalid,
-          dirty: v$.value.$dirty,
-          anyDirty: v$.value.$anyDirty,
-          confirmPasswordField: {
-            invalid: v$.value.confirmPassword.$invalid,
-            dirty: v$.value.confirmPassword.$dirty,
-            sameAsPassword: v$.value.confirmPassword.sameAsPassword
-          }
-        }
-      });
+      const isValid = hasAllRequiredValues && isBasicValidationPassed && passwordsMatch;
       
-      return hasAllRequiredValues && isValidationPassed && passwordsMatch;
+      return isValid;
     });
 
     // Get missing required fields for user feedback (for tooltip only)
@@ -364,12 +358,16 @@ export default {
     const getConfirmPasswordErrors = computed(() => {
       const errors = [];
       const field = v$.value.confirmPassword;
+      
       if (!field.required && field.$dirty) {
         errors.push('Confirm password is required.');
       }
-      if (!field.sameAsPassword && field.$dirty) {
+      
+      // Manual password matching check
+      if (field.$dirty && state.confirmPassword && state.password !== state.confirmPassword) {
         errors.push('Passwords must match.');
       }
+      
       return errors;
     });
 
@@ -400,18 +398,47 @@ export default {
 
     // Form submission
     const handleSubmit = async () => {
+      console.log('Form submission started');
+      
+      // Touch all fields to show validation errors
       v$.value.$touch();
-        if (!await v$.value.$validate()) {
-         window.toast('Validation Error', 'Please fix the form errors', 'error');
-         return;
-       }
-
+      
+      // Wait for validation to complete
+      const isVuelidateValid = await v$.value.$validate();
+      
+      // Check passwords match
+      const passwordsMatch = state.password === state.confirmPassword;
+      
+      console.log('Submission validation:', {
+        isVuelidateValid,
+        passwordsMatch,
+        password: state.password,
+        confirmPassword: state.confirmPassword,
+        invalid: v$.value.$invalid
+      });
+      
+      // Check basic validation first
+      if (!isVuelidateValid) {
+        console.log('Vuelidate validation failed');
+        window.toast('Validation Error', 'Please fix the form errors', 'error');
+        return;
+      }
+      
+      // Check password matching
+      if (!passwordsMatch) {
+        console.log('Password matching failed');
+        window.toast('Password Error', 'Passwords must match', 'error');
+        return;
+      }
+      
+      console.log('All validation passed, submitting...');
       isSubmitting.value = true;
 
       try {
         const payload = {
           username: state.username,
           password: state.password,
+          confirmedPassword: state.confirmPassword,  // Backend expects this field name
           firstname: state.firstName,
           lastname: state.lastName,
           email: state.email,
@@ -419,13 +446,35 @@ export default {
           profilePic: state.profilePic  // include optional URL
         };
 
+        console.log('Sending payload:', {
+          ...payload,
+          password: '***',
+          profilePic: payload.profilePic || '(empty)'
+        });
+
         await window.axios.post('/register', payload);
         
         window.toast('Registration Successful', 'You can now login', 'success');
         window.router.push('/login');
       } catch (error) {
         console.error('Registration failed:', error);
-        const message = error.response?.data?.message || 'Registration failed. Please try again.';
+        console.error('Error response:', error.response?.data);
+        console.error('Error status:', error.response?.status);
+        
+        let message = 'Registration failed. Please try again.';
+        
+        if (error.response?.data) {
+          if (typeof error.response.data === 'string') {
+            message = error.response.data;
+          } else if (error.response.data.message) {
+            message = error.response.data.message;
+          } else if (error.response.data.error) {
+            message = error.response.data.error;
+          } else {
+            message = `Server error: ${JSON.stringify(error.response.data)}`;
+          }
+        }
+        
         window.toast('Registration Failed', message, 'error');
       } finally {
         isSubmitting.value = false;
@@ -433,10 +482,8 @@ export default {
     };
 
     // Initialize on mount
-    onMounted(async () => {
+    onMounted(() => {
       fetchCountries();
-      // Initialize validation
-      await v$.value.$validate();
     });
 
     return {
