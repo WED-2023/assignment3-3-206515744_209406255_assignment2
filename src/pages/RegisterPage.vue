@@ -197,7 +197,7 @@ export default {
       },
       confirmPassword: {
         required,
-        sameAsPassword: sameAs(computed(() => state.password))
+        sameAsPassword: sameAs(() => state.password)
       },
       firstName: { required },
       lastName: { required },
@@ -221,6 +221,13 @@ export default {
       }
     }, { deep: true });
 
+    // Watch specifically for password changes to revalidate confirm password
+    watch(() => state.password, () => {
+      if (v$.value.confirmPassword.$dirty) {
+        v$.value.confirmPassword.$touch();
+      }
+    });
+
     // Computed properties
     const isFormValid = computed(() => {
       // Check if all required fields have values
@@ -235,10 +242,16 @@ export default {
       // Check if validation has passed
       const isValidationPassed = !v$.value.$invalid;
       
+      // Additional check for password matching (since sameAs might have issues)
+      const passwordsMatch = state.password === state.confirmPassword;
+      
       // Log for debugging
       console.log('Form validation check:', {
         hasAllRequiredValues,
         isValidationPassed,
+        passwordsMatch,
+        password: state.password,
+        confirmPassword: state.confirmPassword,
         formState: {
           username: !!state.username.trim(),
           password: !!state.password,
@@ -251,11 +264,16 @@ export default {
         validationState: {
           invalid: v$.value.$invalid,
           dirty: v$.value.$dirty,
-          anyDirty: v$.value.$anyDirty
+          anyDirty: v$.value.$anyDirty,
+          confirmPasswordField: {
+            invalid: v$.value.confirmPassword.$invalid,
+            dirty: v$.value.confirmPassword.$dirty,
+            sameAsPassword: v$.value.confirmPassword.sameAsPassword
+          }
         }
       });
       
-      return hasAllRequiredValues && isValidationPassed;
+      return hasAllRequiredValues && isValidationPassed && passwordsMatch;
     });
 
     // Get missing required fields for user feedback (for tooltip only)
@@ -415,10 +433,10 @@ export default {
     };
 
     // Initialize on mount
-    onMounted(() => {
+    onMounted(async () => {
       fetchCountries();
       // Initialize validation
-      v$.value.$validate();
+      await v$.value.$validate();
     });
 
     return {
