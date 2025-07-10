@@ -44,7 +44,7 @@
           autocomplete="new-password"
           :required="true"
           :has-error="v$.confirmPassword.$error"
-          :errors="['Passwords must match.']"
+          :errors="getConfirmPasswordErrors"
           :requirements="['Required field', 'Must match the password above']"
         />
       </div>
@@ -197,7 +197,7 @@ export default {
       },
       confirmPassword: {
         required,
-        sameAsPassword: sameAs(state.password)
+        sameAsPassword: sameAs(computed(() => state.password))
       },
       firstName: { required },
       lastName: { required },
@@ -215,11 +215,48 @@ export default {
 
     // Watch for user interaction
     watch([state], () => {
-      // User interaction tracking if needed
+      // Only validate if the form has been touched before
+      if (v$.value.$anyDirty) {
+        v$.value.$validate();
+      }
     }, { deep: true });
 
     // Computed properties
-    const isFormValid = computed(() => !v$.value.$invalid);
+    const isFormValid = computed(() => {
+      // Check if all required fields have values
+      const hasAllRequiredValues = state.username.trim() && 
+                                   state.password && 
+                                   state.confirmPassword && 
+                                   state.firstName.trim() && 
+                                   state.lastName.trim() && 
+                                   state.email.trim() && 
+                                   state.country;
+      
+      // Check if validation has passed
+      const isValidationPassed = !v$.value.$invalid;
+      
+      // Log for debugging
+      console.log('Form validation check:', {
+        hasAllRequiredValues,
+        isValidationPassed,
+        formState: {
+          username: !!state.username.trim(),
+          password: !!state.password,
+          confirmPassword: !!state.confirmPassword,
+          firstName: !!state.firstName.trim(),
+          lastName: !!state.lastName.trim(),
+          email: !!state.email.trim(),
+          country: !!state.country
+        },
+        validationState: {
+          invalid: v$.value.$invalid,
+          dirty: v$.value.$dirty,
+          anyDirty: v$.value.$anyDirty
+        }
+      });
+      
+      return hasAllRequiredValues && isValidationPassed;
+    });
 
     // Get missing required fields for user feedback (for tooltip only)
     const missingRequiredFields = computed(() => {
@@ -306,6 +343,18 @@ export default {
       return errors;
     });
 
+    const getConfirmPasswordErrors = computed(() => {
+      const errors = [];
+      const field = v$.value.confirmPassword;
+      if (!field.required && field.$dirty) {
+        errors.push('Confirm password is required.');
+      }
+      if (!field.sameAsPassword && field.$dirty) {
+        errors.push('Passwords must match.');
+      }
+      return errors;
+    });
+
     // Country fetching
     const fetchCountries = async () => {
       try {
@@ -368,6 +417,8 @@ export default {
     // Initialize on mount
     onMounted(() => {
       fetchCountries();
+      // Initialize validation
+      v$.value.$validate();
     });
 
     return {
@@ -382,7 +433,8 @@ export default {
       getUsernameErrors,
       getPasswordErrors,
       getEmailErrors,
-      getProfilePicErrors
+      getProfilePicErrors,
+      getConfirmPasswordErrors
     };
   }
 };
