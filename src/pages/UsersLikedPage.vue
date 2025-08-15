@@ -30,7 +30,7 @@
         <h4>No liked recipes yet</h4>
         <p>You haven't liked any recipes yet.</p>
         <p>Start exploring recipes and click the heart icon to like them!</p>
-        <router-link to="/search" class="btn btn-primary mt-2">
+        <router-link to="/recipes/search" class="btn btn-primary mt-2">
           Search Recipes
         </router-link>
       </div>

@@ -30,7 +30,7 @@
         <h4>No favorite recipes yet</h4>
         <p>You haven't added any recipes to your favorites yet.</p>
         <p>Start exploring recipes and click the star icon to add them to your favorites!</p>
-        <router-link to="/search" class="btn btn-primary mt-2">
+        <router-link to="/recipes/search" class="btn btn-primary mt-2">
           Search Recipes
         </router-link>
       </div>
