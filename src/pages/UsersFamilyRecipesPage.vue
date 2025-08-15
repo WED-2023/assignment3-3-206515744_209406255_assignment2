@@ -106,7 +106,7 @@ export default {
         
         if (error.response?.status === 401) {
           this.errorMessage = "Please log in to view your family recipes.";
-          this.$router.push('/login');
+          this.$router.push({ name: 'login' });
         } else if (error.response?.status === 404) {
           this.familyRecipes = [];
           this.hasLoaded = true;

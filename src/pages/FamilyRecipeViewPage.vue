@@ -155,7 +155,7 @@ export default {
         // Validate that we have a recipe ID
         if (!recipeId) {
           console.error('No recipe ID found in route params');
-          this.$router.replace("/NotFound");
+          this.$router.replace({ name: 'notFound' });
           return;
         }
         
@@ -184,7 +184,7 @@ export default {
             this.recipe = foundRecipe;
           } else {
             console.error('Recipe not found in family recipes list');
-            this.$router.replace("/NotFound");
+            this.$router.replace({ name: 'notFound' });
           }
         } else {
           throw new Error('Failed to fetch family recipes');
@@ -193,7 +193,7 @@ export default {
       } catch (error) {
         console.error("Failed to load family recipe:", error);
         if (error.response?.status === 404) {
-          this.$router.replace("/NotFound");
+          this.$router.replace({ name: 'notFound' });
         } else {
           this.errorMessage = error.response?.data?.message || "Failed to load family recipe. Please try again.";
         }

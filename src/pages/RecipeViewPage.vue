@@ -111,7 +111,7 @@
           console.log('Recipe response:', response.data);
 
           if (response.status !== 200) {
-            this.$router.replace("/NotFound");
+            this.$router.replace({ name: 'notFound' });
             return;
           }
 
@@ -120,7 +120,7 @@
         } catch (error) {
           console.error("Failed to fetch recipe:", error);
           if (error.response?.status === 404) {
-            this.$router.replace("/NotFound");
+            this.$router.replace({ name: 'notFound' });
           } else {
             this.errorMessage = error.response?.data?.message || "Failed to load recipe. Please try again.";
           }

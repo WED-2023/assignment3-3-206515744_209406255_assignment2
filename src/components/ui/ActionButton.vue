@@ -115,7 +115,7 @@ export default {
       // Check if user is logged in
       if (!window.store.username) {
         alert(`Please log in to ${this.actionType} items`);
-        this.$router.push('/login');
+        this.$router.push({ name: 'login' });
         return;
       }
       
@@ -151,7 +151,7 @@ export default {
         
         if (error.response?.status === 401) {
           alert(`Please log in to ${this.actionType} items`);
-          this.$router.push('/login');
+          this.$router.push({ name: 'login' });
         } else {
           alert(`Failed to update ${this.actionType} status. Please try again.`);
         }
